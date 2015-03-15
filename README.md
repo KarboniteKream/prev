@@ -1,11 +1,11 @@
-## How to build
+### Compilation
 
 ```sh
 $ cd src
 $ javac compiler/Main.java
 ```
 
-## How to run
+### Usage
 
 ```sh
 $ cd src
