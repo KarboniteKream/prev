@@ -1,0 +1,9 @@
++ - * / % & | ^ ! == != < > <= >= ( ) [ ] { } : ; . , =;
+! 'q''e' !;		# != ! !=
+= == 3.14;
+true tru false flase
+
+for(var i : integer = 0; i < 10; i++)
+{
+	printf('%d\n', i);
+}
