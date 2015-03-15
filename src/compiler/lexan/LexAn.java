@@ -177,6 +177,7 @@ public class LexAn {
 				case ',': token = Token.COMMA;    break;
 
 				case '\'':
+					// TODO: Support 32->126 inclusive.
 					while(true)
 					{
 						readNext(true);
@@ -190,6 +191,12 @@ public class LexAn {
 								token = Token.STR_CONST;
 								break;
 							}
+						}
+						else if(currChar == -1)
+						{
+							lexeme = "";
+							token = Token.EOF;
+							break;
 						}
 					}
 				break;
