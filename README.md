@@ -1,13 +1,11 @@
 ### Compilation
 
 ```sh
-$ cd src
-$ javac compiler/Main.java
+$ javac -cp src src/compiler/Main.java
 ```
 
 ### Usage
 
 ```sh
-$ cd src
-$ java compiler.Main --phase=PHASE --dump=DUMP FILE.prev
+$ java -cp src compiler.Main --phase=lexan|synan --dump=lexan|synan FILE.prev
 ```
