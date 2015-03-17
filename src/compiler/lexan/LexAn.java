@@ -176,7 +176,6 @@ public class LexAn {
 				case ',': token = Token.COMMA;    break;
 
 				case '\'':
-					// TODO: Support 32->126 inclusive.
 					while(true)
 					{
 						readNext(true);
@@ -196,6 +195,10 @@ public class LexAn {
 							lexeme = "";
 							token = Token.EOF;
 							break;
+						}
+						else if(currChar < 32 || currChar > 126)
+						{
+							Report.error(currLine, currColumn, "Unexpected character.");
 						}
 					}
 				break;
