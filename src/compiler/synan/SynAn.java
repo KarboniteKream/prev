@@ -35,16 +35,16 @@ public class SynAn {
 
 	private void readNext()
 	{
+		readNext(false);
+	}
+
+	private void readNext(boolean allowEOF)
+	{
 		currSymbol = currSymbol == null ? lexAn.lexAn() : currSymbol;
 
-		// TODO: Test empty file.
-		if(currSymbol.token == Token.EOF)
+		if(currSymbol.token == Token.EOF && allowEOF == false)
 		{
-			System.out.println("ERROR: Unexpected end of file!");
-			// FIXME: Change to 1.
-			// FIXME: Ce je konec datoteke sredi stavka, je to v redu,
-			// ce pa smo prisli do konca, in se vracamo po E, pa ni v redu.
-			// System.exit(0);
+			Report.error(currSymbol.position, "Unexpected end of file.");
 		}
 	}
 
@@ -55,15 +55,9 @@ public class SynAn {
 
 		readNext();
 
-		if(currSymbol.token == token)
+		if(currSymbol.token != token)
 		{
-			System.out.println("OK: " + tokenName);
-		}
-		else
-		{
-			// TODO: Position.
-			// TODO: Error checking.
-			System.out.println("ERROR: Got " + currSymbol.toString().substring(0, currSymbol.toString().indexOf(':')) + ", expected " + tokenName + ".");
+			Report.error(currSymbol.position, "Got " + currSymbol.toString().substring(0, currSymbol.toString().indexOf(':')) + ", expected " + tokenName + ".");
 		}
 
 		currSymbol = null;
@@ -75,8 +69,7 @@ public class SynAn {
 	public void parse() {
 		parse_source();
 
-		readNext();
-
+		// TODO
 		if(currSymbol.token != Token.EOF)
 		{
 			System.out.println("ERROR: EOF -> " + currSymbol.token);
@@ -99,11 +92,27 @@ public class SynAn {
 
 	private void parse_definitions_()
 	{
-		readNext();
+		readNext(true);
 
 		if(currSymbol.token == Token.SEMIC)
 		{
+			currSymbol = null;
+			readNext(true);
+
+			if(currSymbol.token == Token.EOF)
+			{
+				Report.warning(currSymbol.position, "Last definiton should not end with SEMIC.");
+				dump("definitions' -> E");
+				return;
+			}
+
 			dump("definitions' -> ; definitions");
+			parse_definitions();
+		}
+		// TODO: Is this OK?
+		else if(currSymbol.token == Token.COMMA)
+		{
+			Report.warning(currSymbol.position, "Got COMMA, expected SEMIC.");
 			currSymbol = null;
 			parse_definitions();
 		}
@@ -122,33 +131,39 @@ public class SynAn {
 			case Token.KW_TYP:
 				dump("definition -> type_definition");
 				currSymbol = null;
-				parse_type_definition();
+				dump("type_definition -> typ identifier : type");
+				check(Token.IDENTIFIER);
+				check(Token.COLON);
+				parse_type();
 			break;
 
 			case Token.KW_FUN:
 				dump("definition -> function_definition");
 				currSymbol = null;
-				parse_function_definition();
+				dump("function_definition -> fun identifier ( parameters ) : type = expression");
+				check(Token.IDENTIFIER);
+				check(Token.LPARENT);
+				parse_parameters();
+				check(Token.RPARENT);
+				check(Token.COLON);
+				parse_type();
+				check(Token.ASSIGN);
+				parse_expression();
 			break;
 
 			case Token.KW_VAR:
 				dump("definition -> variable_definition");
 				currSymbol = null;
-				parse_variable_definition();
+				dump("variable_definition -> var identifier : type");
+				check(Token.IDENTIFIER);
+				check(Token.COLON);
+				parse_type();
 			break;
 
 			default:
-				System.out.println("ERROR: Not a definition.");
+				Report.error(currSymbol.position, "Not a definition expression.");
 			break;
 		}
-	}
-
-	private void parse_type_definition()
-	{
-		dump("type_definition -> typ identifier : type");
-		check(Token.IDENTIFIER);
-		check(Token.COLON);
-		parse_type();
 	}
 
 	private void parse_type()
@@ -201,7 +216,7 @@ public class SynAn {
 			break;
 
 			default:
-				System.out.println("ERROR: Not a type.");
+				Report.error(currSymbol.position, "Not a type expression.");
 			break;
 		}
 	}
@@ -215,7 +230,7 @@ public class SynAn {
 
 	private void parse_components_()
 	{
-		readNext();
+		readNext(true);
 
 		if(currSymbol.token == Token.COMMA)
 		{
@@ -237,19 +252,6 @@ public class SynAn {
 		parse_type();
 	}
 
-	private void parse_function_definition()
-	{
-		dump("function_definition -> fun identifier ( parameters ) : type = expression");
-		check(Token.IDENTIFIER);
-		check(Token.LPARENT);
-		parse_parameters();
-		check(Token.RPARENT);
-		check(Token.COLON);
-		parse_type();
-		check(Token.ASSIGN);
-		parse_expression();
-	}
-
 	private void parse_parameters()
 	{
 		dump("parameters -> parameter parameters'");
@@ -259,7 +261,7 @@ public class SynAn {
 
 	private void parse_parameters_()
 	{
-		readNext();
+		readNext(true);
 
 		if(currSymbol.token == Token.COMMA)
 		{
@@ -290,7 +292,7 @@ public class SynAn {
 
 	private void parse_expressions_()
 	{
-		readNext();
+		readNext(true);
 
 		if(currSymbol.token == Token.COMMA)
 		{
@@ -313,7 +315,7 @@ public class SynAn {
 
 	private void parse_expression_()
 	{
-		readNext();
+		readNext(true);
 
 		if(currSymbol.token == Token.LBRACE)
 		{
@@ -338,7 +340,7 @@ public class SynAn {
 
 	private void parse_logical_ior_expression_()
 	{
-		readNext();
+		readNext(true);
 
 		if(currSymbol.token == Token.IOR)
 		{
@@ -361,7 +363,7 @@ public class SynAn {
 
 	private void parse_logical_and_expression_()
 	{
-		readNext();
+		readNext(true);
 
 		if(currSymbol.token == Token.AND)
 		{
@@ -384,8 +386,9 @@ public class SynAn {
 
 	private void parse_comparative_expression_()
 	{
-		readNext();
+		readNext(true);
 
+		// TODO: Detect ASSIGN.
 		if(currSymbol.token == Token.EQU)
 		{
 			dump("comparative_expression' -> == additive_expression");
@@ -437,7 +440,7 @@ public class SynAn {
 
 	private void parse_additive_expression_()
 	{
-		readNext();
+		readNext(true);
 
 		if(currSymbol.token == Token.ADD)
 		{
@@ -468,7 +471,7 @@ public class SynAn {
 
 	private void parse_multiplicative_expression_()
 	{
-		readNext();
+		readNext(true);
 
 		if(currSymbol.token == Token.MUL)
 		{
@@ -541,7 +544,7 @@ public class SynAn {
 
 	private void parse_postfix_expression_()
 	{
-		readNext();
+		readNext(true);
 
 		if(currSymbol.token == Token.PTR)
 		{
@@ -609,12 +612,18 @@ public class SynAn {
 			parse_expressions();
 			check(Token.RPARENT);
 		}
+		else
+		{
+			// TODO: Change to missing?
+			// TODO: Remove atom?
+			Report.error(currSymbol.position, "Not an atom expression.");
+		}
 	}
 
 	// FIXME: Better method names.
 	private void parse_atom_expression_identifier()
 	{
-		readNext();
+		readNext(true);
 
 		if(currSymbol.token == Token.LPARENT)
 		{
@@ -675,7 +684,7 @@ public class SynAn {
 
 	private void parse_atom_expression_else()
 	{
-		readNext();
+		readNext(true);
 
 		if(currSymbol.token == Token.KW_ELSE)
 		{
@@ -687,14 +696,6 @@ public class SynAn {
 		{
 			dump("atom_expression_else -> E");
 		}
-	}
-
-	private void parse_variable_definition()
-	{
-		dump("variable_definition -> var identifier : type");
-		check(Token.IDENTIFIER);
-		check(Token.COLON);
-		parse_type();
 	}
 
 	/**
