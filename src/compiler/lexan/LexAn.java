@@ -40,7 +40,7 @@ public class LexAn {
 			Report.error("File " + sourceFileName + " could not be found.");
 		}
 
-		readNext(false); // currChar = input.read();
+		readNext(false);
 		currLine = 1;
 		currColumn = 1;
 	}
@@ -88,6 +88,7 @@ public class LexAn {
 		{
 			int temp = currChar;
 
+			startLine = currLine;
 			startColumn = currColumn;
 
 			switch(currChar)
@@ -101,8 +102,6 @@ public class LexAn {
 					readNext(true);
 				break;
 			}
-
-			startLine = currLine;
 
 			switch(temp)
 			{
@@ -268,7 +267,7 @@ public class LexAn {
 			}
 		}
 
-		Symbol symbol = new Symbol(token, lexeme, startLine, startColumn, currLine, currColumn - 1);
+		Symbol symbol = new Symbol(token, lexeme, startLine, startColumn, currLine, currColumn == 1 ? currColumn : currColumn - 1);
 		dump(symbol);
 
 		return symbol;
