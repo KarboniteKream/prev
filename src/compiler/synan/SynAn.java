@@ -67,20 +67,14 @@ public class SynAn {
 	 * Opravi sintaksno analizo.
 	 */
 	public void parse() {
-		parse_source();
-
-		// TODO
-		if(currSymbol.token != Token.EOF)
-		{
-			System.out.println("ERROR: EOF -> " + currSymbol.token);
-		}
-	}
-
-	// TODO: Remove?
-	private void parse_source()
-	{
 		dump("source -> definitions");
 		parse_definitions();
+		readNext(true);
+
+		if(currSymbol.token != Token.EOF)
+		{
+			Report.error(currSymbol.position, "Unparsable symbol.");
+		}
 	}
 
 	private void parse_definitions()
@@ -109,7 +103,6 @@ public class SynAn {
 			dump("definitions' -> ; definitions");
 			parse_definitions();
 		}
-		// TODO: Is this OK?
 		else if(currSymbol.token == Token.COMMA)
 		{
 			Report.warning(currSymbol.position, "Got COMMA, expected SEMIC.");
@@ -388,7 +381,6 @@ public class SynAn {
 	{
 		readNext(true);
 
-		// TODO: Detect ASSIGN.
 		if(currSymbol.token == Token.EQU)
 		{
 			dump("comparative_expression' -> == additive_expression");
@@ -614,13 +606,10 @@ public class SynAn {
 		}
 		else
 		{
-			// TODO: Change to missing?
-			// TODO: Remove atom?
 			Report.error(currSymbol.position, "Not an atom expression.");
 		}
 	}
 
-	// FIXME: Better method names.
 	private void parse_atom_expression_identifier()
 	{
 		readNext(true);
