@@ -1,0 +1,24 @@
+#var x : integer;
+#addX function
+#fun addX(argc : integer) : integer =
+#(
+#	{ x = x + 1 }
+#);
+
+#var cc : ^ arr [ 3 ] integer;
+#var i : integer;
+fun main(argc : integer) : integer =
+(
+	( { if { i= 20} then {i = 30} else {i = 10}} ),
+	#arr [ 1 ] , INTAGER	
+	{ 
+		#count
+		while (i == 10) : (i++--^2)
+	}
+)
+#{ where var i : integer; var j : integer };
+# na koncu pride do napake zaradi pike
+#typ yy : rec{ cc : string , kk : arr [ 3] string } .
+
+#RESITEV
+#source -> var identifier : INTEGER ; fun identifier ( identifier : INTEGER ) : INTEGER = ( { identifier = identifier + int_const } ) ;  var identifier : ^ arr [ int_const ] INTEGER ; var identifier : INTEGER ; fun identifer ( identifier : INTEGER ) : INTEGER = ( ( { if { identifier = int_const } then { identifier = int_const } else { identifier = int_const } } ) ,  { while ( identifier == int_const ) : ( identifier + + - - ^ int_const ) } ) { WHERE var identifier : INTEGER ; var identifier : INTEGER } ; typ identifier : rec { identifier : STRING , identifier : arr [ int_const ] STRING }

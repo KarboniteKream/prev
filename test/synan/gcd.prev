@@ -1,0 +1,16 @@
+var a: integer;
+var b: integer;
+var result: integer;
+
+fun main(argc: integer):integer = (
+  scanf('%d', a^),                  #v bistvu ne vem kaj pomeni ^
+  scanf('%d', b^),
+  {result = gcd(a,b)},
+  printf('result = %d\n', result),
+  0)
+  {where
+    fun gcd(x: integer, y: integer): integer =
+      {if y == 0 then
+        x
+       else
+        gcd(y, x % y) }}

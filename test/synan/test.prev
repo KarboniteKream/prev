@@ -1,0 +1,5 @@
+fun main(argc: integer): integer = (
+  {a = argc}                    #manjka }
+  {while i > : (                #expression 'i >' ni veljaven
+    {i = i + 1})}
+){where var a:integer}
