@@ -76,28 +76,33 @@ public class SynAn {
 	/**
 	 * Opravi sintaksno analizo.
 	 */
-	public void parse() {
+	public AbsTree parse() {
 		dump("source -> definitions");
-		parse_definitions();
+		Vector<AbsDef> definitions = new Vector<AbsDef>();
+		parse_definitions(definitions);
+		AbsTree tree = new AbsDefs(new Position(new Position(1, 1), prevSymbol.position), definitions);
 		readNext(true);
 
 		if(currSymbol.token != Token.EOF)
 		{
 			Report.error(currSymbol.position, "Unparsable symbol.");
 		}
+
+		return tree;
 	}
 
-	private void parse_definitions()
+	private void parse_definitions(Vector<AbsDef> definitions)
 	{
 		dump("definitions -> definition definitions'");
-		parse_definition();
-		parse_definitions_();
+		definitions.add(parse_definition());
+		parse_definitions_(definitions);
 	}
 
-	private void parse_definitions_()
+	private void parse_definitions_(Vector<AbsDef> definitions)
 	{
 		readNext(true);
 
+		// TODO: Change production.
 		if(currSymbol.token == Token.SEMIC)
 		{
 			prepareNext();
@@ -111,13 +116,13 @@ public class SynAn {
 			}
 
 			dump("definitions' -> ; definitions");
-			parse_definitions();
+			parse_definitions(definitions);
 		}
 		else if(currSymbol.token == Token.COMMA)
 		{
 			Report.warning(currSymbol.position, "Got COMMA, expected SEMIC.");
 			prepareNext();
-			parse_definitions();
+			parse_definitions(definitions);
 		}
 		else
 		{
@@ -125,73 +130,90 @@ public class SynAn {
 		}
 	}
 
-	private void parse_definition()
+	private AbsDef parse_definition()
 	{
 		readNext();
 
-		switch(currSymbol.token)
+		AbsDef definition = null;
+		Position position = currSymbol.position;
+
+		if(currSymbol.token == Token.KW_TYP)
 		{
-			case Token.KW_TYP:
-				dump("definition -> type_definition");
-				prepareNext();
-				dump("type_definition -> typ identifier : type");
-				check(Token.IDENTIFIER);
-				check(Token.COLON);
-				parse_type();
-			break;
-
-			case Token.KW_FUN:
-				dump("definition -> function_definition");
-				prepareNext();
-				dump("function_definition -> fun identifier ( parameters ) : type = expression");
-				check(Token.IDENTIFIER);
-				check(Token.LPARENT);
-				parse_parameters();
-				check(Token.RPARENT);
-				check(Token.COLON);
-				parse_type();
-				check(Token.ASSIGN);
-				parse_expression();
-			break;
-
-			case Token.KW_VAR:
-				dump("definition -> variable_definition");
-				prepareNext();
-				dump("variable_definition -> var identifier : type");
-				check(Token.IDENTIFIER);
-				check(Token.COLON);
-				parse_type();
-			break;
-
-			default:
-				Report.error(currSymbol.position, "Not a definition expression.");
-			break;
+			dump("definition -> type_definition");
+			prepareNext();
+			dump("type_definition -> typ identifier : type");
+			check(Token.IDENTIFIER);
+			String name = prevSymbol.lexeme;
+			check(Token.COLON);
+			AbsType type = parse_type();
+			definition = new AbsTypeDef(new Position(position, prevSymbol.position), name, type);
 		}
+		else if(currSymbol.token == Token.KW_FUN)
+		{
+			dump("definition -> function_definition");
+			prepareNext();
+			dump("function_definition -> fun identifier ( parameters ) : type = expression");
+			check(Token.IDENTIFIER);
+			String name = prevSymbol.lexeme;
+			check(Token.LPARENT);
+			Vector<AbsPar> parameters = new Vector<AbsPar>();
+			parse_parameters(parameters);
+			check(Token.RPARENT);
+			check(Token.COLON);
+			AbsType type = parse_type();
+			check(Token.ASSIGN);
+			AbsExpr expression = parse_expression();
+			definition = new AbsFunDef(new Position(position, prevSymbol.position), name, parameters, type, expression);
+		}
+		else if(currSymbol.token == Token.KW_VAR)
+		{
+			dump("definition -> variable_definition");
+			prepareNext();
+			dump("variable_definition -> var identifier : type");
+			check(Token.IDENTIFIER);
+			String name = prevSymbol.lexeme;
+			check(Token.COLON);
+			AbsType type = parse_type();
+			definition = new AbsVarDef(new Position(position, prevSymbol.position), name, type);
+		}
+		else
+		{
+			Report.error(currSymbol.position, "Not a definition expression.");
+		}
+
+		return definition;
 	}
 
-	private void parse_type()
+	private AbsType parse_type()
 	{
 		readNext();
+
+		AbsType type = null;
+		Position position = currSymbol.position;
 
 		switch(currSymbol.token)
 		{
 			case Token.IDENTIFIER:
 				dump("type -> identifier");
+				type = new AbsTypeName(new Position(position, currSymbol.position), currSymbol.lexeme);
 				prepareNext();
 			break;
 
 			case Token.LOGICAL:
 				dump("type -> logical");
+				type = new AbsAtomType(new Position(position, currSymbol.position), AbsAtomType.LOG);
 				prepareNext();
 			break;
 
 			case Token.INTEGER:
 				dump("type -> integer");
+				type = new AbsAtomType(new Position(position, currSymbol.position), AbsAtomType.INT);
 				prepareNext();
 			break;
 
 			case Token.STRING:
 				dump("type -> string");
+				type = new AbsAtomType(new Position(position, currSymbol.position), AbsAtomType.STR);
 				prepareNext();
 			break;
 
@@ -200,247 +222,289 @@ public class SynAn {
 				prepareNext();
 				check(Token.LBRACKET);
 				check(Token.INT_CONST);
+				String size = prevSymbol.lexeme;
 				check(Token.RBRACKET);
-				parse_type();
+				AbsType arrType = parse_type();
+				type = new AbsArrType(new Position(position, prevSymbol.position), Integer.parseInt(size), arrType);
 			break;
 
 			case Token.KW_REC:
 				dump("type -> rec { components }");
 				prepareNext();
 				check(Token.LBRACE);
-				parse_components();
+				Vector<AbsComp> components = new Vector<AbsComp>();
+				parse_components(components);
 				check(Token.RBRACE);
+				type = new AbsRecType(new Position(position, prevSymbol.position), components);
 			break;
 
 			case Token.PTR:
 				dump("type -> ^ type");
 				prepareNext();
-				parse_type();
+				AbsType ptrType = parse_type();
+				type = new AbsPtrType(new Position(position, prevSymbol.position), ptrType);
 			break;
 
 			default:
 				Report.error(currSymbol.position, "Not a type expression.");
 			break;
 		}
+
+		return type;
 	}
 
-	private void parse_components()
+	private void parse_components(Vector<AbsComp> components)
 	{
 		dump("components -> component components'");
-		parse_component();
-		parse_components_();
+		components.add(parse_component());
+		parse_components_(components);
 	}
 
-	private void parse_components_()
+	private void parse_components_(Vector<AbsComp> components)
 	{
 		readNext(true);
 
-		if(currSymbol.token == Token.COMMA)
-		{
-			dump("components' -> , components");
-			prepareNext();
-			parse_components();
-		}
-		else
+		if(currSymbol.token != Token.COMMA)
 		{
 			dump("components' -> E");
+			return;
 		}
+
+		dump("components' -> , components");
+		prepareNext();
+		parse_components(components);
 	}
 
-	private void parse_component()
+	private AbsComp parse_component()
 	{
 		dump("component -> identifier : type");
 		check(Token.IDENTIFIER);
+		Position position = prevSymbol.position;
+		String name = prevSymbol.lexeme;
 		check(Token.COLON);
-		parse_type();
+		AbsType type = parse_type();
+
+		return new AbsComp(new Position(position, prevSymbol.position), name, type);
 	}
 
-	private void parse_parameters()
+	private void parse_parameters(Vector<AbsPar> parameters)
 	{
 		dump("parameters -> parameter parameters'");
-		parse_parameter();
-		parse_parameters_();
+		parameters.add(parse_parameter());
+		parse_parameters_(parameters);
 	}
 
-	private void parse_parameters_()
+	private void parse_parameters_(Vector<AbsPar> parameters)
 	{
 		readNext(true);
 
-		if(currSymbol.token == Token.COMMA)
-		{
-			dump("parameters' -> , parameters");
-			prepareNext();
-			parse_parameters();
-		}
-		else
+		if(currSymbol.token != Token.COMMA)
 		{
 			dump("parameters' -> E");
+			return;
 		}
+
+		dump("parameters' -> , parameters");
+		prepareNext();
+		parse_parameters(parameters);
 	}
 
-	private void parse_parameter()
+	private AbsPar parse_parameter()
 	{
 		dump("parameter -> identifier : type");
 		check(Token.IDENTIFIER);
+		Position position = prevSymbol.position;
+		String name = prevSymbol.lexeme;
 		check(Token.COLON);
-		parse_type();
+		AbsType type = parse_type();
+
+		return new AbsPar(new Position(position, prevSymbol.position), name, type);
 	}
 
-	private void parse_expressions()
+	private void parse_expressions(Vector<AbsExpr> expressions)
 	{
 		dump("expressions -> expression expressions'");
-		parse_expression();
-		parse_expressions_();
+		expressions.add(parse_expression());
+		parse_expressions_(expressions);
 	}
 
-	private void parse_expressions_()
+	private void parse_expressions_(Vector<AbsExpr> expressions)
 	{
 		readNext(true);
 
-		if(currSymbol.token == Token.COMMA)
-		{
-			dump("expressions' -> , expressions");
-			prepareNext();
-			parse_expressions();
-		}
-		else
+		// TODO: Warning on ending comma.
+		if(currSymbol.token != Token.COMMA)
 		{
 			dump("expressions' -> E");
+			return;
 		}
+
+		dump("expressions' -> , expressions");
+		prepareNext();
+		parse_expressions(expressions);
 	}
 
-	private void parse_expression()
+	private AbsExpr parse_expression()
 	{
 		dump("expression -> logical_ior_expression expression'");
-		parse_logical_ior_expression();
-		parse_expression_();
+		AbsExpr expression = parse_logical_ior_expression();
+		AbsDefs definitions = parse_expression_();
+
+		if(definitions != null)
+		{
+			expression = new AbsWhere(new Position(expression.position, prevSymbol.position), expression, definitions);
+		}
+
+		return expression;
 	}
 
-	private void parse_expression_()
+	private AbsDefs parse_expression_()
 	{
 		readNext(true);
 
-		if(currSymbol.token == Token.LBRACE)
-		{
-			dump("expression' -> { where definitions }");
-			prepareNext();
-			check(Token.KW_WHERE);
-			parse_definitions();
-			check(Token.RBRACE);
-		}
-		else
+		if(currSymbol.token != Token.LBRACE)
 		{
 			dump("expression' -> E");
+			return null;
 		}
+
+		dump("expression' -> { where definitions }");
+		prepareNext();
+		check(Token.KW_WHERE);
+		Vector<AbsDef> defs = new Vector<AbsDef>();
+		parse_definitions(defs);
+		Position position = prevSymbol.position;
+		check(Token.RBRACE);
+
+		return new AbsDefs(new Position(defs.get(0).position, position), defs);
 	}
 
-	private void parse_logical_ior_expression()
+	private AbsExpr parse_logical_ior_expression()
 	{
 		dump("logical_ior_expression -> logical_and_expression logical_ior_expression'");
-		parse_logical_and_expression();
-		parse_logical_ior_expression_();
+		return parse_logical_ior_expression_(parse_logical_and_expression());
 	}
 
-	private void parse_logical_ior_expression_()
+	private AbsExpr parse_logical_ior_expression_(AbsExpr expressionLeft)
 	{
 		readNext(true);
 
 		if(currSymbol.token == Token.IOR)
 		{
-			dump("logical_ior_expression' -> | logical_ior_expression");
+			dump("logical_ior_expression' -> | logical_and_expression logical_ior_expression'");
 			prepareNext();
-			parse_logical_ior_expression();
+			AbsExpr expressionRight = parse_logical_and_expression();
+			expressionLeft = parse_logical_ior_expression_(new AbsBinExpr(new Position(expressionLeft.position, expressionRight.position), AbsBinExpr.IOR, expressionLeft, expressionRight));
 		}
 		else
 		{
 			dump("logical_ior_expression' -> E");
 		}
+
+		return expressionLeft;
 	}
 
-	private void parse_logical_and_expression()
+	private AbsExpr parse_logical_and_expression()
 	{
 		dump("logical_and_expression -> comparative_expression logical_and_expression'");
-		parse_comparative_expression();
-		parse_logical_and_expression_();
+		return parse_logical_and_expression_(parse_comparative_expression());
 	}
 
-	private void parse_logical_and_expression_()
+	private AbsExpr parse_logical_and_expression_(AbsExpr expressionLeft)
 	{
 		readNext(true);
 
 		if(currSymbol.token == Token.AND)
 		{
-			dump("logical_and_expression' -> & logical_and_expression");
+			dump("logical_and_expression' -> & comparative_expression logical_and_expression'");
 			prepareNext();
-			parse_logical_and_expression();
+			AbsExpr expressionRight = parse_comparative_expression();
+			expressionLeft = parse_logical_and_expression_(new AbsBinExpr(new Position(expressionLeft.position, expressionRight.position), AbsBinExpr.AND, expressionLeft, expressionRight));
 		}
 		else
 		{
 			dump("logical_and_expression' -> E");
 		}
+
+		return expressionLeft;
 	}
 
-	private void parse_comparative_expression()
+	private AbsExpr parse_comparative_expression()
 	{
 		dump("comparative_expression -> additive_expression comparative_expression'");
-		parse_additive_expression();
-		parse_comparative_expression_();
+		return parse_comparative_expression_(parse_additive_expression());
 	}
 
-	private void parse_comparative_expression_()
+	private AbsExpr parse_comparative_expression_(AbsExpr expressionLeft)
 	{
 		readNext(true);
+
+		AbsExpr expressionRight = null;
+		int operation = 0;
 
 		if(currSymbol.token == Token.EQU)
 		{
 			dump("comparative_expression' -> == additive_expression");
+			operation = AbsBinExpr.EQU;
 			prepareNext();
-			parse_additive_expression();
+			expressionRight = parse_additive_expression();
 		}
 		else if(currSymbol.token == Token.NEQ)
 		{
 			dump("comparative_expression' -> != additive_expression");
+			operation = AbsBinExpr.NEQ;
 			prepareNext();
-			parse_additive_expression();
+			expressionRight = parse_additive_expression();
 		}
 		else if(currSymbol.token == Token.LEQ)
 		{
 			dump("comparative_expression' -> <= additive_expression");
+			operation = AbsBinExpr.LEQ;
 			prepareNext();
-			parse_additive_expression();
+			expressionRight = parse_additive_expression();
 		}
 		else if(currSymbol.token == Token.GEQ)
 		{
 			dump("comparative_expression' -> >= additive_expression");
+			operation = AbsBinExpr.GEQ;
 			prepareNext();
-			parse_additive_expression();
+			expressionRight = parse_additive_expression();
 		}
 		else if(currSymbol.token == Token.LTH)
 		{
 			dump("comparative_expression' -> < additive_expression");
+			operation = AbsBinExpr.LTH;
 			prepareNext();
-			parse_additive_expression();
+			expressionRight = parse_additive_expression();
 		}
 		else if(currSymbol.token == Token.GTH)
 		{
 			dump("comparative_expression' -> > additive_expression");
+			operation = AbsBinExpr.GTH;
 			prepareNext();
-			parse_additive_expression();
+			expressionRight = parse_additive_expression();
 		}
 		else
 		{
 			dump("comparative_expression' -> E");
 		}
+
+		// TODO: Move back.
+		if(expressionRight != null)
+		{
+			expressionLeft = new AbsBinExpr(new Position(expressionLeft.position, expressionRight.position), operation, expressionLeft, expressionRight);
+		}
+
+		return expressionLeft;
 	}
 
-	private void parse_additive_expression()
+	private AbsExpr parse_additive_expression()
 	{
 		dump("additive_expression -> multiplicative_expression additive_expression'");
-		parse_multiplicative_expression();
-		parse_additive_expression_();
+		return parse_additive_expression_(parse_multiplicative_expression());
 	}
 
-	private void parse_additive_expression_()
+	private AbsExpr parse_additive_expression_(AbsExpr expressionLeft)
 	{
 		readNext(true);
 
@@ -448,30 +512,32 @@ public class SynAn {
 		{
 			dump("additive_expression' -> + multiplicative_expression additive_expression'");
 			prepareNext();
-			parse_multiplicative_expression();
-			parse_additive_expression_();
+			AbsExpr expressionRight = parse_multiplicative_expression();
+			expressionLeft = parse_additive_expression_(new AbsBinExpr(new Position(expressionLeft.position, expressionRight.position), AbsBinExpr.ADD, expressionLeft, expressionRight));
 		}
 		else if(currSymbol.token == Token.SUB)
 		{
 			dump("additive_expression' -> - multiplicative_expression additive_expression'");
 			prepareNext();
-			parse_multiplicative_expression();
-			parse_additive_expression_();
+			AbsExpr expressionRight = parse_multiplicative_expression();
+			expressionLeft = parse_additive_expression_(new AbsBinExpr(new Position(expressionLeft.position, expressionRight.position), AbsBinExpr.SUB, expressionLeft, expressionRight));
 		}
 		else
 		{
 			dump("additive_expression' -> E");
 		}
+
+
+		return expressionLeft;
 	}
 
-	private void parse_multiplicative_expression()
+	private AbsExpr parse_multiplicative_expression()
 	{
 		dump("multiplicative_expression -> prefix_expression multiplicative_expression'");
-		parse_prefix_expression();
-		parse_multiplicative_expression_();
+		return parse_multiplicative_expression_(parse_prefix_expression());
 	}
 
-	private void parse_multiplicative_expression_()
+	private AbsExpr parse_multiplicative_expression_(AbsExpr expressionLeft)
 	{
 		readNext(true);
 
@@ -479,222 +545,280 @@ public class SynAn {
 		{
 			dump("multiplicative_expression' -> * prefix_expression multiplicative_expression'");
 			prepareNext();
-			parse_prefix_expression();
-			parse_multiplicative_expression_();
+			AbsExpr expressionRight = parse_prefix_expression();
+			expressionLeft = parse_multiplicative_expression_(new AbsBinExpr(new Position(expressionLeft.position, expressionRight.position), AbsBinExpr.MUL, expressionLeft, expressionRight));
 		}
 		else if(currSymbol.token == Token.DIV)
 		{
 			dump("multiplicative_expression' -> / prefix_expression multiplicative_expression'");
 			prepareNext();
-			parse_prefix_expression();
-			parse_multiplicative_expression_();
+			AbsExpr expressionRight = parse_prefix_expression();
+			expressionLeft = parse_multiplicative_expression_(new AbsBinExpr(new Position(expressionLeft.position, expressionRight.position), AbsBinExpr.DIV, expressionLeft, expressionRight));
 		}
 		else if(currSymbol.token == Token.MOD)
 		{
 			dump("multiplicative_expression' -> % prefix_expression multiplicative_expression'");
 			prepareNext();
-			parse_prefix_expression();
-			parse_multiplicative_expression_();
+			AbsExpr expressionRight = parse_prefix_expression();
+			expressionLeft = parse_multiplicative_expression_(new AbsBinExpr(new Position(expressionLeft.position, expressionRight.position), AbsBinExpr.MOD, expressionLeft, expressionRight));
 		}
 		else
 		{
 			dump("multiplicative_expression' -> E");
 		}
+
+		return expressionLeft;
 	}
 
-	private void parse_prefix_expression()
+	private AbsExpr parse_prefix_expression()
 	{
 		readNext();
+
+		AbsExpr expression = null;
+		Position position = currSymbol.position;
 
 		if(currSymbol.token == Token.ADD)
 		{
 			dump("prefix_expression -> + prefix_expression");
 			prepareNext();
-			parse_prefix_expression();
+			AbsExpr expr = parse_prefix_expression();
+			expression = new AbsUnExpr(new Position(position, prevSymbol.position), AbsUnExpr.ADD, expr);
 		}
 		else if(currSymbol.token == Token.SUB)
 		{
 			dump("prefix_expression -> - prefix_expression");
 			prepareNext();
-			parse_prefix_expression();
+			AbsExpr expr = parse_prefix_expression();
+			expression = new AbsUnExpr(new Position(position, prevSymbol.position), AbsUnExpr.SUB, expr);
 		}
 		else if(currSymbol.token == Token.PTR)
 		{
 			dump("prefix_expression -> ^ prefix_expression");
 			prepareNext();
-			parse_prefix_expression();
+			AbsExpr expr = parse_prefix_expression();
+			expression = new AbsUnExpr(new Position(position, prevSymbol.position), AbsUnExpr.MEM, expr);
 		}
 		else if(currSymbol.token == Token.NOT)
 		{
 			dump("prefix_expression -> ! prefix_expression");
 			prepareNext();
-			parse_prefix_expression();
+			AbsExpr expr = parse_prefix_expression();
+			expression = new AbsUnExpr(new Position(position, prevSymbol.position), AbsUnExpr.NOT, expr);
 		}
 		else
 		{
 			dump("prefix_expression -> postfix_expression");
-			parse_postfix_expression();
+			expression = parse_postfix_expression();
 		}
+
+		return expression;
 	}
 
-	private void parse_postfix_expression()
+	private AbsExpr parse_postfix_expression()
 	{
 		dump("postfix_expression -> atom_expression postfix_expression'");
-		parse_atom_expression();
-		parse_postfix_expression_();
+		return parse_postfix_expression_(parse_atom_expression());
 	}
 
-	private void parse_postfix_expression_()
+	private AbsExpr parse_postfix_expression_(AbsExpr expressionLeft)
 	{
 		readNext(true);
+
+		AbsExpr expression = null;
+		// FIXME: Position on longer expressions.
+		Position position = prevSymbol.position;
 
 		if(currSymbol.token == Token.PTR)
 		{
 			dump("postfix_expression' -> ^ postfix_expression'");
 			prepareNext();
-			parse_postfix_expression_();
+			expression = parse_postfix_expression_(new AbsUnExpr(new Position(position, prevSymbol.position), AbsUnExpr.VAL, expressionLeft));
 		}
 		else if(currSymbol.token == Token.DOT)
 		{
 			dump("postfix_expression' -> . identifier postfix_expression'");
 			prepareNext();
 			check(Token.IDENTIFIER);
-			parse_postfix_expression_();
+			expression = parse_postfix_expression_(new AbsBinExpr(new Position(position, prevSymbol.position), AbsBinExpr.DOT, expressionLeft, new AbsCompName(new Position(position, prevSymbol.position), prevSymbol.lexeme)));
 		}
 		else if(currSymbol.token == Token.LBRACKET)
 		{
 			dump("postfix_expression' -> [ expression ] postfix_expression'");
 			prepareNext();
-			parse_expression();
+			AbsExpr array = parse_expression();
+			System.out.println(prevSymbol.lexeme);
 			check(Token.RBRACKET);
-			parse_postfix_expression_();
+			expression = parse_postfix_expression_(new AbsBinExpr(new Position(position, prevSymbol.position), AbsBinExpr.ARR, expressionLeft, array));
 		}
 		else
 		{
 			dump("postfix_expression' -> E");
+			expression = expressionLeft;
 		}
+
+		return expression;
 	}
 
-	private void parse_atom_expression()
+	private AbsExpr parse_atom_expression()
 	{
 		readNext();
+
+		AbsExpr expression = null;
+		Position position = currSymbol.position;
 
 		if(currSymbol.token == Token.LOG_CONST)
 		{
 			dump("atom_expression -> log_constant");
+			expression = new AbsAtomConst(currSymbol.position, AbsAtomConst.LOG, currSymbol.lexeme);
 			prepareNext();
 		}
 		else if(currSymbol.token == Token.INT_CONST)
 		{
 			dump("atom_expression -> int_constant");
+			expression = new AbsAtomConst(currSymbol.position, AbsAtomConst.INT, currSymbol.lexeme);
 			prepareNext();
 		}
 		else if(currSymbol.token == Token.STR_CONST)
 		{
 			dump("atom_expression -> str_constant");
+			expression = new AbsAtomConst(currSymbol.position, AbsAtomConst.STR, currSymbol.lexeme);
 			prepareNext();
 		}
 		else if(currSymbol.token == Token.IDENTIFIER)
 		{
 			dump("atom_expression -> identifier atom_expression_identifier");
+			// TODO: Check all positions.
+			expression = new AbsVarName(currSymbol.position, currSymbol.lexeme);
+			String name = currSymbol.lexeme;
 			prepareNext();
-			parse_atom_expression_identifier();
+			Vector<AbsExpr> expressions = parse_atom_expression_identifier();
+
+			if(expressions != null)
+			{
+				expression = new AbsFunCall(new Position(position, prevSymbol.position), name, expressions);
+			}
 		}
 		else if(currSymbol.token == Token.LBRACE)
 		{
 			dump("atom_expression -> { atom_expression_braces }");
 			prepareNext();
-			parse_atom_expression_braces();
+			expression = parse_atom_expression_braces();
 			check(Token.RBRACE);
 		}
 		else if(currSymbol.token == Token.LPARENT)
 		{
 			dump("atom_expression -> ( expressions )");
 			prepareNext();
-			parse_expressions();
+			Vector<AbsExpr> expressions = new Vector<AbsExpr>();
+			parse_expressions(expressions);
 			check(Token.RPARENT);
+			expression = new AbsExprs(new Position(position, prevSymbol.position), expressions);
 		}
 		else
 		{
 			Report.error(currSymbol.position, "Not an atom expression.");
 		}
+
+		return expression;
 	}
 
-	private void parse_atom_expression_identifier()
+	private Vector<AbsExpr> parse_atom_expression_identifier()
 	{
 		readNext(true);
 
-		if(currSymbol.token == Token.LPARENT)
-		{
-			dump("atom_expression_identifier -> ( expressions )");
-			prepareNext();
-			parse_expressions();
-			check(Token.RPARENT);
-		}
-		else
+		Position position = currSymbol.position;
+
+		if(currSymbol.token != Token.LPARENT)
 		{
 			dump("atom_expression_identifier -> E");
+			return null;
 		}
+
+		dump("atom_expression_identifier -> ( expressions )");
+		prepareNext();
+		Vector<AbsExpr> expressions = new Vector<AbsExpr>();
+		parse_expressions(expressions);
+		check(Token.RPARENT);
+
+		return expressions;
 	}
 
-	private void parse_atom_expression_braces()
+	private AbsExpr parse_atom_expression_braces()
 	{
 		readNext();
+
+		AbsExpr expression = null;
+		Position position = currSymbol.position;
 
 		if(currSymbol.token == Token.KW_IF)
 		{
 			dump("atom_expression_braces -> if expression then expression atom_expression_else");
 			prepareNext();
-			parse_expression();
+			AbsExpr ifExpression = parse_expression();
 			check(Token.KW_THEN);
-			parse_expression();
-			parse_atom_expression_else();
+			AbsExpr thenExpression = parse_expression();
+			AbsExpr elseExpression = parse_atom_expression_else();
+
+			if(elseExpression == null)
+			{
+				expression = new AbsIfThen(new Position(position, prevSymbol.position), ifExpression, thenExpression);
+			}
+			else
+			{
+				expression = new AbsIfThenElse(new Position(position, prevSymbol.position), ifExpression, thenExpression, elseExpression);
+			}
 		}
 		else if(currSymbol.token == Token.KW_WHILE)
 		{
 			dump("atom_expression_braces -> while expression : expression");
 			prepareNext();
-			parse_expression();
+			AbsExpr condition = parse_expression();
 			check(Token.COLON);
-			parse_expression();
+			AbsExpr body = parse_expression();
+			expression = new AbsWhile(new Position(position, prevSymbol.position), condition, body);
 		}
 		else if(currSymbol.token == Token.KW_FOR)
 		{
 			dump("atom_expression_braces -> for identifier = expression, expression, expression : expression");
 			prepareNext();
 			check(Token.IDENTIFIER);
+			AbsVarName count = new AbsVarName(prevSymbol.position, prevSymbol.lexeme);
 			check(Token.ASSIGN);
-			parse_expression();
+			AbsExpr lo = parse_expression();
 			check(Token.COMMA);
-			parse_expression();
+			AbsExpr hi = parse_expression();
 			check(Token.COMMA);
-			parse_expression();
+			AbsExpr step = parse_expression();
 			check(Token.COLON);
-			parse_expression();
+			AbsExpr body = parse_expression();
+			expression = new AbsFor(new Position(position, prevSymbol.position), count, lo, hi, step, body);
 		}
 		else
 		{
 			dump("atom_expression_braces -> expression = expression");
-			parse_expression();
+			// TODO: Rename to left/right.
+			AbsExpr expressionLeft = parse_expression();
 			check(Token.ASSIGN);
-			parse_expression();
+			AbsExpr expressionRight = parse_expression();
+			expression = new AbsBinExpr(new Position(position, prevSymbol.position), AbsBinExpr.ASSIGN, expressionLeft, expressionRight);
 		}
+
+		return expression;
 	}
 
-	private void parse_atom_expression_else()
+	private AbsExpr parse_atom_expression_else()
 	{
 		readNext(true);
 
-		if(currSymbol.token == Token.KW_ELSE)
-		{
-			dump("atom_expression_else -> else expression");
-			prepareNext();
-			parse_expression();
-		}
-		else
+		if(currSymbol.token != Token.KW_ELSE)
 		{
 			dump("atom_expression_else -> E");
+			return null;
 		}
+
+		dump("atom_expression_else -> else expression");
+		prepareNext();
+		return parse_expression();
 	}
 
 	/**
