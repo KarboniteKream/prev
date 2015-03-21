@@ -37,7 +37,7 @@ public class Position {
 	}
 
 	/**
-	 * Ustvari not polozaj znaka izvornega besedila.
+	 * Ustvari nov polozaj znaka izvornega besedila.
 	 * 
 	 * @param line
 	 *            Vrstica znaka v izvornem besedilu.

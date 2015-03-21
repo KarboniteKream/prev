@@ -1,7 +1,10 @@
 package compiler.synan;
 
-import compiler.Report;
+import java.util.Vector;
+
+import compiler.*;
 import compiler.lexan.*;
+import compiler.abstr.tree.*;
 
 /**
  * Sintaksni analizator.
@@ -16,6 +19,7 @@ public class SynAn {
 	/** Ali se izpisujejo vmesni rezultati. */
 	private boolean dump;
 
+	private Symbol prevSymbol;
 	private Symbol currSymbol;
 
 	/**
@@ -30,6 +34,13 @@ public class SynAn {
 		this.lexAn = lexAn;
 		this.dump = dump;
 
+		prevSymbol = null;
+		currSymbol = null;
+	}
+
+	private void prepareNext()
+	{
+		prevSymbol = currSymbol;
 		currSymbol = null;
 	}
 
@@ -50,17 +61,16 @@ public class SynAn {
 
 	private void check(int token)
 	{
-		Symbol symbol = new Symbol(token, "", null);
-		String tokenName = symbol.toString().substring(0, symbol.toString().length() - 1);
-
 		readNext();
 
 		if(currSymbol.token != token)
 		{
+			Symbol symbol = new Symbol(token, "", null);
+			String tokenName = symbol.toString().substring(0, symbol.toString().length() - 1);
 			Report.error(currSymbol.position, "Got " + currSymbol.toString().substring(0, currSymbol.toString().indexOf(':')) + ", expected " + tokenName + ".");
 		}
 
-		currSymbol = null;
+		prepareNext();
 	}
 
 	/**
@@ -90,7 +100,7 @@ public class SynAn {
 
 		if(currSymbol.token == Token.SEMIC)
 		{
-			currSymbol = null;
+			prepareNext();
 			readNext(true);
 
 			if(currSymbol.token == Token.EOF)
@@ -106,7 +116,7 @@ public class SynAn {
 		else if(currSymbol.token == Token.COMMA)
 		{
 			Report.warning(currSymbol.position, "Got COMMA, expected SEMIC.");
-			currSymbol = null;
+			prepareNext();
 			parse_definitions();
 		}
 		else
@@ -123,7 +133,7 @@ public class SynAn {
 		{
 			case Token.KW_TYP:
 				dump("definition -> type_definition");
-				currSymbol = null;
+				prepareNext();
 				dump("type_definition -> typ identifier : type");
 				check(Token.IDENTIFIER);
 				check(Token.COLON);
@@ -132,7 +142,7 @@ public class SynAn {
 
 			case Token.KW_FUN:
 				dump("definition -> function_definition");
-				currSymbol = null;
+				prepareNext();
 				dump("function_definition -> fun identifier ( parameters ) : type = expression");
 				check(Token.IDENTIFIER);
 				check(Token.LPARENT);
@@ -146,7 +156,7 @@ public class SynAn {
 
 			case Token.KW_VAR:
 				dump("definition -> variable_definition");
-				currSymbol = null;
+				prepareNext();
 				dump("variable_definition -> var identifier : type");
 				check(Token.IDENTIFIER);
 				check(Token.COLON);
@@ -167,27 +177,27 @@ public class SynAn {
 		{
 			case Token.IDENTIFIER:
 				dump("type -> identifier");
-				currSymbol = null;
+				prepareNext();
 			break;
 
 			case Token.LOGICAL:
 				dump("type -> logical");
-				currSymbol = null;
+				prepareNext();
 			break;
 
 			case Token.INTEGER:
 				dump("type -> integer");
-				currSymbol = null;
+				prepareNext();
 			break;
 
 			case Token.STRING:
 				dump("type -> string");
-				currSymbol = null;
+				prepareNext();
 			break;
 
 			case Token.KW_ARR:
 				dump("type -> arr [ int_const ] type");
-				currSymbol = null;
+				prepareNext();
 				check(Token.LBRACKET);
 				check(Token.INT_CONST);
 				check(Token.RBRACKET);
@@ -196,7 +206,7 @@ public class SynAn {
 
 			case Token.KW_REC:
 				dump("type -> rec { components }");
-				currSymbol = null;
+				prepareNext();
 				check(Token.LBRACE);
 				parse_components();
 				check(Token.RBRACE);
@@ -204,7 +214,7 @@ public class SynAn {
 
 			case Token.PTR:
 				dump("type -> ^ type");
-				currSymbol = null;
+				prepareNext();
 				parse_type();
 			break;
 
@@ -228,7 +238,7 @@ public class SynAn {
 		if(currSymbol.token == Token.COMMA)
 		{
 			dump("components' -> , components");
-			currSymbol = null;
+			prepareNext();
 			parse_components();
 		}
 		else
@@ -259,7 +269,7 @@ public class SynAn {
 		if(currSymbol.token == Token.COMMA)
 		{
 			dump("parameters' -> , parameters");
-			currSymbol = null;
+			prepareNext();
 			parse_parameters();
 		}
 		else
@@ -290,7 +300,7 @@ public class SynAn {
 		if(currSymbol.token == Token.COMMA)
 		{
 			dump("expressions' -> , expressions");
-			currSymbol = null;
+			prepareNext();
 			parse_expressions();
 		}
 		else
@@ -313,7 +323,7 @@ public class SynAn {
 		if(currSymbol.token == Token.LBRACE)
 		{
 			dump("expression' -> { where definitions }");
-			currSymbol = null;
+			prepareNext();
 			check(Token.KW_WHERE);
 			parse_definitions();
 			check(Token.RBRACE);
@@ -338,7 +348,7 @@ public class SynAn {
 		if(currSymbol.token == Token.IOR)
 		{
 			dump("logical_ior_expression' -> | logical_ior_expression");
-			currSymbol = null;
+			prepareNext();
 			parse_logical_ior_expression();
 		}
 		else
@@ -361,7 +371,7 @@ public class SynAn {
 		if(currSymbol.token == Token.AND)
 		{
 			dump("logical_and_expression' -> & logical_and_expression");
-			currSymbol = null;
+			prepareNext();
 			parse_logical_and_expression();
 		}
 		else
@@ -384,37 +394,37 @@ public class SynAn {
 		if(currSymbol.token == Token.EQU)
 		{
 			dump("comparative_expression' -> == additive_expression");
-			currSymbol = null;
+			prepareNext();
 			parse_additive_expression();
 		}
 		else if(currSymbol.token == Token.NEQ)
 		{
 			dump("comparative_expression' -> != additive_expression");
-			currSymbol = null;
+			prepareNext();
 			parse_additive_expression();
 		}
 		else if(currSymbol.token == Token.LEQ)
 		{
 			dump("comparative_expression' -> <= additive_expression");
-			currSymbol = null;
+			prepareNext();
 			parse_additive_expression();
 		}
 		else if(currSymbol.token == Token.GEQ)
 		{
 			dump("comparative_expression' -> >= additive_expression");
-			currSymbol = null;
+			prepareNext();
 			parse_additive_expression();
 		}
 		else if(currSymbol.token == Token.LTH)
 		{
 			dump("comparative_expression' -> < additive_expression");
-			currSymbol = null;
+			prepareNext();
 			parse_additive_expression();
 		}
 		else if(currSymbol.token == Token.GTH)
 		{
 			dump("comparative_expression' -> > additive_expression");
-			currSymbol = null;
+			prepareNext();
 			parse_additive_expression();
 		}
 		else
@@ -437,14 +447,14 @@ public class SynAn {
 		if(currSymbol.token == Token.ADD)
 		{
 			dump("additive_expression' -> + multiplicative_expression additive_expression'");
-			currSymbol = null;
+			prepareNext();
 			parse_multiplicative_expression();
 			parse_additive_expression_();
 		}
 		else if(currSymbol.token == Token.SUB)
 		{
 			dump("additive_expression' -> - multiplicative_expression additive_expression'");
-			currSymbol = null;
+			prepareNext();
 			parse_multiplicative_expression();
 			parse_additive_expression_();
 		}
@@ -468,21 +478,21 @@ public class SynAn {
 		if(currSymbol.token == Token.MUL)
 		{
 			dump("multiplicative_expression' -> * prefix_expression multiplicative_expression'");
-			currSymbol = null;
+			prepareNext();
 			parse_prefix_expression();
 			parse_multiplicative_expression_();
 		}
 		else if(currSymbol.token == Token.DIV)
 		{
 			dump("multiplicative_expression' -> / prefix_expression multiplicative_expression'");
-			currSymbol = null;
+			prepareNext();
 			parse_prefix_expression();
 			parse_multiplicative_expression_();
 		}
 		else if(currSymbol.token == Token.MOD)
 		{
 			dump("multiplicative_expression' -> % prefix_expression multiplicative_expression'");
-			currSymbol = null;
+			prepareNext();
 			parse_prefix_expression();
 			parse_multiplicative_expression_();
 		}
@@ -499,25 +509,25 @@ public class SynAn {
 		if(currSymbol.token == Token.ADD)
 		{
 			dump("prefix_expression -> + prefix_expression");
-			currSymbol = null;
+			prepareNext();
 			parse_prefix_expression();
 		}
 		else if(currSymbol.token == Token.SUB)
 		{
 			dump("prefix_expression -> - prefix_expression");
-			currSymbol = null;
+			prepareNext();
 			parse_prefix_expression();
 		}
 		else if(currSymbol.token == Token.PTR)
 		{
 			dump("prefix_expression -> ^ prefix_expression");
-			currSymbol = null;
+			prepareNext();
 			parse_prefix_expression();
 		}
 		else if(currSymbol.token == Token.NOT)
 		{
 			dump("prefix_expression -> ! prefix_expression");
-			currSymbol = null;
+			prepareNext();
 			parse_prefix_expression();
 		}
 		else
@@ -541,20 +551,20 @@ public class SynAn {
 		if(currSymbol.token == Token.PTR)
 		{
 			dump("postfix_expression' -> ^ postfix_expression'");
-			currSymbol = null;
+			prepareNext();
 			parse_postfix_expression_();
 		}
 		else if(currSymbol.token == Token.DOT)
 		{
 			dump("postfix_expression' -> . identifier postfix_expression'");
-			currSymbol = null;
+			prepareNext();
 			check(Token.IDENTIFIER);
 			parse_postfix_expression_();
 		}
 		else if(currSymbol.token == Token.LBRACKET)
 		{
 			dump("postfix_expression' -> [ expression ] postfix_expression'");
-			currSymbol = null;
+			prepareNext();
 			parse_expression();
 			check(Token.RBRACKET);
 			parse_postfix_expression_();
@@ -572,35 +582,35 @@ public class SynAn {
 		if(currSymbol.token == Token.LOG_CONST)
 		{
 			dump("atom_expression -> log_constant");
-			currSymbol = null;
+			prepareNext();
 		}
 		else if(currSymbol.token == Token.INT_CONST)
 		{
 			dump("atom_expression -> int_constant");
-			currSymbol = null;
+			prepareNext();
 		}
 		else if(currSymbol.token == Token.STR_CONST)
 		{
 			dump("atom_expression -> str_constant");
-			currSymbol = null;
+			prepareNext();
 		}
 		else if(currSymbol.token == Token.IDENTIFIER)
 		{
 			dump("atom_expression -> identifier atom_expression_identifier");
-			currSymbol = null;
+			prepareNext();
 			parse_atom_expression_identifier();
 		}
 		else if(currSymbol.token == Token.LBRACE)
 		{
 			dump("atom_expression -> { atom_expression_braces }");
-			currSymbol = null;
+			prepareNext();
 			parse_atom_expression_braces();
 			check(Token.RBRACE);
 		}
 		else if(currSymbol.token == Token.LPARENT)
 		{
 			dump("atom_expression -> ( expressions )");
-			currSymbol = null;
+			prepareNext();
 			parse_expressions();
 			check(Token.RPARENT);
 		}
@@ -617,7 +627,7 @@ public class SynAn {
 		if(currSymbol.token == Token.LPARENT)
 		{
 			dump("atom_expression_identifier -> ( expressions )");
-			currSymbol = null;
+			prepareNext();
 			parse_expressions();
 			check(Token.RPARENT);
 		}
@@ -634,7 +644,7 @@ public class SynAn {
 		if(currSymbol.token == Token.KW_IF)
 		{
 			dump("atom_expression_braces -> if expression then expression atom_expression_else");
-			currSymbol = null;
+			prepareNext();
 			parse_expression();
 			check(Token.KW_THEN);
 			parse_expression();
@@ -643,7 +653,7 @@ public class SynAn {
 		else if(currSymbol.token == Token.KW_WHILE)
 		{
 			dump("atom_expression_braces -> while expression : expression");
-			currSymbol = null;
+			prepareNext();
 			parse_expression();
 			check(Token.COLON);
 			parse_expression();
@@ -651,7 +661,7 @@ public class SynAn {
 		else if(currSymbol.token == Token.KW_FOR)
 		{
 			dump("atom_expression_braces -> for identifier = expression, expression, expression : expression");
-			currSymbol = null;
+			prepareNext();
 			check(Token.IDENTIFIER);
 			check(Token.ASSIGN);
 			parse_expression();
@@ -678,7 +688,7 @@ public class SynAn {
 		if(currSymbol.token == Token.KW_ELSE)
 		{
 			dump("atom_expression_else -> else expression");
-			currSymbol = null;
+			prepareNext();
 			parse_expression();
 		}
 		else
