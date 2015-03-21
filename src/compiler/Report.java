@@ -155,5 +155,18 @@ public class Report {
 			Report.error ("Internal error: compiler.Report.dumpFile().");
 		return dumpFile;
 	}
+
+	/**
+	 * Izpise vrstico na datoteko z vmesniki rezultati zamaknjeno v desno.
+	 *
+	 * @param indent
+	 *            Sirina zamika.
+	 * @param line
+	 *            Vsebina vrstice.
+	 */
+	public static void dump(int indent, String line) {
+		for (int i = 0; i < indent; i++) dumpFile.print(" ");
+		dumpFile.println(line);
+	}
 	
 }

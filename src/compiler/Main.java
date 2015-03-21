@@ -2,6 +2,8 @@ package compiler;
 
 import compiler.lexan.*;
 import compiler.synan.*;
+import compiler.abstr.*;
+import compiler.abstr.tree.AbsTree;
 
 /**
  * Osnovni razred prevajalnika, ki vodi izvajanje celotnega procesa prevajanja.
@@ -14,10 +16,10 @@ public class Main {
 	private static String sourceFileName;
 
 	/** Seznam vseh faz prevajalnika. */
-	private static String allPhases = "(lexan|synan)";
+	private static String allPhases = "(lexan|synan|ast)";
 
 	/** Doloca zadnjo fazo prevajanja, ki se bo se izvedla. */
-	private static String execPhase = "synan";
+	private static String execPhase = "ast";
 
 	/** Doloca faze, v katerih se bodo izpisali vmesni rezultati. */
 	private static String dumpPhases = "";
@@ -78,8 +80,12 @@ public class Main {
 			}
 			// Sintaksna analiza.
 			SynAn synAn = new SynAn(lexAn, dumpPhases.contains("synan"));
-			synAn.parse();
+			AbsTree source = synAn.parse();
 			if (execPhase.equals("synan")) break;
+			// Abstraktna sintaksa.
+			Abstr ast = new Abstr(dumpPhases.contains("ast"));
+			source.accept(ast);
+			if (execPhase.equals("ast")) break;
 			
 			// Neznana faza prevajanja.
 			if (! execPhase.equals(""))
