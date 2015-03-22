@@ -1,0 +1,27 @@
+fun x(a:integer) : integer =
+(
+    {x = 5 * 5}
+);
+
+
+var index : integer;
+typ niz : string;
+var tabela : arr [10] integer;
+typ ok : rec
+{
+    j : integer,
+    k : string,
+    p : logical
+};
+
+#fun test() : integer = 0;
+fun test(argc : logical) : integer = 0;
+
+fun main(argc : integer) : integer =
+(
+    ( {i = 0}, {j = 0} ),
+    { while i <= 10 : ( { if j == 0 then { j = 1 } else { j = 0 } },
+    { i = i * 1} ) },
+    0
+)
+{ where var i : integer; var j : integer }

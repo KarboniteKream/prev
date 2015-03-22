@@ -1,0 +1,17 @@
+var x : integer;
+fun addX(argc : integer) : integer =
+(
+	{ x = x + 1 }
+);
+
+var cc : ^ arr [ 3 ] integer;
+var i : integer;
+fun main(argc : integer) : integer =
+(
+	( { if { i= 20} then {i = 30} else {i = 10}} ),
+	{ 
+		while (i == 10) : (i++--^2)
+	}
+)
+{ where var i : integer; var j : integer };
+typ yy : rec{ cc : string , kk : arr [ 3] string }

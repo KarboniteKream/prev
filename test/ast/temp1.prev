@@ -1,0 +1,7 @@
+fun main(argc : integer) : integer =
+(
+	( { i = 0 }, { j = 0 } ),
+	{ while i < 10 : ( { if j == 0 then { j = 1 } else { j = 0 } }, { i = i + 1 } ) },
+	0
+)
+{ where var i : integer; var j : integer }

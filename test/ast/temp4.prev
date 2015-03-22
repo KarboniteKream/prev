@@ -1,0 +1,6 @@
+var data : string;
+
+fun main(argc : integer) : integer =
+(
+	{ data = 'qwe' }
+)

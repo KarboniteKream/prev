@@ -1,0 +1,1 @@
+fun main(argc : integer) : string = a+1
