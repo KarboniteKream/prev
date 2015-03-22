@@ -1,0 +1,10 @@
+var qwe : integer;
+var asd : string;
+var asd : rec { a : integer, b : string, c : logical };
+
+fun main(argc : integer, argv : ^string) : integer =
+(
+	asd,
+	qwe
+)
+{ where var i : integer; var j : string }
