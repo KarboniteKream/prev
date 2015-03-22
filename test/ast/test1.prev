@@ -1,0 +1,32 @@
+#typ _banana_int : ^integer;
+#var temp1 : integer;
+#var temp2 : _banana_int;
+#var temp3 : ^   ^    integer;
+#var temp4 : arr [149] ^_banana_string;
+#var temp5 : rec { a : integer, b : ^ arr [99] ^   string };
+
+fun main(argc : integer, argv : ^string) : integer =
+(
+	#1 + 2 & 3 | 4 != 5 | 6 == 7 & 8 < 9,
+	#1 + 2 - 3 - 4,
+	#a | b & c | d,
+	#1 * 2 * 3 / 4 % 5,
+	#1 + 2 * 3,
+	#1 | 2 | 3,
+	#1 | 2 == 3 & 4 | 5 & 6 + 7 * 8,
+	#0,
+	#true | 1 | 'qwe'
+	#+-!!^2
+	#1232^^^,
+	# kako naj tukaj gledam position, ce sploh ta primer velja
+	#(2, 3, 4)^.data,
+	#2.data,
+	#2[12][40][56],
+	#2^.qwe^.asd,
+	#printf('%d\n', 0),
+	#test,
+	#{ while x > 0 : printf('%d\n', x) },
+	#{ for qwe = 0, 5, 1 : { asd = qwe + 2 } }
+	{ if x > 0 then { x = x - 1 } else { x = x + 2 } }
+)
+{ where var i : integer; var j : integer }
