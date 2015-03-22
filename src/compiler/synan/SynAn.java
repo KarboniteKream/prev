@@ -78,9 +78,7 @@ public class SynAn {
 	 */
 	public AbsTree parse() {
 		dump("source -> definitions");
-		Vector<AbsDef> definitions = new Vector<AbsDef>();
-		parse_definitions(definitions);
-		AbsTree tree = new AbsDefs(new Position(new Position(1, 1), prevSymbol.position), definitions);
+		AbsTree tree = parse_definitions();
 		readNext(true);
 
 		if(currSymbol.token != Token.EOF)
@@ -91,18 +89,22 @@ public class SynAn {
 		return tree;
 	}
 
-	private void parse_definitions(Vector<AbsDef> definitions)
+	private AbsDefs parse_definitions()
 	{
 		dump("definitions -> definition definitions'");
-		definitions.add(parse_definition());
-		parse_definitions_(definitions);
+		readNext();
+		Position position = currSymbol.position;
+		Vector<AbsDef> defs = new Vector<AbsDef>();
+		defs.add(parse_definition());
+		parse_definitions_(defs);
+
+		return new AbsDefs(new Position(position, prevSymbol.position), defs);
 	}
 
 	private void parse_definitions_(Vector<AbsDef> definitions)
 	{
 		readNext(true);
 
-		// TODO: Change production.
 		if(currSymbol.token == Token.SEMIC)
 		{
 			prepareNext();
@@ -115,14 +117,17 @@ public class SynAn {
 				return;
 			}
 
-			dump("definitions' -> ; definitions");
-			parse_definitions(definitions);
+			dump("definitions' -> ; definition definitions'");
+			definitions.add(parse_definition());
+			parse_definitions_(definitions);
 		}
 		else if(currSymbol.token == Token.COMMA)
 		{
+			dump("definitions' -> ; definition definitions'");
 			Report.warning(currSymbol.position, "Got COMMA, expected SEMIC.");
 			prepareNext();
-			parse_definitions(definitions);
+			definitions.add(parse_definition());
+			parse_definitions_(definitions);
 		}
 		else
 		{
@@ -156,8 +161,7 @@ public class SynAn {
 			check(Token.IDENTIFIER);
 			String name = prevSymbol.lexeme;
 			check(Token.LPARENT);
-			Vector<AbsPar> parameters = new Vector<AbsPar>();
-			parse_parameters(parameters);
+			Vector<AbsPar> parameters = parse_parameters();
 			check(Token.RPARENT);
 			check(Token.COLON);
 			AbsType type = parse_type();
@@ -232,8 +236,7 @@ public class SynAn {
 				dump("type -> rec { components }");
 				prepareNext();
 				check(Token.LBRACE);
-				Vector<AbsComp> components = new Vector<AbsComp>();
-				parse_components(components);
+				Vector<AbsComp> components = parse_components();
 				check(Token.RBRACE);
 				type = new AbsRecType(new Position(position, prevSymbol.position), components);
 			break;
@@ -253,11 +256,14 @@ public class SynAn {
 		return type;
 	}
 
-	private void parse_components(Vector<AbsComp> components)
+	private Vector<AbsComp> parse_components()
 	{
 		dump("components -> component components'");
+		Vector<AbsComp> components = new Vector<AbsComp>();
 		components.add(parse_component());
 		parse_components_(components);
+
+		return components;
 	}
 
 	private void parse_components_(Vector<AbsComp> components)
@@ -270,9 +276,10 @@ public class SynAn {
 			return;
 		}
 
-		dump("components' -> , components");
+		dump("components' -> , component components'");
 		prepareNext();
-		parse_components(components);
+		components.add(parse_component());
+		parse_components_(components);
 	}
 
 	private AbsComp parse_component()
@@ -287,11 +294,14 @@ public class SynAn {
 		return new AbsComp(new Position(position, prevSymbol.position), name, type);
 	}
 
-	private void parse_parameters(Vector<AbsPar> parameters)
+	private Vector<AbsPar> parse_parameters()
 	{
 		dump("parameters -> parameter parameters'");
+		Vector<AbsPar> parameters = new Vector<AbsPar>();
 		parameters.add(parse_parameter());
 		parse_parameters_(parameters);
+
+		return parameters;
 	}
 
 	private void parse_parameters_(Vector<AbsPar> parameters)
@@ -304,9 +314,10 @@ public class SynAn {
 			return;
 		}
 
-		dump("parameters' -> , parameters");
+		dump("parameters' -> , parameter parameters'");
 		prepareNext();
-		parse_parameters(parameters);
+		parameters.add(parse_parameter());
+		parse_parameters_(parameters);
 	}
 
 	private AbsPar parse_parameter()
@@ -321,11 +332,14 @@ public class SynAn {
 		return new AbsPar(new Position(position, prevSymbol.position), name, type);
 	}
 
-	private void parse_expressions(Vector<AbsExpr> expressions)
+	private Vector<AbsExpr> parse_expressions()
 	{
 		dump("expressions -> expression expressions'");
+		Vector<AbsExpr> expressions = new Vector<AbsExpr>();
 		expressions.add(parse_expression());
 		parse_expressions_(expressions);
+
+		return expressions;
 	}
 
 	private void parse_expressions_(Vector<AbsExpr> expressions)
@@ -339,9 +353,10 @@ public class SynAn {
 			return;
 		}
 
-		dump("expressions' -> , expressions");
+		dump("expressions' -> , expression expressions'");
 		prepareNext();
-		parse_expressions(expressions);
+		expressions.add(parse_expression());
+		parse_expressions_(expressions);
 	}
 
 	private AbsExpr parse_expression()
@@ -371,12 +386,10 @@ public class SynAn {
 		dump("expression' -> { where definitions }");
 		prepareNext();
 		check(Token.KW_WHERE);
-		Vector<AbsDef> defs = new Vector<AbsDef>();
-		parse_definitions(defs);
-		Position position = prevSymbol.position;
+		AbsDefs definitions = parse_definitions();
 		check(Token.RBRACE);
 
-		return new AbsDefs(new Position(defs.get(0).position, position), defs);
+		return definitions;
 	}
 
 	private AbsExpr parse_logical_ior_expression()
@@ -707,8 +720,7 @@ public class SynAn {
 		{
 			dump("atom_expression -> ( expressions )");
 			prepareNext();
-			Vector<AbsExpr> expressions = new Vector<AbsExpr>();
-			parse_expressions(expressions);
+			Vector<AbsExpr> expressions = parse_expressions();
 			check(Token.RPARENT);
 			expression = new AbsExprs(new Position(position, prevSymbol.position), expressions);
 		}
@@ -734,8 +746,7 @@ public class SynAn {
 
 		dump("atom_expression_identifier -> ( expressions )");
 		prepareNext();
-		Vector<AbsExpr> expressions = new Vector<AbsExpr>();
-		parse_expressions(expressions);
+		Vector<AbsExpr> expressions = parse_expressions();
 		check(Token.RPARENT);
 
 		return expressions;
