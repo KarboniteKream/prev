@@ -1,0 +1,6 @@
+fun main(argc : integer) : integer =
+(
+	asd,
+	qwe,
+	(asd, asd,),
+)

@@ -346,15 +346,23 @@ public class SynAn {
 	{
 		readNext(true);
 
-		// TODO: Warning on ending comma.
 		if(currSymbol.token != Token.COMMA)
 		{
 			dump("expressions' -> E");
 			return;
 		}
 
-		dump("expressions' -> , expression expressions'");
 		prepareNext();
+		readNext(true);
+
+		if(currSymbol.token == Token.RPARENT)
+		{
+			Report.warning(prevSymbol.position, "Last expression should not end with COMMA.");
+			dump("expressions' -> E");
+			return;
+		}
+
+		dump("expressions' -> , expression expressions'");
 		expressions.add(parse_expression());
 		parse_expressions_(expressions);
 	}
