@@ -617,29 +617,29 @@ public class SynAn {
 	private AbsExpr parse_postfix_expression()
 	{
 		dump("postfix_expression -> atom_expression postfix_expression'");
-		return parse_postfix_expression_(parse_atom_expression());
+		readNext();
+
+		return parse_postfix_expression_(currSymbol.position, parse_atom_expression());
 	}
 
-	private AbsExpr parse_postfix_expression_(AbsExpr expressionLeft)
+	private AbsExpr parse_postfix_expression_(Position position, AbsExpr expressionLeft)
 	{
 		readNext(true);
 
 		AbsExpr expression = null;
-		// FIXME: Position on longer expressions.
-		Position position = prevSymbol.position;
 
 		if(currSymbol.token == Token.PTR)
 		{
 			dump("postfix_expression' -> ^ postfix_expression'");
 			prepareNext();
-			expression = parse_postfix_expression_(new AbsUnExpr(new Position(position, prevSymbol.position), AbsUnExpr.VAL, expressionLeft));
+			expression = parse_postfix_expression_(position, new AbsUnExpr(new Position(position, prevSymbol.position), AbsUnExpr.VAL, expressionLeft));
 		}
 		else if(currSymbol.token == Token.DOT)
 		{
 			dump("postfix_expression' -> . identifier postfix_expression'");
 			prepareNext();
 			check(Token.IDENTIFIER);
-			expression = parse_postfix_expression_(new AbsBinExpr(new Position(position, prevSymbol.position), AbsBinExpr.DOT, expressionLeft, new AbsCompName(new Position(position, prevSymbol.position), prevSymbol.lexeme)));
+			expression = parse_postfix_expression_(position, new AbsBinExpr(new Position(position, prevSymbol.position), AbsBinExpr.DOT, expressionLeft, new AbsCompName(prevSymbol.position, prevSymbol.lexeme)));
 		}
 		else if(currSymbol.token == Token.LBRACKET)
 		{
@@ -648,7 +648,7 @@ public class SynAn {
 			AbsExpr array = parse_expression();
 			System.out.println(prevSymbol.lexeme);
 			check(Token.RBRACKET);
-			expression = parse_postfix_expression_(new AbsBinExpr(new Position(position, prevSymbol.position), AbsBinExpr.ARR, expressionLeft, array));
+			expression = parse_postfix_expression_(position, new AbsBinExpr(new Position(position, prevSymbol.position), AbsBinExpr.ARR, expressionLeft, array));
 		}
 		else
 		{
