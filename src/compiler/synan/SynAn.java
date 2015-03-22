@@ -385,7 +385,7 @@ public class SynAn {
 		return parse_logical_ior_expression_(parse_logical_and_expression());
 	}
 
-	private AbsExpr parse_logical_ior_expression_(AbsExpr expressionLeft)
+	private AbsExpr parse_logical_ior_expression_(AbsExpr left)
 	{
 		readNext(true);
 
@@ -393,15 +393,15 @@ public class SynAn {
 		{
 			dump("logical_ior_expression' -> | logical_and_expression logical_ior_expression'");
 			prepareNext();
-			AbsExpr expressionRight = parse_logical_and_expression();
-			expressionLeft = parse_logical_ior_expression_(new AbsBinExpr(new Position(expressionLeft.position, expressionRight.position), AbsBinExpr.IOR, expressionLeft, expressionRight));
+			AbsExpr right = parse_logical_and_expression();
+			left = parse_logical_ior_expression_(new AbsBinExpr(new Position(left.position, right.position), AbsBinExpr.IOR, left, right));
 		}
 		else
 		{
 			dump("logical_ior_expression' -> E");
 		}
 
-		return expressionLeft;
+		return left;
 	}
 
 	private AbsExpr parse_logical_and_expression()
@@ -410,7 +410,7 @@ public class SynAn {
 		return parse_logical_and_expression_(parse_comparative_expression());
 	}
 
-	private AbsExpr parse_logical_and_expression_(AbsExpr expressionLeft)
+	private AbsExpr parse_logical_and_expression_(AbsExpr left)
 	{
 		readNext(true);
 
@@ -418,15 +418,15 @@ public class SynAn {
 		{
 			dump("logical_and_expression' -> & comparative_expression logical_and_expression'");
 			prepareNext();
-			AbsExpr expressionRight = parse_comparative_expression();
-			expressionLeft = parse_logical_and_expression_(new AbsBinExpr(new Position(expressionLeft.position, expressionRight.position), AbsBinExpr.AND, expressionLeft, expressionRight));
+			AbsExpr right = parse_comparative_expression();
+			left = parse_logical_and_expression_(new AbsBinExpr(new Position(left.position, right.position), AbsBinExpr.AND, left, right));
 		}
 		else
 		{
 			dump("logical_and_expression' -> E");
 		}
 
-		return expressionLeft;
+		return left;
 	}
 
 	private AbsExpr parse_comparative_expression()
@@ -435,11 +435,11 @@ public class SynAn {
 		return parse_comparative_expression_(parse_additive_expression());
 	}
 
-	private AbsExpr parse_comparative_expression_(AbsExpr expressionLeft)
+	private AbsExpr parse_comparative_expression_(AbsExpr left)
 	{
 		readNext(true);
 
-		AbsExpr expressionRight = null;
+		AbsExpr right = null;
 		int operation = 0;
 
 		if(currSymbol.token == Token.EQU)
@@ -447,55 +447,54 @@ public class SynAn {
 			dump("comparative_expression' -> == additive_expression");
 			operation = AbsBinExpr.EQU;
 			prepareNext();
-			expressionRight = parse_additive_expression();
+			right = parse_additive_expression();
 		}
 		else if(currSymbol.token == Token.NEQ)
 		{
 			dump("comparative_expression' -> != additive_expression");
 			operation = AbsBinExpr.NEQ;
 			prepareNext();
-			expressionRight = parse_additive_expression();
+			right = parse_additive_expression();
 		}
 		else if(currSymbol.token == Token.LEQ)
 		{
 			dump("comparative_expression' -> <= additive_expression");
 			operation = AbsBinExpr.LEQ;
 			prepareNext();
-			expressionRight = parse_additive_expression();
+			right = parse_additive_expression();
 		}
 		else if(currSymbol.token == Token.GEQ)
 		{
 			dump("comparative_expression' -> >= additive_expression");
 			operation = AbsBinExpr.GEQ;
 			prepareNext();
-			expressionRight = parse_additive_expression();
+			right = parse_additive_expression();
 		}
 		else if(currSymbol.token == Token.LTH)
 		{
 			dump("comparative_expression' -> < additive_expression");
 			operation = AbsBinExpr.LTH;
 			prepareNext();
-			expressionRight = parse_additive_expression();
+			right = parse_additive_expression();
 		}
 		else if(currSymbol.token == Token.GTH)
 		{
 			dump("comparative_expression' -> > additive_expression");
 			operation = AbsBinExpr.GTH;
 			prepareNext();
-			expressionRight = parse_additive_expression();
+			right = parse_additive_expression();
 		}
 		else
 		{
 			dump("comparative_expression' -> E");
 		}
 
-		// TODO: Move back.
-		if(expressionRight != null)
+		if(right != null)
 		{
-			expressionLeft = new AbsBinExpr(new Position(expressionLeft.position, expressionRight.position), operation, expressionLeft, expressionRight);
+			left = new AbsBinExpr(new Position(left.position, right.position), operation, left, right);
 		}
 
-		return expressionLeft;
+		return left;
 	}
 
 	private AbsExpr parse_additive_expression()
@@ -504,7 +503,7 @@ public class SynAn {
 		return parse_additive_expression_(parse_multiplicative_expression());
 	}
 
-	private AbsExpr parse_additive_expression_(AbsExpr expressionLeft)
+	private AbsExpr parse_additive_expression_(AbsExpr left)
 	{
 		readNext(true);
 
@@ -512,15 +511,15 @@ public class SynAn {
 		{
 			dump("additive_expression' -> + multiplicative_expression additive_expression'");
 			prepareNext();
-			AbsExpr expressionRight = parse_multiplicative_expression();
-			expressionLeft = parse_additive_expression_(new AbsBinExpr(new Position(expressionLeft.position, expressionRight.position), AbsBinExpr.ADD, expressionLeft, expressionRight));
+			AbsExpr right = parse_multiplicative_expression();
+			left = parse_additive_expression_(new AbsBinExpr(new Position(left.position, right.position), AbsBinExpr.ADD, left, right));
 		}
 		else if(currSymbol.token == Token.SUB)
 		{
 			dump("additive_expression' -> - multiplicative_expression additive_expression'");
 			prepareNext();
-			AbsExpr expressionRight = parse_multiplicative_expression();
-			expressionLeft = parse_additive_expression_(new AbsBinExpr(new Position(expressionLeft.position, expressionRight.position), AbsBinExpr.SUB, expressionLeft, expressionRight));
+			AbsExpr right = parse_multiplicative_expression();
+			left = parse_additive_expression_(new AbsBinExpr(new Position(left.position, right.position), AbsBinExpr.SUB, left, right));
 		}
 		else
 		{
@@ -528,7 +527,7 @@ public class SynAn {
 		}
 
 
-		return expressionLeft;
+		return left;
 	}
 
 	private AbsExpr parse_multiplicative_expression()
@@ -537,7 +536,7 @@ public class SynAn {
 		return parse_multiplicative_expression_(parse_prefix_expression());
 	}
 
-	private AbsExpr parse_multiplicative_expression_(AbsExpr expressionLeft)
+	private AbsExpr parse_multiplicative_expression_(AbsExpr left)
 	{
 		readNext(true);
 
@@ -545,29 +544,29 @@ public class SynAn {
 		{
 			dump("multiplicative_expression' -> * prefix_expression multiplicative_expression'");
 			prepareNext();
-			AbsExpr expressionRight = parse_prefix_expression();
-			expressionLeft = parse_multiplicative_expression_(new AbsBinExpr(new Position(expressionLeft.position, expressionRight.position), AbsBinExpr.MUL, expressionLeft, expressionRight));
+			AbsExpr right = parse_prefix_expression();
+			left = parse_multiplicative_expression_(new AbsBinExpr(new Position(left.position, right.position), AbsBinExpr.MUL, left, right));
 		}
 		else if(currSymbol.token == Token.DIV)
 		{
 			dump("multiplicative_expression' -> / prefix_expression multiplicative_expression'");
 			prepareNext();
-			AbsExpr expressionRight = parse_prefix_expression();
-			expressionLeft = parse_multiplicative_expression_(new AbsBinExpr(new Position(expressionLeft.position, expressionRight.position), AbsBinExpr.DIV, expressionLeft, expressionRight));
+			AbsExpr right = parse_prefix_expression();
+			left = parse_multiplicative_expression_(new AbsBinExpr(new Position(left.position, right.position), AbsBinExpr.DIV, left, right));
 		}
 		else if(currSymbol.token == Token.MOD)
 		{
 			dump("multiplicative_expression' -> % prefix_expression multiplicative_expression'");
 			prepareNext();
-			AbsExpr expressionRight = parse_prefix_expression();
-			expressionLeft = parse_multiplicative_expression_(new AbsBinExpr(new Position(expressionLeft.position, expressionRight.position), AbsBinExpr.MOD, expressionLeft, expressionRight));
+			AbsExpr right = parse_prefix_expression();
+			left = parse_multiplicative_expression_(new AbsBinExpr(new Position(left.position, right.position), AbsBinExpr.MOD, left, right));
 		}
 		else
 		{
 			dump("multiplicative_expression' -> E");
 		}
 
-		return expressionLeft;
+		return left;
 	}
 
 	private AbsExpr parse_prefix_expression()
@@ -622,7 +621,7 @@ public class SynAn {
 		return parse_postfix_expression_(currSymbol.position, parse_atom_expression());
 	}
 
-	private AbsExpr parse_postfix_expression_(Position position, AbsExpr expressionLeft)
+	private AbsExpr parse_postfix_expression_(Position position, AbsExpr left)
 	{
 		readNext(true);
 
@@ -632,14 +631,14 @@ public class SynAn {
 		{
 			dump("postfix_expression' -> ^ postfix_expression'");
 			prepareNext();
-			expression = parse_postfix_expression_(position, new AbsUnExpr(new Position(position, prevSymbol.position), AbsUnExpr.VAL, expressionLeft));
+			expression = parse_postfix_expression_(position, new AbsUnExpr(new Position(position, prevSymbol.position), AbsUnExpr.VAL, left));
 		}
 		else if(currSymbol.token == Token.DOT)
 		{
 			dump("postfix_expression' -> . identifier postfix_expression'");
 			prepareNext();
 			check(Token.IDENTIFIER);
-			expression = parse_postfix_expression_(position, new AbsBinExpr(new Position(position, prevSymbol.position), AbsBinExpr.DOT, expressionLeft, new AbsCompName(prevSymbol.position, prevSymbol.lexeme)));
+			expression = parse_postfix_expression_(position, new AbsBinExpr(new Position(position, prevSymbol.position), AbsBinExpr.DOT, left, new AbsCompName(prevSymbol.position, prevSymbol.lexeme)));
 		}
 		else if(currSymbol.token == Token.LBRACKET)
 		{
@@ -648,12 +647,12 @@ public class SynAn {
 			AbsExpr array = parse_expression();
 			System.out.println(prevSymbol.lexeme);
 			check(Token.RBRACKET);
-			expression = parse_postfix_expression_(position, new AbsBinExpr(new Position(position, prevSymbol.position), AbsBinExpr.ARR, expressionLeft, array));
+			expression = parse_postfix_expression_(position, new AbsBinExpr(new Position(position, prevSymbol.position), AbsBinExpr.ARR, left, array));
 		}
 		else
 		{
 			dump("postfix_expression' -> E");
-			expression = expressionLeft;
+			expression = left;
 		}
 
 		return expression;
@@ -687,7 +686,6 @@ public class SynAn {
 		else if(currSymbol.token == Token.IDENTIFIER)
 		{
 			dump("atom_expression -> identifier atom_expression_identifier");
-			// TODO: Check all positions.
 			expression = new AbsVarName(currSymbol.position, currSymbol.lexeme);
 			String name = currSymbol.lexeme;
 			prepareNext();
@@ -796,11 +794,10 @@ public class SynAn {
 		else
 		{
 			dump("atom_expression_braces -> expression = expression");
-			// TODO: Rename to left/right.
-			AbsExpr expressionLeft = parse_expression();
+			AbsExpr left = parse_expression();
 			check(Token.ASSIGN);
-			AbsExpr expressionRight = parse_expression();
-			expression = new AbsBinExpr(new Position(position, prevSymbol.position), AbsBinExpr.ASSIGN, expressionLeft, expressionRight);
+			AbsExpr right = parse_expression();
+			expression = new AbsBinExpr(new Position(position, prevSymbol.position), AbsBinExpr.ASSIGN, left, right);
 		}
 
 		return expression;
