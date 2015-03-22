@@ -658,7 +658,6 @@ public class SynAn {
 			dump("postfix_expression' -> [ expression ] postfix_expression'");
 			prepareNext();
 			AbsExpr array = parse_expression();
-			System.out.println(prevSymbol.lexeme);
 			check(Token.RBRACKET);
 			expression = parse_postfix_expression_(position, new AbsBinExpr(new Position(position, prevSymbol.position), AbsBinExpr.ARR, left, array));
 		}
