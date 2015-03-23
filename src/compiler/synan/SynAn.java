@@ -764,7 +764,7 @@ public class SynAn {
 		readNext();
 
 		AbsExpr expression = null;
-		Position position = currSymbol.position;
+		Position position = prevSymbol.position;
 
 		if(currSymbol.token == Token.KW_IF)
 		{
@@ -777,11 +777,11 @@ public class SynAn {
 
 			if(elseExpression == null)
 			{
-				expression = new AbsIfThen(new Position(position, prevSymbol.position), ifExpression, thenExpression);
+				expression = new AbsIfThen(new Position(position, currSymbol.position), ifExpression, thenExpression);
 			}
 			else
 			{
-				expression = new AbsIfThenElse(new Position(position, prevSymbol.position), ifExpression, thenExpression, elseExpression);
+				expression = new AbsIfThenElse(new Position(position, currSymbol.position), ifExpression, thenExpression, elseExpression);
 			}
 		}
 		else if(currSymbol.token == Token.KW_WHILE)
@@ -791,7 +791,7 @@ public class SynAn {
 			AbsExpr condition = parse_expression();
 			check(Token.COLON);
 			AbsExpr body = parse_expression();
-			expression = new AbsWhile(new Position(position, prevSymbol.position), condition, body);
+			expression = new AbsWhile(new Position(position, currSymbol.position), condition, body);
 		}
 		else if(currSymbol.token == Token.KW_FOR)
 		{
@@ -807,7 +807,7 @@ public class SynAn {
 			AbsExpr step = parse_expression();
 			check(Token.COLON);
 			AbsExpr body = parse_expression();
-			expression = new AbsFor(new Position(position, prevSymbol.position), count, lo, hi, step, body);
+			expression = new AbsFor(new Position(position, currSymbol.position), count, lo, hi, step, body);
 		}
 		else
 		{
@@ -815,7 +815,7 @@ public class SynAn {
 			AbsExpr left = parse_expression();
 			check(Token.ASSIGN);
 			AbsExpr right = parse_expression();
-			expression = new AbsBinExpr(new Position(position, prevSymbol.position), AbsBinExpr.ASSIGN, left, right);
+			expression = new AbsBinExpr(new Position(position, currSymbol.position), AbsBinExpr.ASSIGN, left, right);
 		}
 
 		return expression;
