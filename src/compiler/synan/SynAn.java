@@ -775,6 +775,8 @@ public class SynAn {
 			AbsExpr thenExpression = parse_expression();
 			AbsExpr elseExpression = parse_atom_expression_else();
 
+			readNext();
+
 			if(elseExpression == null)
 			{
 				expression = new AbsIfThen(new Position(position, currSymbol.position), ifExpression, thenExpression);
@@ -791,6 +793,7 @@ public class SynAn {
 			AbsExpr condition = parse_expression();
 			check(Token.COLON);
 			AbsExpr body = parse_expression();
+			readNext();
 			expression = new AbsWhile(new Position(position, currSymbol.position), condition, body);
 		}
 		else if(currSymbol.token == Token.KW_FOR)
@@ -807,6 +810,7 @@ public class SynAn {
 			AbsExpr step = parse_expression();
 			check(Token.COLON);
 			AbsExpr body = parse_expression();
+			readNext();
 			expression = new AbsFor(new Position(position, currSymbol.position), count, lo, hi, step, body);
 		}
 		else
@@ -815,6 +819,7 @@ public class SynAn {
 			AbsExpr left = parse_expression();
 			check(Token.ASSIGN);
 			AbsExpr right = parse_expression();
+			readNext();
 			expression = new AbsBinExpr(new Position(position, currSymbol.position), AbsBinExpr.ASSIGN, left, right);
 		}
 
@@ -833,6 +838,7 @@ public class SynAn {
 
 		dump("atom_expression_else -> else expression");
 		prepareNext();
+
 		return parse_expression();
 	}
 
