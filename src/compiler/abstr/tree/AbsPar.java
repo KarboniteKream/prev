@@ -9,7 +9,7 @@ import compiler.abstr.*;
  * @author sliva
  *
  */
-public class AbsPar extends AbsTree {
+public class AbsPar extends AbsDef {
 
 	/** Ime parametra. */
 	public final String name;
