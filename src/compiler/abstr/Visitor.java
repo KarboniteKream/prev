@@ -20,8 +20,8 @@ public interface Visitor {
     public void visit(AbsFor        acceptor);
 	public void visit(AbsFunCall    acceptor);
 	public void visit(AbsFunDef     acceptor);
-	public void visit(AbsIfThen     accpetor);
-	public void visit(AbsIfThenElse accpetor);
+	public void visit(AbsIfThen     acceptor);
+	public void visit(AbsIfThenElse acceptor);
 	public void visit(AbsPar        acceptor);
 	public void visit(AbsPtrType    acceptor);
 	public void visit(AbsRecType    acceptor);

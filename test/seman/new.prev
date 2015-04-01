@@ -1,0 +1,19 @@
+typ qwe : asd;
+var a : logical;
+var b : qwe;
+typ asd : integer;
+var c : arr [10] ^asd;
+
+fun main(argc : integer, argv : ^string, a : logical) : asd =
+(
+	{ a = 0 },
+	util(asd, argv)
+);
+
+fun util(argc : integer, argv : ^string) : integer =
+(
+	{ a = 0 },
+	main(argc, argv, d)
+);
+
+var d : integer

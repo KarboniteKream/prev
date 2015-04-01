@@ -1,0 +1,33 @@
+typ _banana_int : ^integer;
+var temp1 : integer;
+var temp2 : _banana_int;
+var temp3 : ^   ^    integer;
+var temp4 : arr [149] ^_banana_int;
+var temp5 : rec { temp1 : integer, temp3 : ^ arr [99] ^   _banana_int };
+ 
+fun main(temp1xx : integer, temp2yy : integer) : integer =
+(
+        (i + 2 & 3 | 4 != 5 | 6 == 7 & 8 < 9),
+        1 + 2 - 3 - 4,
+        temp1 | temp2 & temp2 | temp2,
+        1 * 2 * 3 / 4 % 5,
+        1 + 2 * 3,
+        1 | 2 | 3,
+        1 | 2 == 3 & 4 | 5 & 6 + 7 * 8,
+        0,
+        true | 1 | 'qwe',
+        +-!!^2,
+        1232^^^,
+        temp5.data,
+        2.data.xx,
+        temp1[12][40][56],
+        2^.qwe^.asd,
+        main(temp1xx, temp2yy),
+        ({p = 0}, p+p){where var p : integer},
+        1,
+        temp4,
+        { while temp1 > 0 : main(temp1xx, temp2yy) },
+        { for x = 0, 5, 1 : { temp1xx = tr + 2 }{where var tr : logical} }{where var x : integer},
+        { if temp1 > 0 then { temp1 = temp1 - 1 } else { temp1 = temp1 + 2 } },
+        { if temp1 > 0 then { temp1 = temp1 - 1 }}
+)
