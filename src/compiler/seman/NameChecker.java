@@ -27,6 +27,7 @@ public class NameChecker implements Visitor
 
 	public void visit(AbsComp acceptor)
 	{
+		acceptor.type.accept(this);
 	}
 
 	public void visit(AbsCompName acceptor)
@@ -96,6 +97,11 @@ public class NameChecker implements Visitor
 
     public void visit(AbsFor acceptor)
 	{
+		acceptor.count.accept(this);
+		acceptor.lo.accept(this);
+		acceptor.hi.accept(this);
+		acceptor.step.accept(this);
+		acceptor.body.accept(this);
 	}
 
 	public void visit(AbsFunCall acceptor)
@@ -131,10 +137,15 @@ public class NameChecker implements Visitor
 
 	public void visit(AbsIfThen acceptor)
 	{
+		acceptor.cond.accept(this);
+		acceptor.thenBody.accept(this);
 	}
 
 	public void visit(AbsIfThenElse acceptor)
 	{
+		acceptor.cond.accept(this);
+		acceptor.thenBody.accept(this);
+		acceptor.elseBody.accept(this);
 	}
 
 	public void visit(AbsPar acceptor)
@@ -157,6 +168,10 @@ public class NameChecker implements Visitor
 
 	public void visit(AbsRecType acceptor)
 	{
+		for(int i = 0; i < acceptor.numComps(); i++)
+		{
+			acceptor.comp(i).accept(this);
+		}
 	}
 
 	public void visit(AbsTypeDef acceptor)
@@ -178,6 +193,7 @@ public class NameChecker implements Visitor
 
 	public void visit(AbsUnExpr acceptor)
 	{
+		acceptor.expr.accept(this);
 	}
 
 	public void visit(AbsVarDef acceptor)
@@ -199,9 +215,15 @@ public class NameChecker implements Visitor
 
 	public void visit(AbsWhere acceptor)
 	{
+		SymbTable.newScope();
+		acceptor.defs.accept(this);
+		acceptor.expr.accept(this);
+		SymbTable.oldScope();
 	}
 
 	public void visit(AbsWhile acceptor)
 	{
+		acceptor.cond.accept(this);
+		acceptor.body.accept(this);
 	}
 }

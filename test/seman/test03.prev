@@ -1,0 +1,22 @@
+fun queens(pos:^arr[8]integer,n:integer):integer=
+  {if column==9
+     then
+       ({for l=1,8,1:
+           ({for c=1,8,1:{if pos^[c]==l then putstr('*') else putstr(' ')}},
+            putstrln(''))},
+        putstrln(''))
+       {where var l:integer;
+              var c:integer}
+     else
+       ({r=0},
+        {for l=1,8,1:({f=true},
+                      {for c=1,n-1,1:{f=f&!(pos^[n])}},
+                      {if f then ({pos^[n]=l},{r=r+queens(pos,n+1)})})},
+        r)
+       {where var r:integer;
+              var l:integer;
+              var c:integer;
+              var f:logical}}
+	   {where var column:integer};
+fun putstr(str:string):integer=0;
+fun putstrln(str:string):integer=1

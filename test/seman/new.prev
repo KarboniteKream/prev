@@ -7,13 +7,20 @@ var c : arr [10] ^asd;
 fun main(argc : integer, argv : ^string, a : logical) : asd =
 (
 	{ a = 0 },
-	util(asd, argv)
+	util(asd, argv),
+	{ while b > 0 : { b = b - 1 } }
 );
 
 fun util(argc : integer, argv : ^string) : integer =
 (
-	{ a = 0 },
-	main(argc, argv, d)
+	main(argc, argv, d),
+	{ for a  = 0, 5, 1 : add(a, c[0]) }
+);
+
+fun add(a : asd, b : qwe) : integer =
+(
+	{ if a > ^c[a]^ then { a = a - 1} else { a = a + 1 } },
+	a + b { where var b : asd }
 );
 
 var d : integer
