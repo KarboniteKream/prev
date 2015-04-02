@@ -107,12 +107,14 @@ public class SynAn {
 
 		if(currSymbol.token == Token.SEMIC)
 		{
+			Symbol temp = prevSymbol;
 			prepareNext();
 			readNext(true);
 
 			if(currSymbol.token == Token.EOF)
 			{
 				Report.warning(currSymbol.position, "Last definiton should not end with SEMIC.");
+				prevSymbol = temp;
 				dump("definitions' -> E");
 				return;
 			}
