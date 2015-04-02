@@ -1,15 +1,19 @@
-### Compilation
+### Compiling
 
 ```sh
 $ javac -cp src src/compiler/Main.java
 ```
 
-### Usage
+### Running
 
 ```sh
-$ java -cp src compiler.Main --phase=lexan|synan --dump=lexan|synan|ast FILE.prev
+$ java -cp src compiler.Main --phase=PHASE --dump=DUMP FILE.prev
 ```
-OR
+or
 ```sh
-$ ./compile.sh lexan|synan|ast PHASE/TEST_FILE
+$ ./compile.sh PHASE PHASE/FILENAME
+```
+
+```
+PHASE/DUMP = lexan|synan|ast|seman
 ```
