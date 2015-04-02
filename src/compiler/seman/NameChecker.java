@@ -181,14 +181,14 @@ public class NameChecker implements Visitor
 
 	public void visit(AbsTypeName acceptor)
 	{
-		AbsDef identifier = SymbTable.fnd(acceptor.name);
-		
-		if(identifier == null)
+		AbsDef type = SymbTable.fnd(acceptor.name);
+
+		if(type == null)
 		{
 			Report.error(acceptor.position, "Undefined type '" + acceptor.name + "'.");
 		}
 
-		SymbDesc.setNameDef(acceptor, identifier);
+		SymbDesc.setNameDef(acceptor, type);
 	}
 
 	public void visit(AbsUnExpr acceptor)
