@@ -10,7 +10,7 @@ var i : integer;
 fun main(argc : integer) : integer =
 (
 	( { if { i= 20} then {i = 30} else {i = 10}} ),
-	{ 
+	{
 		while (i == 10) : (i++--^2)
 	}
 )

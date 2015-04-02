@@ -34,7 +34,7 @@ fun main(temp1 : integer, temp2 : integer) : integer =
 )
 { where var i : integer; var j : integer };
 
-fun test(t : integer) : logical = 
+fun test(t : integer) : logical =
 (
 	z,
 	t,
