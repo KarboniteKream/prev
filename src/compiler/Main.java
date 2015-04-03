@@ -90,7 +90,7 @@ public class Main {
 			// Semanticna analiza.
 			SemAn semAn = new SemAn(dumpPhases.contains("seman"));
 			source.accept(new NameChecker());
-			//source.accept(semAn.typeChecker());
+			source.accept(new TypeChecker());
 			semAn.dump(source);
 			if (execPhase.equals("seman")) break;
 			

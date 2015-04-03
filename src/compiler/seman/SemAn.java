@@ -3,6 +3,7 @@ package compiler.seman;
 import compiler.Report;
 import compiler.abstr.*;
 import compiler.abstr.tree.*;
+import compiler.seman.type.*;
 
 /**
  * Semanticni analizator.
@@ -43,8 +44,12 @@ public class SemAn implements Visitor {
 	private int indent;
 	
 	public void visit(AbsArrType arrType) {
-		Report.dump(indent, "AbsArrType " + arrType.position.toString() + ":");
-		Report.dump(indent + 2, "[" + arrType.length + "]");
+		Report.dump(indent, "AbsArrType " + arrType.position.toString() + ": " + "[" + arrType.length + "]");
+		{
+			SemType typ = SymbDesc.getType(arrType);
+			if (typ != null)
+				Report.dump(indent + 2, "#typed as " + typ.toString());
+		}
 		indent += 2; arrType.type.accept(this); indent -= 2;
 	}
 	
@@ -62,6 +67,11 @@ public class SemAn implements Visitor {
 		default:
 			Report.error("Internal error :: compiler.abstr.Abstr.visit(AbsAtomConst)");
 		}
+		{
+			SemType typ = SymbDesc.getType(atomConst);
+			if (typ != null)
+				Report.dump(indent + 2, "#typed as " + typ.toString());
+		}
 	}
 	
 	public void visit(AbsAtomType atomType) {
@@ -77,6 +87,11 @@ public class SemAn implements Visitor {
 			break;
 		default:
 			Report.error("Internal error :: compiler.abstr.Abstr.visit(AbsAtomType)");
+		}
+		{
+			SemType typ = SymbDesc.getType(atomType);
+			if (typ != null)
+				Report.dump(indent + 2, "#typed as " + typ.toString());
 		}
 	}
 	
@@ -133,21 +148,41 @@ public class SemAn implements Visitor {
 		default:
 			Report.error("Internal error :: compiler.abstr.Abstr.visit(AbsBinExpr)");
 		}
+		{
+			SemType typ = SymbDesc.getType(binExpr);
+			if (typ != null)
+				Report.dump(indent + 2, "#typed as " + typ.toString());
+		}
 		indent += 2; binExpr.expr1.accept(this); indent -= 2;
 		indent += 2; binExpr.expr2.accept(this); indent -= 2;
 	}
 	
 	public void visit(AbsComp comp) {
 		Report.dump(indent, "AbsComp " + comp.position.toString() + ": " + comp.name);
+		{
+			SemType typ = SymbDesc.getType(comp);
+			if (typ != null)
+				Report.dump(indent + 2, "#typed as " + typ.toString());
+		}
 		indent += 2; comp.type.accept(this); indent -= 2;
 	}
 	
 	public void visit(AbsCompName compName) {
 		Report.dump(indent, "AbsCompName " + compName.position.toString() + ": " + compName.name);
+		{
+			SemType typ = SymbDesc.getType(compName);
+			if (typ != null)
+				Report.dump(indent + 2, "#typed as " + typ.toString());
+		}
 	}
 	
 	public void visit(AbsDefs defs) {
 		Report.dump(indent, "AbsDefs " + defs.position.toString() + ":");
+		{
+			SemType typ = SymbDesc.getType(defs);
+			if (typ != null)
+				Report.dump(indent + 2, "#typed as " + typ.toString());
+		}
 		for (int def = 0; def < defs.numDefs(); def++) {
 			indent += 2; defs.def(def).accept(this); indent -= 2;
 		}
@@ -155,6 +190,11 @@ public class SemAn implements Visitor {
 	
 	public void visit(AbsExprs exprs) {
 		Report.dump(indent, "AbsExprs " + exprs.position.toString() + ":");
+		{
+			SemType typ = SymbDesc.getType(exprs);
+			if (typ != null)
+				Report.dump(indent + 2, "#typed as " + typ.toString());
+		}
 		for (int expr = 0; expr < exprs.numExprs(); expr++) {
 			indent += 2; exprs.expr(expr).accept(this); indent -= 2;
 		}
@@ -162,6 +202,11 @@ public class SemAn implements Visitor {
 	
 	public void visit(AbsFor forStmt) {
 		Report.dump(indent, "AbsFor " + forStmt.position.toString() + ":");
+		{
+			SemType typ = SymbDesc.getType(forStmt);
+			if (typ != null)
+				Report.dump(indent + 2, "#typed as " + typ.toString());
+		}
 		indent += 2; forStmt.count.accept(this); indent -= 2;
 		indent += 2; forStmt.lo.accept(this); indent -= 2;
 		indent += 2; forStmt.hi.accept(this); indent -= 2;
@@ -176,6 +221,11 @@ public class SemAn implements Visitor {
 			if (def != null)
 				Report.dump(indent + 2, "#defined at " + def.position.toString());
 		}
+		{
+			SemType typ = SymbDesc.getType(funCall);
+			if (typ != null)
+				Report.dump(indent + 2, "#typed as " + typ.toString());
+		}
 		for (int arg = 0; arg < funCall.numArgs(); arg++) {
 			indent += 2; funCall.arg(arg).accept(this); indent -= 2;
 		}
@@ -183,6 +233,11 @@ public class SemAn implements Visitor {
 	
 	public void visit(AbsFunDef funDef) {
 		Report.dump(indent, "AbsFunDef " + funDef.position.toString() + ": " + funDef.name);
+		{
+			SemType typ = SymbDesc.getType(funDef);
+			if (typ != null)
+				Report.dump(indent + 2, "#typed as " + typ.toString());
+		}
 		for (int par = 0; par < funDef.numPars(); par++) {
 			indent += 2; funDef.par(par).accept(this); indent -= 2;
 		}
@@ -192,12 +247,22 @@ public class SemAn implements Visitor {
 	
 	public void visit(AbsIfThen ifThen) {
 		Report.dump(indent, "AbsIfThen " + ifThen.position.toString() + ":");
+		{
+			SemType typ = SymbDesc.getType(ifThen);
+			if (typ != null)
+				Report.dump(indent + 2, "#typed as " + typ.toString());
+		}
 		indent += 2; ifThen.cond.accept(this); indent -= 2;		
 		indent += 2; ifThen.thenBody.accept(this); indent -= 2;		
 	}
 	
 	public void visit(AbsIfThenElse ifThenElse) {
 		Report.dump(indent, "AbsIfThenElse " + ifThenElse.position.toString() + ":");
+		{
+			SemType typ = SymbDesc.getType(ifThenElse);
+			if (typ != null)
+				Report.dump(indent + 2, "#typed as " + typ.toString());
+		}
 		indent += 2; ifThenElse.cond.accept(this); indent -= 2;		
 		indent += 2; ifThenElse.thenBody.accept(this); indent -= 2;		
 		indent += 2; ifThenElse.elseBody.accept(this); indent -= 2;		
@@ -205,16 +270,31 @@ public class SemAn implements Visitor {
 	
 	public void visit(AbsPar par) {
 		Report.dump(indent, "AbsPar " + par.position.toString() + ": " + par.name);
+		{
+			SemType typ = SymbDesc.getType(par);
+			if (typ != null)
+				Report.dump(indent + 2, "#typed as " + typ.toString());
+		}
 		indent += 2; par.type.accept(this); indent -= 2;
 	}
 	
 	public void visit(AbsPtrType ptrType) {
 		Report.dump(indent, "AbsPtrType " + ptrType.position.toString() + ":");
+		{
+			SemType typ = SymbDesc.getType(ptrType);
+			if (typ != null)
+				Report.dump(indent + 2, "#typed as " + typ.toString());
+		}
 		indent += 2; ptrType.type.accept(this); indent -= 2;
 	}
 	
 	public void visit(AbsRecType recType) {
 		Report.dump(indent, "AbsRecType " + recType.position.toString() + ":");
+		{
+			SemType typ = SymbDesc.getType(recType);
+			if (typ != null)
+				Report.dump(indent + 2, "#typed as " + typ.toString());
+		}
 		for (int comp = 0; comp < recType.numComps(); comp++) {
 			indent += 2; recType.comp(comp).accept(this); indent -= 2;
 		}
@@ -222,6 +302,11 @@ public class SemAn implements Visitor {
 	
 	public void visit(AbsTypeDef typeDef) {
 		Report.dump(indent, "AbsTypeDef " + typeDef.position.toString() + ": " + typeDef.name);
+		{
+			SemType typ = SymbDesc.getType(typeDef);
+			if (typ != null)
+				Report.dump(indent + 2, "#typed as " + typ.toString());
+		}
 		indent += 2; typeDef.type.accept(this); indent -= 2;
 	}
 	
@@ -231,6 +316,11 @@ public class SemAn implements Visitor {
 			AbsDef def = SymbDesc.getNameDef(typeName);
 			if (def != null)
 				Report.dump(indent + 2, "#defined at " + def.position.toString());
+		}
+		{
+			SemType typ = SymbDesc.getType(typeName);
+			if (typ != null)
+				Report.dump(indent + 2, "#typed as " + typ.toString());
 		}
 	}
 	
@@ -254,11 +344,21 @@ public class SemAn implements Visitor {
 		default:
 			Report.error("Internal error :: compiler.abstr.Abstr.visit(AbsBinExpr)");
 		}
+		{
+			SemType typ = SymbDesc.getType(unExpr);
+			if (typ != null)
+				Report.dump(indent + 2, "#typed as " + typ.toString());
+		}
 		indent += 2; unExpr.expr.accept(this); indent -= 2;
 	}
 	
 	public void visit(AbsVarDef varDef) {
 		Report.dump(indent, "AbsVarDef " + varDef.position.toString() + ": " + varDef.name);
+		{
+			SemType typ = SymbDesc.getType(varDef);
+			if (typ != null)
+				Report.dump(indent + 2, "#typed as " + typ.toString());
+		}
 		indent += 2; varDef.type.accept(this); indent -= 2;
 	}
 	
@@ -273,14 +373,24 @@ public class SemAn implements Visitor {
 	
 	public void visit(AbsWhere where) {
 		Report.dump(indent, "AbsWhere " + where.position.toString() + ":");
+		{
+			SemType typ = SymbDesc.getType(where);
+			if (typ != null)
+				Report.dump(indent + 2, "#typed as " + typ.toString());
+		}
 		indent += 2; where.expr.accept(this); indent -= 2;
 		indent += 2; where.defs.accept(this); indent -= 2;
 	}
 	
-	public void visit(AbsWhile where) {
-		Report.dump(indent, "AbsWhileName " + where.position.toString() + ":");
-		indent += 2; where.cond.accept(this); indent -= 2;
-		indent += 2; where.body.accept(this); indent -= 2;
+	public void visit(AbsWhile whileStmt) {
+		Report.dump(indent, "AbsWhileName " + whileStmt.position.toString() + ":");
+		{
+			SemType typ = SymbDesc.getType(whileStmt);
+			if (typ != null)
+				Report.dump(indent + 2, "#typed as " + typ.toString());
+		}
+		indent += 2; whileStmt.cond.accept(this); indent -= 2;
+		indent += 2; whileStmt.body.accept(this); indent -= 2;
 	}
 	
 }
