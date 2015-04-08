@@ -40,7 +40,7 @@ public class NameChecker implements Visitor
 		{
 			AbsDef definition = acceptor.def(i);
 
-			if(definition instanceof AbsTypeDef)
+			if(definition instanceof AbsTypeDef == true)
 			{
 				AbsTypeDef type = (AbsTypeDef)definition;
 
@@ -53,7 +53,7 @@ public class NameChecker implements Visitor
 					Report.error(type.position, "Redefinition of type '" + type.name + "'.");
 				}
 			}
-			else if(definition instanceof AbsFunDef)
+			else if(definition instanceof AbsFunDef == true)
 			{
 				AbsFunDef function = (AbsFunDef)definition;
 
@@ -66,7 +66,7 @@ public class NameChecker implements Visitor
 					Report.error(function.position, "Redefinition of function '" + function.name + "'.");
 				}
 			}
-			else if(definition instanceof AbsVarDef)
+			else if(definition instanceof AbsVarDef == true)
 			{
 				AbsVarDef variable = (AbsVarDef)definition;
 
@@ -87,7 +87,7 @@ public class NameChecker implements Visitor
 		}
 	}
 
-    public void visit(AbsExprs acceptor)
+	public void visit(AbsExprs acceptor)
 	{
 		for(int i = 0; i < acceptor.numExprs(); i++)
 		{
@@ -95,7 +95,7 @@ public class NameChecker implements Visitor
 		}
 	}
 
-    public void visit(AbsFor acceptor)
+	public void visit(AbsFor acceptor)
 	{
 		acceptor.count.accept(this);
 		acceptor.lo.accept(this);
@@ -108,7 +108,7 @@ public class NameChecker implements Visitor
 	{
 		AbsDef function = SymbTable.fnd(acceptor.name);
 
-		if(function == null)
+		if(function == null || function instanceof AbsFunDef == false)
 		{
 			Report.error(acceptor.position, "Undefined function '" + acceptor.name + "'.");
 		}
@@ -183,7 +183,7 @@ public class NameChecker implements Visitor
 	{
 		AbsDef type = SymbTable.fnd(acceptor.name);
 
-		if(type == null)
+		if(type == null || type instanceof AbsTypeDef == false)
 		{
 			Report.error(acceptor.position, "Undefined type '" + acceptor.name + "'.");
 		}
@@ -205,7 +205,7 @@ public class NameChecker implements Visitor
 	{
 		AbsDef variable = SymbTable.fnd(acceptor.name);
 
-		if(variable == null)
+		if(variable == null || (variable instanceof AbsVarDef == false && variable instanceof AbsPar == false))
 		{
 			Report.error(acceptor.position, "Undefined variable '" + acceptor.name + "'.");
 		}
