@@ -22,6 +22,7 @@ public class TypeChecker implements Visitor
 
 	public void visit(AbsAtomConst acceptor)
 	{
+		SymbDesc.setType(acceptor, new SemAtomType(acceptor.type));
 	}
 
 	public void visit(AbsAtomType acceptor)
@@ -65,8 +66,18 @@ public class TypeChecker implements Visitor
 				}
 
 				function.type.accept(this);
-
 				SymbDesc.setType(function, new SemFunType(parameters, SymbDesc.getType(function.type)));
+			}
+		}
+
+		// TODO: Check if types should also be finished.
+		for(int i = 0; i < acceptor.numDefs(); i++)
+		{
+			if(acceptor.def(i) instanceof AbsVarDef == true)
+			{
+				AbsVarDef variable = (AbsVarDef)acceptor.def(i);
+				variable.type.accept(this);
+				SymbDesc.setType(variable, SymbDesc.getType(variable.type));
 			}
 		}
 
@@ -76,11 +87,17 @@ public class TypeChecker implements Visitor
 		}
 	}
 
-    public void visit(AbsExprs acceptor)
+	public void visit(AbsExprs acceptor)
 	{
+		for(int i = 0; i < acceptor.numExprs(); i++)
+		{
+			acceptor.expr(i).accept(this);
+		}
+
+		SymbDesc.setType(acceptor, SymbDesc.getType(acceptor.expr(acceptor.numExprs() - 1)));
 	}
 
-    public void visit(AbsFor acceptor)
+	public void visit(AbsFor acceptor)
 	{
 	}
 
@@ -91,6 +108,14 @@ public class TypeChecker implements Visitor
 	public void visit(AbsFunDef acceptor)
 	{
 		acceptor.expr.accept(this);
+
+		SemType returnType = ((SemFunType)SymbDesc.getType(acceptor)).resultType;
+		SemType expression = SymbDesc.getType(acceptor.expr);
+
+		if(returnType.sameStructureAs(expression) == false)
+		{
+			Report.error(acceptor.expr.position, "Expression does not match function return type. Got " + expression + ", expected " + returnType + ".");
+		}
 	}
 
 	public void visit(AbsIfThen acceptor)
@@ -144,9 +169,7 @@ public class TypeChecker implements Visitor
 	{
 	}
 
-	public void visit(AbsVarDef acceptor)
-	{
-	}
+	public void visit(AbsVarDef acceptor) {}
 
 	public void visit(AbsVarName acceptor)
 	{
