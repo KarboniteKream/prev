@@ -32,6 +32,13 @@ public class TypeChecker implements Visitor
 
 	public void visit(AbsBinExpr acceptor)
 	{
+		switch(acceptor.oper)
+		{
+			case AbsBinExpr.IOR: case AbsBinExpr.AND:
+			break;
+		}
+
+		// TODO: ASSIGN to variable.
 	}
 
 	public void visit(AbsComp acceptor)
@@ -167,16 +174,49 @@ public class TypeChecker implements Visitor
 
 	public void visit(AbsUnExpr acceptor)
 	{
+		acceptor.expr.accept(this);
+
+		if(acceptor.oper == AbsUnExpr.NOT && SymbDesc.getType(acceptor.expr).sameStructureAs(new SemAtomType(SemAtomType.LOG)) == false)
+		{
+			Report.error(acceptor.expr.position, "Expression type should be LOGICAL, got " + SymbDesc.getType(acceptor.expr).actualType() + ".");
+		}
+		else if((acceptor.oper == AbsUnExpr.ADD || acceptor.oper == AbsUnExpr.SUB) && SymbDesc.getType(acceptor.expr).sameStructureAs(new SemAtomType(SemAtomType.INT)) == false)
+		{
+			Report.error(acceptor.expr.position, "Expression type should be INTEGER, got " + SymbDesc.getType(acceptor.expr).actualType() + ".");
+		}
+		else if(acceptor.oper == AbsUnExpr.MEM)
+		{
+			SymbDesc.setType(acceptor, new SemPtrType(SymbDesc.getType(acceptor.expr)));
+		}
+		else if(acceptor.oper == AbsUnExpr.VAL)
+		{
+			if(SymbDesc.getType(acceptor.expr) instanceof SemPtrType == true)
+			{
+				SymbDesc.setType(acceptor, ((SemPtrType)SymbDesc.getType(acceptor.expr)).type);
+			}
+			else
+			{
+				System.out.println("NOK");
+			}
+		}
+		else
+		{
+			SymbDesc.setType(acceptor, SymbDesc.getType(acceptor.expr));
+		}
 	}
 
 	public void visit(AbsVarDef acceptor) {}
 
 	public void visit(AbsVarName acceptor)
 	{
+		SymbDesc.setType(acceptor, SymbDesc.getType(SymbDesc.getNameDef(acceptor)));
 	}
 
 	public void visit(AbsWhere acceptor)
 	{
+		acceptor.defs.accept(this);
+		acceptor.expr.accept(this);
+		SymbDesc.setType(acceptor, SymbDesc.getType(acceptor.expr));
 	}
 
 	public void visit(AbsWhile acceptor)
