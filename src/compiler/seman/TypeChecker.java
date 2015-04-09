@@ -429,7 +429,7 @@ public class TypeChecker implements Visitor
 		{
 			if(SymbDesc.getType(acceptor.expr).actualType() instanceof SemPtrType == true)
 			{
-				SymbDesc.setType(acceptor, ((SemPtrType)SymbDesc.getType(acceptor.expr)).type);
+				SymbDesc.setType(acceptor, ((SemPtrType)SymbDesc.getType(acceptor.expr).actualType()).type);
 			}
 			else
 			{
