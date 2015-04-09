@@ -88,12 +88,9 @@ public class TypeChecker implements Visitor
 						Report.error(acceptor.expr2.position, "Expected PTR, found " + type2.actualType() + ".");
 					}
 
-					SemType typeLeft = ((SemPtrType)type1.actualType()).type;
-					SemType typeRight = ((SemPtrType)type2.actualType()).type;
-
-					if(typeLeft.sameStructureAs(typeRight) == false)
+					if(type1.sameStructureAs(type2) == false)
 					{
-						Report.error(acceptor.expr2.position, "Expected " + typeLeft.actualType() + ", found " + typeRight.actualType() + ".");
+						Report.error(acceptor.expr2.position, "Expected " + type1.actualType() + ", found " + type2.actualType() + ".");
 					}
 				}
 				else
@@ -173,13 +170,9 @@ public class TypeChecker implements Visitor
 						Report.error(acceptor.expr2.position, "Expected PTR, found " + type2.actualType() + ".");
 					}
 
-					// sameStructureAs()
-					SemType typeLeft = ((SemPtrType)type1.actualType()).type;
-					SemType typeRight = ((SemPtrType)type2.actualType()).type;
-
-					if(typeLeft.sameStructureAs(typeRight) == false)
+					if(type1.sameStructureAs(type2) == false)
 					{
-						Report.error(acceptor.expr2.position, "Expected " + typeLeft.actualType() + ", found " + typeRight.actualType() + ".");
+						Report.error(acceptor.expr2.position, "Expected " + type1.actualType() + ", found " + type2.actualType() + ".");
 					}
 				}
 				else
