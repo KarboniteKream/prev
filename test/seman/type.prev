@@ -1,0 +1,84 @@
+typ a : asd;
+typ qwe : temp;
+typ int : integer;
+typ temp : int;
+typ asd : arr [10] ^temp;
+typ struct : rec { id : int, name : ^string };
+typ str : string;
+typ bool : logical;
+
+var ww : bool;
+
+var variable : test;
+typ test : int;
+
+var i : integer;
+var qq : ^integer;
+
+var array : asd;
+
+typ ee : int;
+typ rr : ^ee;
+
+var tt : rr;
+
+typ yy : arr [10] integer;
+var uu : yy;
+
+var ii : bool;
+
+typ aaa : ^integer;
+typ bbb : ^logical;
+typ ccc : aaa;
+typ ddd : bbb;
+
+var a1 : ccc;
+var a2 : ddd;
+var a3 : ccc;
+
+var ss : struct;
+
+fun main(argc : test, argv : ^str) : int =
+(
+	!false,
+	+argc,
+	^i,
+	qq^,
+	true & ww,
+	1 * argc,
+	^1 <= tt,
+	uu[1],
+	+uu[0],
+	a1 == a3,
+	ss.id,
+	ss.name,
+	util(1),
+	#^1 == ^true,
+	{ argc = 1 },
+	{ true = false },
+	{ '1' = '1' },
+	0
+);
+
+typ zz : rec { id : string };
+typ kk : zz;
+var xx : struct;
+var ll : asd;
+
+fun util(argc : int) : integer =
+(
+	{ while argc > 0 : { argc = argc - 1 } },
+	{ if !false then { argc = 1 } else { argc = 0 } },
+	{ for i = 0, argc, 1 : { argc = argc / 2 } },
+	{ argc = 1 },
+	side(xx, ^1, ll),
+	0
+)
+{ where var i : int };
+
+fun side(a : struct, b : ^int, c : asd) : asd =
+(
+	^1 == ^2,
+	{ ^2 = ^1 },
+	ll
+)
