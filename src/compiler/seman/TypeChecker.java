@@ -47,7 +47,7 @@ public class TypeChecker implements Visitor
 			case AbsBinExpr.IOR: case AbsBinExpr.AND:
 				if(type1.sameStructureAs(logical) == false || type2.sameStructureAs(logical) == false)
 				{
-					Report.error(acceptor.position, "Expected (LOGICAL, LOGICAL), got (" + type1.actualType() + ", " + type2.actualType() + ").");
+					Report.error(acceptor.position, "Expected (LOGICAL, LOGICAL), found (" + type1.actualType() + ", " + type2.actualType() + ").");
 				}
 
 				SymbDesc.setType(acceptor, logical);
@@ -58,7 +58,7 @@ public class TypeChecker implements Visitor
 			case AbsBinExpr.MOD:
 				if(type1.sameStructureAs(integer) == false || type2.sameStructureAs(integer) == false)
 				{
-					Report.error(acceptor.position, "Expected (INTEGER, INTEGER), got (" + type1.actualType() + ", " + type2.actualType() + ").");
+					Report.error(acceptor.position, "Expected (INTEGER, INTEGER), found (" + type1.actualType() + ", " + type2.actualType() + ").");
 				}
 
 				SymbDesc.setType(acceptor, integer);
@@ -71,21 +71,21 @@ public class TypeChecker implements Visitor
 				{
 					if(type2.sameStructureAs(logical) == false)
 					{
-						Report.error(acceptor.expr2.position, "Expected LOGICAL, got " + type2.actualType() + ".");
+						Report.error(acceptor.expr2.position, "Expected LOGICAL, found " + type2.actualType() + ".");
 					}
 				}
 				else if(type1.sameStructureAs(integer) == true)
 				{
 					if(type2.sameStructureAs(integer) == false)
 					{
-						Report.error(acceptor.expr2.position, "Expected INTEGER, got " + type2.actualType() + ".");
+						Report.error(acceptor.expr2.position, "Expected INTEGER, found " + type2.actualType() + ".");
 					}
 				}
 				else if(type1.actualType() instanceof SemPtrType == true)
 				{
 					if(type2.actualType() instanceof SemPtrType == false)
 					{
-						Report.error(acceptor.expr2.position, "Expected PTR, got " + type2.actualType() + ".");
+						Report.error(acceptor.expr2.position, "Expected PTR, found " + type2.actualType() + ".");
 					}
 
 					SemType typeLeft = ((SemPtrType)type1.actualType()).type;
@@ -93,12 +93,12 @@ public class TypeChecker implements Visitor
 
 					if(typeLeft.sameStructureAs(typeRight) == false)
 					{
-						Report.error(acceptor.expr2.position, "Expected " + typeLeft.actualType() + ", got " + typeRight.actualType() + ".");
+						Report.error(acceptor.expr2.position, "Expected " + typeLeft.actualType() + ", found " + typeRight.actualType() + ".");
 					}
 				}
 				else
 				{
-					Report.error(acceptor.expr1.position, "Expected { LOGICAL, INTEGER, PTR }, got " + type1.actualType() + ".");
+					Report.error(acceptor.expr1.position, "Expected { LOGICAL, INTEGER, PTR }, found " + type1.actualType() + ".");
 				}
 
 				SymbDesc.setType(acceptor, logical);
@@ -107,7 +107,7 @@ public class TypeChecker implements Visitor
 			case AbsBinExpr.ARR:
 				if(type1.actualType() instanceof SemArrType == false || type2.sameStructureAs(integer) == false)
 				{
-					Report.error(acceptor.position, "Expected (ARR, INTEGER), got (" + type1.actualType() + ", " + type2.actualType() + ").");
+					Report.error(acceptor.position, "Expected (ARR, INTEGER), found (" + type1.actualType() + ", " + type2.actualType() + ").");
 				}
 
 				SymbDesc.setType(acceptor, ((SemArrType)type1.actualType()).type);
@@ -116,7 +116,7 @@ public class TypeChecker implements Visitor
 			case AbsBinExpr.DOT:
 				if(type1.actualType() instanceof SemRecType == false)
 				{
-					Report.error(acceptor.expr1.position, "Expected REC, got " + type1.actualType() + ".");
+					Report.error(acceptor.expr1.position, "Expected REC, found " + type1.actualType() + ".");
 				}
 
 				SemRecType record = (SemRecType)type1.actualType();
@@ -142,48 +142,49 @@ public class TypeChecker implements Visitor
 			case AbsBinExpr.ASSIGN:
 				if(type1 instanceof SemTypeName == false)
 				{
-					Report.warning(acceptor.expr1.position, "Expected VARIABLE, got " + type1.actualType() + ".");
+					Report.warning(acceptor.expr1.position, "Expected VARIABLE, found " + type1.actualType() + ".");
 				}
 
 				if(type1.sameStructureAs(logical) == true)
 				{
 					if(type2.sameStructureAs(logical) == false)
 					{
-						Report.error(acceptor.expr2.position, "Expected LOGICAL, got " + type2.actualType() + ".");
+						Report.error(acceptor.expr2.position, "Expected LOGICAL, found " + type2.actualType() + ".");
 					}
 				}
 				else if(type1.sameStructureAs(integer) == true)
 				{
 					if(type2.sameStructureAs(integer) == false)
 					{
-						Report.error(acceptor.expr2.position, "Expected INTEGER, got " + type2.actualType() + ".");
+						Report.error(acceptor.expr2.position, "Expected INTEGER, found " + type2.actualType() + ".");
 					}
 				}
 				else if(type1.sameStructureAs(string) == true)
 				{
 					if(type2.sameStructureAs(string) == false)
 					{
-						Report.error(acceptor.expr2.position, "Expected STRING, got " + type2.actualType() + ".");
+						Report.error(acceptor.expr2.position, "Expected STRING, found " + type2.actualType() + ".");
 					}
 				}
 				else if(type1.actualType() instanceof SemPtrType == true)
 				{
 					if(type2.actualType() instanceof SemPtrType == false)
 					{
-						Report.error(acceptor.expr2.position, "Expected PTR, got " + type2.actualType() + ".");
+						Report.error(acceptor.expr2.position, "Expected PTR, found " + type2.actualType() + ".");
 					}
 
+					// sameStructureAs()
 					SemType typeLeft = ((SemPtrType)type1.actualType()).type;
 					SemType typeRight = ((SemPtrType)type2.actualType()).type;
 
 					if(typeLeft.sameStructureAs(typeRight) == false)
 					{
-						Report.error(acceptor.expr2.position, "Expected " + typeLeft.actualType() + ", got " + typeRight.actualType() + ".");
+						Report.error(acceptor.expr2.position, "Expected " + typeLeft.actualType() + ", found " + typeRight.actualType() + ".");
 					}
 				}
 				else
 				{
-					Report.error(acceptor.expr1.position, "Expected { LOGICAL, INTEGER, STRING, PTR }, got " + type1.actualType() + ".");
+					Report.error(acceptor.expr1.position, "Expected { LOGICAL, INTEGER, STRING, PTR }, found " + type1.actualType() + ".");
 				}
 
 				SymbDesc.setType(acceptor, type1);
@@ -264,22 +265,22 @@ public class TypeChecker implements Visitor
 
 		if(SymbDesc.getType(acceptor.count).sameStructureAs(integer) == false)
 		{
-			Report.error(acceptor.count.position, "Expected INTEGER, got " + SymbDesc.getType(acceptor.count).actualType() + ".");
+			Report.error(acceptor.count.position, "Expected INTEGER, found " + SymbDesc.getType(acceptor.count).actualType() + ".");
 		}
 
 		if(SymbDesc.getType(acceptor.lo).sameStructureAs(integer) == false)
 		{
-			Report.error(acceptor.lo.position, "Expected INTEGER, got " + SymbDesc.getType(acceptor.lo).actualType() + ".");
+			Report.error(acceptor.lo.position, "Expected INTEGER, found " + SymbDesc.getType(acceptor.lo).actualType() + ".");
 		}
 
 		if(SymbDesc.getType(acceptor.hi).sameStructureAs(integer) == false)
 		{
-			Report.error(acceptor.hi.position, "Expected INTEGER, got " + SymbDesc.getType(acceptor.hi).actualType() + ".");
+			Report.error(acceptor.hi.position, "Expected INTEGER, found " + SymbDesc.getType(acceptor.hi).actualType() + ".");
 		}
 
 		if(SymbDesc.getType(acceptor.step).sameStructureAs(integer) == false)
 		{
-			Report.error(acceptor.step.position, "Expected INTEGER, got " + SymbDesc.getType(acceptor.step).actualType() + ".");
+			Report.error(acceptor.step.position, "Expected INTEGER, found " + SymbDesc.getType(acceptor.step).actualType() + ".");
 		}
 
 		SymbDesc.setType(acceptor, new SemAtomType(SemAtomType.VOID));
@@ -287,6 +288,24 @@ public class TypeChecker implements Visitor
 
 	public void visit(AbsFunCall acceptor)
 	{
+		SemFunType type = (SemFunType)SymbDesc.getType(SymbDesc.getNameDef(acceptor));
+
+		if(type.getNumPars() != acceptor.numArgs())
+		{
+			Report.error(acceptor.position, "Expected " + type.getNumPars() + " parameter(s), found " + acceptor.numArgs() + ".");
+		}
+
+		for(int i = 0; i < acceptor.numArgs(); i++)
+		{
+			acceptor.arg(i).accept(this);
+
+			if(SymbDesc.getType(acceptor.arg(i)).sameStructureAs(type.getParType(i)) == false)
+			{
+				Report.error(acceptor.arg(i).position, "Expected " + type.getParType(i).actualType() + ", found " + SymbDesc.getType(acceptor.arg(i)).actualType() + ".");
+			}
+		}
+
+		SymbDesc.setType(acceptor, type.resultType);
 	}
 
 	public void visit(AbsFunDef acceptor)
@@ -298,7 +317,7 @@ public class TypeChecker implements Visitor
 
 		if(returnType.sameStructureAs(expression) == false)
 		{
-			Report.error(acceptor.expr.position, "Expected " + returnType.actualType() + ", got " + expression.actualType() + ".");
+			Report.error(acceptor.expr.position, "Expected " + returnType.actualType() + ", found " + expression.actualType() + ".");
 		}
 	}
 
@@ -313,7 +332,7 @@ public class TypeChecker implements Visitor
 		}
 		else
 		{
-			Report.error(acceptor.cond.position, "Expected LOGICAL, got " + SymbDesc.getType(acceptor.cond).actualType() + ".");
+			Report.error(acceptor.cond.position, "Expected LOGICAL, found " + SymbDesc.getType(acceptor.cond).actualType() + ".");
 		}
 	}
 
@@ -329,7 +348,7 @@ public class TypeChecker implements Visitor
 		}
 		else
 		{
-			Report.error(acceptor.cond.position, "Expected LOGICAL, got " + SymbDesc.getType(acceptor.cond).actualType() + ".");
+			Report.error(acceptor.cond.position, "Expected LOGICAL, found " + SymbDesc.getType(acceptor.cond).actualType() + ".");
 		}
 	}
 
@@ -384,7 +403,7 @@ public class TypeChecker implements Visitor
 			}
 			else
 			{
-				Report.error(acceptor.expr.position, "Expected LOGICAL, got " + SymbDesc.getType(acceptor.expr).actualType() + ".");
+				Report.error(acceptor.expr.position, "Expected LOGICAL, found " + SymbDesc.getType(acceptor.expr).actualType() + ".");
 			}
 		}
 		else if(acceptor.oper == AbsUnExpr.ADD || acceptor.oper == AbsUnExpr.SUB)
@@ -395,7 +414,7 @@ public class TypeChecker implements Visitor
 			}
 			else
 			{
-				Report.error(acceptor.expr.position, "Expected INTEGER, got " + SymbDesc.getType(acceptor.expr).actualType() + ".");
+				Report.error(acceptor.expr.position, "Expected INTEGER, found " + SymbDesc.getType(acceptor.expr).actualType() + ".");
 			}
 		}
 		else if(acceptor.oper == AbsUnExpr.MEM)
@@ -410,7 +429,7 @@ public class TypeChecker implements Visitor
 			}
 			else
 			{
-				Report.error(acceptor.expr.position, "Expected PTR, got " + SymbDesc.getType(acceptor.expr).actualType() + ".");
+				Report.error(acceptor.expr.position, "Expected PTR, found " + SymbDesc.getType(acceptor.expr).actualType() + ".");
 			}
 		}
 	}
@@ -440,7 +459,7 @@ public class TypeChecker implements Visitor
 		}
 		else
 		{
-			Report.error(acceptor.cond.position, "Expected LOGICAL, got " + SymbDesc.getType(acceptor.cond).actualType() + ".");
+			Report.error(acceptor.cond.position, "Expected LOGICAL, found " + SymbDesc.getType(acceptor.cond).actualType() + ".");
 		}
 	}
 }
