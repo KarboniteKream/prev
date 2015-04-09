@@ -194,15 +194,33 @@ public class TypeChecker implements Visitor
 
 	public void visit(AbsDefs acceptor)
 	{
+		AbsDef definition = null;
+
 		for(int i = 0; i < acceptor.numDefs(); i++)
 		{
-			AbsDef definition = acceptor.def(i);
+			definition = acceptor.def(i);
 
 			if(definition instanceof AbsTypeDef == true)
 			{
 				SymbDesc.setType(definition, new SemTypeName(((AbsTypeDef)definition).name));
 			}
-			else if(definition instanceof AbsFunDef == true)
+		}
+
+		for(int i = 0; i < acceptor.numDefs(); i++)
+		{
+			definition = acceptor.def(i);
+
+			if(definition instanceof AbsFunDef == false)
+			{
+				definition.accept(this);
+			}
+		}
+
+		for(int i = 0; i < acceptor.numDefs(); i++)
+		{
+			definition = acceptor.def(i);
+
+			if(definition instanceof AbsFunDef == true)
 			{
 				AbsFunDef function = (AbsFunDef)definition;
 				Vector<SemType> parameters = new Vector<SemType>();
@@ -218,20 +236,14 @@ public class TypeChecker implements Visitor
 			}
 		}
 
-		// TODO: Check if types should also be finished.
 		for(int i = 0; i < acceptor.numDefs(); i++)
 		{
-			if(acceptor.def(i) instanceof AbsVarDef == true)
-			{
-				AbsVarDef variable = (AbsVarDef)acceptor.def(i);
-				variable.type.accept(this);
-				SymbDesc.setType(variable, SymbDesc.getType(variable.type));
-			}
-		}
+			definition = acceptor.def(i);
 
-		for(int i = 0; i < acceptor.numDefs(); i++)
-		{
-			acceptor.def(i).accept(this);
+			if(definition instanceof AbsFunDef == true)
+			{
+				definition.accept(this);
+			}
 		}
 	}
 
@@ -426,7 +438,11 @@ public class TypeChecker implements Visitor
 		}
 	}
 
-	public void visit(AbsVarDef acceptor) {}
+	public void visit(AbsVarDef acceptor)
+	{
+		acceptor.type.accept(this);
+		SymbDesc.setType(acceptor, SymbDesc.getType(acceptor.type));
+	}
 
 	public void visit(AbsVarName acceptor)
 	{
