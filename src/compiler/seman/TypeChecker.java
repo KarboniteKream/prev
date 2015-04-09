@@ -117,22 +117,18 @@ public class TypeChecker implements Visitor
 				}
 
 				SemRecType record = (SemRecType)type1.actualType();
-				boolean found = false;
 
 				for(int i = 0; i < record.getNumComps(); i++)
 				{
 					if(record.getCompName(i).equals(((AbsCompName)acceptor.expr2).name) == true)
 					{
+						SymbDesc.setType(acceptor.expr2, record.getCompType(i));
 						SymbDesc.setType(acceptor, record.getCompType(i));
-						found = true;
-						break;
+						return;
 					}
 				}
 
-				if(found == false)
-				{
-					Report.error(acceptor.expr2.position, "Undefined component " + ((AbsCompName)acceptor.expr2).name + ".");
-				}
+				Report.error(acceptor.expr2.position, "Undefined component " + ((AbsCompName)acceptor.expr2).name + ".");
 			break;
 
 			case AbsBinExpr.ASSIGN:
