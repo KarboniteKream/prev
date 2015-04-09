@@ -121,7 +121,6 @@ public class TypeChecker implements Visitor
 
 				for(int i = 0; i < record.getNumComps(); i++)
 				{
-					// TODO: Same name.
 					if(record.getCompName(i).equals(((AbsCompName)acceptor.expr2).name) == true)
 					{
 						SymbDesc.setType(acceptor, record.getCompType(i));

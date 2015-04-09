@@ -168,6 +168,19 @@ public class NameChecker implements Visitor
 
 	public void visit(AbsRecType acceptor)
 	{
+		for(int i = acceptor.numComps() - 1; i > 0; i--)
+		{
+			AbsComp component = acceptor.comp(i);
+
+			for(int j = i - 1; j >= 0; j--)
+			{
+				if(component.name.equals(acceptor.comp(j).name))
+				{
+					Report.error(component.position, "Redefinition of component " + component.name + ".");
+				}
+			}
+		}
+
 		for(int i = 0; i < acceptor.numComps(); i++)
 		{
 			acceptor.comp(i).accept(this);
