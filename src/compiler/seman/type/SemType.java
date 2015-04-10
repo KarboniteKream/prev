@@ -18,5 +18,12 @@ public abstract class SemType {
 	 * @return Ali je podani tip strukturno enak temu tipu.
 	 */
 	public abstract boolean sameStructureAs(SemType type);
+	
+	/**
+	 * Vrne velikost podatkovnega tipa v bytih.
+	 * 
+	 * @return Velikost podatkovnega tipa v bytih.
+	 */
+	public abstract int size();
 
 }
