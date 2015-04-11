@@ -206,16 +206,6 @@ public class TypeChecker implements Visitor
 		{
 			definition = acceptor.def(i);
 
-			if(definition instanceof AbsFunDef == false)
-			{
-				definition.accept(this);
-			}
-		}
-
-		for(int i = 0; i < acceptor.numDefs(); i++)
-		{
-			definition = acceptor.def(i);
-
 			if(definition instanceof AbsFunDef == true)
 			{
 				AbsFunDef function = (AbsFunDef)definition;
@@ -229,6 +219,10 @@ public class TypeChecker implements Visitor
 
 				function.type.accept(this);
 				SymbDesc.setType(function, new SemFunType(parameters, SymbDesc.getType(function.type)));
+			}
+			else
+			{
+				definition.accept(this);
 			}
 		}
 
