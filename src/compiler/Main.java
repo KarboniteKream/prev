@@ -18,7 +18,7 @@ public class Main {
 	private static String sourceFileName;
 
 	/** Seznam vseh faz prevajalnika. */
-	private static String allPhases = "(lexan|synan|ast|seman)";
+	private static String allPhases = "(lexan|synan|ast|seman|frames)";
 
 	/** Doloca zadnjo fazo prevajanja, ki se bo se izvedla. */
 	private static String execPhase = "frames";
