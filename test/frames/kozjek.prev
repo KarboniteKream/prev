@@ -1,0 +1,75 @@
+typ temp5 : rec { temp1 : logical, temp3 : _banana_int };
+typ _banana_int : ^integer;
+var temp1 : _banana_int;
+var temp2 : _banana_int;
+var temp3 : integer;
+var temp4 : string;
+var arrr  : arr[2]arr[1] string;
+typ temp18 : rec { temp1 : integer, temp3 : rec { a: integer, tempt1 : temp5 } };
+
+#typ a : b;
+#typ b : a;
+
+var zoo : arr[100] temp18;
+
+var aaa : arr[100] string;
+var bbb : arr[900] string;
+fun testFun(a : integer) : arr[100] string = (aaa);
+fun testFun2(a : arr[900] string) : arr[100] string = (aaa);
+
+fun main(temp1 : integer, temp2 : integer) : integer =
+(
+	zoo[-1].temp3,
+	test(1),
+	arrr[2][3],
+	#temp18.temp3.tempt1.temp1 | 5 != 5,
+	(true & 3 < 5 | 4 != 5 | 6 == 7 & 8 < 9),
+	1 + 2 - 3 - 4,
+	#temp1 | temp2 & temp2 | temp2,
+	1 * 2 * 3 / 4 % 5,
+	1 + 2 * 3,
+	false | true | true,
+	false | 2 == 3 & 4 != 5 | 5 == 5 & 6 + 7 * 8 <= 0,
+	0,
+	true | !true | false > true,
+	2,
+	testFun(5),
+	testFun2(bbb),
+	1232,
+	#temp18.temp3.a,
+	#2.data.xx,
+	arrr[8][40],#[56],
+	#^temp18.temp1,
+	main(temp1,1),
+	({p = temp3}, temp3+p){where var p : integer},
+	1,
+	temp4,
+	test(1),
+	{ while 3 > temp2 : (temp1) },
+	{ for x = 0, 5, 1 : { temp2 = temp2 * x + 2 }{where var tr : logical} }{where var x : integer},
+	{ if 1 > 2 then { temp1 = temp1 - 1 } else { temp1 = temp1 + 2 } },
+	{ if 1 > 0 then { temp1 = temp1 - 1 }},
+	1
+)
+{ where var i : integer; var j : integer; var mom : string };
+fun test(t : integer) : logical = 
+(
+	z,
+	t,
+	test2(tt),
+	(z,t){
+	where var z : string;
+			  var t : logical
+	},
+	t,
+	z,
+	u.t,
+	o
+){
+	where var z : integer;
+		  var o : logical;
+		  var u : rec {t : integer};
+		  fun x123(t : integer) : integer = (1){where fun y123(t:integer) : integer = (2)}
+};
+fun test2(t : rec { ime : string}) : rec { ime : string} = (t);
+var tt : rec { ime : string};

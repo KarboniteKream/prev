@@ -1,0 +1,18 @@
+var a : integer;
+typ b : rec { id : integer, enabled : logical, name : string };
+var c : b;
+
+fun main(argc : integer, argv : ^string) : integer =
+(
+	i,
+	a,
+	c.id,
+	temp(argc),
+	util(c.id)
+)
+{ where fun util(a : integer) : integer = 0; var i : integer; var j : b; var k : string };
+
+typ qwe : rec { num : arr [10] integer };
+var asd : qwe;
+
+fun temp(f : integer) : qwe = asd

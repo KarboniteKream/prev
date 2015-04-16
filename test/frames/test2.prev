@@ -1,0 +1,12 @@
+var g : arr [2] integer;
+
+fun main(argc : integer, argv : ^string) : integer =
+(
+	util(argc),
+	temp(argv^, true, argc),
+	0
+)
+{ where
+	fun util(a : integer) : arr [2] integer = g;
+	fun temp(b : string, c : logical, d : integer) : integer = 0 { where var i : rec { id : arr [5] integer, name : string } };
+	fun init(e : arr [11] integer, f : string) : integer = qq(1) { where fun qq(i : integer) : integer = i } }
