@@ -9,29 +9,18 @@ public class FrmEvaluator implements Visitor
 	private static int level = 1;
 	private static FrmFrame frame = null;
 
-	public void visit(AbsArrType acceptor)
-	{
-	}
-
-	public void visit(AbsAtomConst acceptor)
-	{
-	}
-
-	public void visit(AbsAtomType acceptor)
-	{
-	}
+	public void visit(AbsArrType acceptor) {}
+	public void visit(AbsAtomConst acceptor) {}
+	public void visit(AbsAtomType acceptor) {}
 
 	public void visit(AbsBinExpr acceptor)
 	{
+		acceptor.expr1.accept(this);
+		acceptor.expr2.accept(this);
 	}
 
-	public void visit(AbsComp acceptor)
-	{
-	}
-
-	public void visit(AbsCompName acceptor)
-	{
-	}
+	public void visit(AbsComp acceptor) {}
+	public void visit(AbsCompName acceptor) {}
 
 	public void visit(AbsDefs acceptor)
 	{
@@ -51,10 +40,15 @@ public class FrmEvaluator implements Visitor
 
 	public void visit(AbsFor acceptor)
 	{
+		acceptor.lo.accept(this);
+		acceptor.hi.accept(this);
+		acceptor.step.accept(this);
+		acceptor.body.accept(this);
 	}
 
 	public void visit(AbsFunCall acceptor)
 	{
+		// TODO
 	}
 
 	public void visit(AbsFunDef acceptor)
@@ -75,10 +69,15 @@ public class FrmEvaluator implements Visitor
 
 	public void visit(AbsIfThen acceptor)
 	{
+		acceptor.cond.accept(this);
+		acceptor.thenBody.accept(this);
 	}
 
 	public void visit(AbsIfThenElse acceptor)
 	{
+		acceptor.cond.accept(this);
+		acceptor.thenBody.accept(this);
+		acceptor.elseBody.accept(this);
 	}
 
 	public void visit(AbsPar acceptor)
@@ -86,25 +85,29 @@ public class FrmEvaluator implements Visitor
 		FrmDesc.setAccess(acceptor, new FrmParAccess(acceptor, frame));
 	}
 
-	public void visit(AbsPtrType acceptor)
-	{
-	}
+	public void visit(AbsPtrType acceptor) {}
 
 	public void visit(AbsRecType acceptor)
 	{
+		int offset = 0;
+
+		for(int i = 0; i < acceptor.numComps(); i++)
+		{
+			AbsComp component = acceptor.comp(i);
+			FrmDesc.setAccess(component, new FrmCmpAccess(component, offset));
+			offset += SymbDesc.getType(component).size();
+		}
 	}
 
 	public void visit(AbsTypeDef acceptor)
 	{
+		acceptor.type.accept(this);
 	}
 
-	public void visit(AbsTypeName acceptor)
-	{
-	}
+	public void visit(AbsTypeName acceptor) {}
 
 	public void visit(AbsUnExpr acceptor)
 	{
-		// TODO: Operation?
 		acceptor.expr.accept(this);
 	}
 
@@ -121,7 +124,7 @@ public class FrmEvaluator implements Visitor
 			frame.locVars.add(variable);
 		}
 
-		// TODO: Type?
+		acceptor.type.accept(this);
 	}
 
 	public void visit(AbsVarName acceptor) {}

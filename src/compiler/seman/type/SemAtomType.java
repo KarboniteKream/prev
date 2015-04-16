@@ -50,7 +50,6 @@ public class SemAtomType extends SemType {
 
 	public int size()
 	{
-		// TODO: String, void.
 		return 8;
 	}
 }
