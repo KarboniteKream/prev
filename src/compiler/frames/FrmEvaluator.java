@@ -3,6 +3,7 @@ package compiler.frames;
 import compiler.abstr.*;
 import compiler.abstr.tree.*;
 import compiler.seman.*;
+import compiler.seman.type.*;
 
 public class FrmEvaluator implements Visitor
 {
@@ -48,22 +49,33 @@ public class FrmEvaluator implements Visitor
 
 	public void visit(AbsFunCall acceptor)
 	{
-		// TODO
+		int size = 0;
+		int returnSize = ((SemFunType)SymbDesc.getType(SymbDesc.getNameDef(acceptor))).resultType.size();
+
+		for(int i = 0; i < acceptor.numArgs(); i++)
+		{
+			size += SymbDesc.getType(acceptor.arg(i)).size();
+		}
+
+		size = returnSize > size ? returnSize : size;
+		frame.sizeArgs = size > frame.sizeArgs ? size : frame.sizeArgs;
 	}
 
 	public void visit(AbsFunDef acceptor)
 	{
 		FrmFrame temp = frame;
-		frame = new FrmFrame(acceptor, level);
+		frame = new FrmFrame(acceptor, level++);
 
 		for(int i = 0; i < acceptor.numPars(); i++)
 		{
 			acceptor.par(i).accept(this);
 		}
 
+		acceptor.type.accept(this);
 		acceptor.expr.accept(this);
 
 		FrmDesc.setFrame(acceptor, frame);
+		level--;
 		frame = temp;
 	}
 
@@ -83,6 +95,7 @@ public class FrmEvaluator implements Visitor
 	public void visit(AbsPar acceptor)
 	{
 		FrmDesc.setAccess(acceptor, new FrmParAccess(acceptor, frame));
+		acceptor.type.accept(this);
 	}
 
 	public void visit(AbsPtrType acceptor) {}
@@ -96,6 +109,7 @@ public class FrmEvaluator implements Visitor
 			AbsComp component = acceptor.comp(i);
 			FrmDesc.setAccess(component, new FrmCmpAccess(component, offset));
 			offset += SymbDesc.getType(component).size();
+			component.type.accept(this);
 		}
 	}
 
