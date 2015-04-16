@@ -88,4 +88,15 @@ public class SemRecType extends SemType {
 		return str;
 	}
 
+	public int size()
+	{
+		int size = 0;
+
+		for(int i = 0; i < compTypes.length; i++)
+		{
+			size += compTypes[i].size();
+		}
+
+		return size;
+	}
 }

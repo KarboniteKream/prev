@@ -47,4 +47,10 @@ public class SemAtomType extends SemType {
 		Report.error("Internal error :: compiler.seman.type.SemAtomType.toString()");
 		return "";
 	}
+
+	public int size()
+	{
+		// TODO: String, void.
+		return 8;
+	}
 }
