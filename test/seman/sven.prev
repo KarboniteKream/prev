@@ -1,0 +1,95 @@
+# PODATKOVNI TIPI
+
+var a_integer: integer;
+var b_logical: logical;
+var c_strtring: string;
+
+var d_arr: arr[500] integer;
+var e_arr: arr[20] logical;
+var f_arr: arr[15] arr[20] string;
+
+var g_rec: rec { a: integer, b: string};
+var h_rec: rec { a:logical, foo: arr[20] string, r: rec {a: integer, foo: string} };
+
+var i_arr: arr[354] rec {i: integer};
+
+var j_ptr: ^integer;
+
+# DEKLARACIJE TIPOV
+
+typ int: integer;
+typ str: string;
+typ arr_int: arr[27] integer;
+typ rec_int_str: rec {a: integer, b: string};
+typ ptr_integer: ^integer;
+typ ptr_rec_int_str: ^rec_int_str;
+#typ int_list_node: rec{val: integer, next: ^int_list_node};  #meni se zdi tole pravilno, amak pade StackOverflowError v visitorju za izpis (SemAn.java)
+
+# DEKLARACIJE SPREMENLJIVK
+
+var va_int: int;
+var vb_ptr_rec_int_str: ^rec_int_str;
+
+# DEKLARACIJE FUNKCIJ
+
+fun f1_integer_integer(a: integer): integer = 1;
+fun g1_int_integer(a: integer): int = 1;
+fun h3_int_string_logical(a:int, b:string, c:logical): rec {a: integer, b: string} = (
+    {if c then (
+        {r.a = a},
+        {r.b = b}
+    )
+    else (
+        {r.a = 0},
+        {r.b = ''}
+    )},
+    r
+) {where var r: rec_int_str};
+
+##returnType se ne ujema
+#fun e_error(a: integer): logical = 'niz';
+
+# IZRAZI
+
+fun f(a: integer, b: integer, c: logical, p: ptr_integer): integer = (
+    1,
+    true,
+    'string',
+    !false,
+    !a[5] {where var a: arr[13] logical},
+    7+5,
+    13-a,
+    ^a,
+    p^,
+    true | false & c,
+    a * b + 7 / 5 / (a + 12) % p^, #f(1,2,true, ^a),
+    
+    true == false,
+    7 <= a,
+    ra > rb {where var ra: ptr_rec_int_str; var rb: ^rec {a: integer, b: string}},
+    
+    aa[7] {where var aa: arr_int},
+    
+    ra.b {where var ra: rec_int_str},
+    
+    h3_int_string_logical(a, ({s = 'niz'},s){where var s:string}, false),
+    
+    a {where var a: rec {a: integer, b: arr[59] ^logical}},
+    
+    {b = {a = 5}},
+    
+    {while true: 5},
+    {if false then c},
+    {if c then {a = 7} else {b = 7}},
+    {for i=0,5,1 : {a = a + i}}{where var i: integer},
+    
+    0
+);
+
+# OSTALO
+
+fun ff(a: tt1): tt2 = ({b = 0}, c){where var c: ttf; typ ttf:tt2};
+var b : tt;
+typ tt: integer;
+typ tt1: logical;
+typ tt2: integer
