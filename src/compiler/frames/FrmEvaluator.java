@@ -10,7 +10,11 @@ public class FrmEvaluator implements Visitor
 	private static int level = 1;
 	private static FrmFrame frame = null;
 
-	public void visit(AbsArrType acceptor) {}
+	public void visit(AbsArrType acceptor)
+	{
+		acceptor.type.accept(this);
+	}
+
 	public void visit(AbsAtomConst acceptor) {}
 	public void visit(AbsAtomType acceptor) {}
 
@@ -98,7 +102,10 @@ public class FrmEvaluator implements Visitor
 		acceptor.type.accept(this);
 	}
 
-	public void visit(AbsPtrType acceptor) {}
+	public void visit(AbsPtrType acceptor)
+	{
+		acceptor.type.accept(this);
+	}
 
 	public void visit(AbsRecType acceptor)
 	{
