@@ -53,7 +53,7 @@ public class FrmEvaluator implements Visitor
 
 	public void visit(AbsFunCall acceptor)
 	{
-		int size = 0;
+		int size = 8;
 		int returnSize = ((SemFunType)SymbDesc.getType(SymbDesc.getNameDef(acceptor))).resultType.size();
 
 		for(int i = 0; i < acceptor.numArgs(); i++)
