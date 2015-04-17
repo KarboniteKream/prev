@@ -6,6 +6,7 @@ import compiler.abstr.*;
 import compiler.abstr.tree.*;
 import compiler.seman.*;
 import compiler.frames.*;
+import compiler.imcode.*;
 
 /**
  * Osnovni razred prevajalnika, ki vodi izvajanje celotnega procesa prevajanja.
@@ -18,13 +19,13 @@ public class Main {
 	private static String sourceFileName;
 
 	/** Seznam vseh faz prevajalnika. */
-	private static String allPhases = "(lexan|synan|ast|seman|frames)";
+	private static String allPhases = "(lexan|synan|ast|seman|frames|imcode)";
 
 	/** Doloca zadnjo fazo prevajanja, ki se bo se izvedla. */
-	private static String execPhase = "frames";
+	private static String execPhase = "imcode";
 
 	/** Doloca faze, v katerih se bodo izpisali vmesni rezultati. */
-	private static String dumpPhases = "frames";
+	private static String dumpPhases = "imcode";
 
 	/**
 	 * Metoda, ki izvede celotni proces prevajanja.
@@ -99,6 +100,12 @@ public class Main {
 			source.accept(new FrmEvaluator());
 			frames.dump(source);
 			if (execPhase.equals("frames")) break;
+			// Vmesna koda.
+			ImCode imcode = new ImCode(dumpPhases.contains("imcode"));
+			ImcCodeGen imcodegen = new ImcCodeGen();
+			source.accept(imcodegen);
+			imcode.dump(imcodegen.chunks);
+			if (execPhase.equals("imcode")) break;
 			
 			// Neznana faza prevajanja.
 			if (! execPhase.equals(""))
