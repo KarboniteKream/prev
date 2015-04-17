@@ -1,0 +1,26 @@
+var a: integer;
+var b: logical;
+var c: string;
+
+var d: arr[500] integer;
+var e: rec {a: integer, b: string, c: logical};
+
+var f: arr[500] arr[43] logical;
+var g: rec {a: integer, b: arr[24] integer, c: string};
+var h: rec {r: rec {a: integer, b: logical}, c: string};
+
+fun foo(arg:integer): integer = 1;
+
+fun goo(arg:integer): integer = a;
+
+fun hoo(arg:integer): integer = loc {where var loc1: string; var loc: integer};
+
+fun ioo(arg: arr[16] logical):arr[16] logical = arg;
+
+fun joo(arg: integer): integer = foo(arg);
+
+fun koo(arg: integer): arr[16] logical = ({loc[1] = true}, ioo(loc)) {where var loc: arr[16] logical};
+
+fun loo(arg: integer): integer = loo1(arg, r {where var r: rec {a: integer, b: string}}) {where fun loo1(arg: integer, r: rec {a: integer, b: string}):integer = r.a};
+
+var brezveze: integer

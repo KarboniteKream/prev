@@ -1,0 +1,33 @@
+var globalna_int: integer;
+var globalna_rec: rec {data: arr[15] integer,
+                       len: integer,
+                       r: rec {a: integer, rr: rec{a: ^integer}}};
+
+fun foo(arg: integer): integer = (
+    {if arg == 0 then
+        {a = 0}
+     else
+        {a = 1 + foo(arg-1)}},
+    a
+) {where var a: integer};
+
+fun main(argc: integer, args: ^string): integer = (
+    {a = 7},
+    {b = 5},
+    {c = foo(argc)},
+    f(a,b),
+    {globalna_rec.data[1] = foo(a + globalna_int - globalna_rec.len)},
+    f(b,a).a[17]
+) {where
+    typ t: rec{a: arr[31] integer};
+    var a: integer;
+    var b: integer;
+    var c: integer;
+    fun f(a: integer, b: integer): t = (
+        {a = 13},
+        {b = 7-c},
+        f1(c)
+    ) {where
+        fun f1(x: integer): t = (x + c - y {where var y: integer}, l {where var l: t})
+      }
+  }

@@ -1,0 +1,32 @@
+var ps: integer;
+var s: integer;
+var pt: integer;
+var t: integer;
+
+
+fun eea(a: integer, b: integer): integer = (
+  {ps = 1}, {s = 0},
+  {pt = 0}, {t = 1},
+  {while b > 0: (
+    {q = a / b},
+    {tmp =  a}, { a = b}, {b = tmp - q*b},
+    {tmp = ps}, {ps = s}, {s = tmp - q*s},
+    {tmp = pt}, {pt = t}, {t = tmp - q*t} )},
+  a )
+  {where
+    var q: integer;
+    var tmp: integer};
+
+var aa: integer;
+var bb: integer;
+
+fun main(argc: integer): integer = (
+  {aa = 231},
+  {bb = 49},
+  #printf('gcd(%d,%d) = %d\n', eea(aa,bb)),
+  
+  eea(aa,bb),
+  #printf('%d / gcd(%d,%d) = %d\n', aa, aa, bb, abs(t)),
+  #printf('%d / gcd(%d,%d) = %d\n', bb, aa, bb, abs(s)),
+  #printf('%d*%d ' + {if pt>0 then '+' else '-'} + ' %d*%d = gcd(%d,%d)', ps,aa,abs(pt),bb,aa,bb),
+  0 )
