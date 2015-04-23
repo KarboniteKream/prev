@@ -105,9 +105,16 @@ public class ImcCodeGen implements Visitor
 
 	public void visit(AbsFunCall acceptor)
 	{
-		// TODO
-		FrmFrame frame = FrmDesc.getFrame(SymbDesc.getNameDef(acceptor));
-		ImcCALL call = new ImcCALL(frame.label);
+		FrmFrame function = FrmDesc.getFrame(SymbDesc.getNameDef(acceptor));
+		ImcCALL call = new ImcCALL(function.label);
+		ImcExpr location = new ImcTEMP(frame.FP);
+
+		for(int i = 0; i <= frame.level - function.level; i++)
+		{
+			location = new ImcMEM(location);
+		}
+
+		call.args.add(location);
 
 		for(int i = 0; i < acceptor.numArgs(); i++)
 		{
@@ -123,7 +130,7 @@ public class ImcCodeGen implements Visitor
 		FrmFrame temp = frame;
 		frame = FrmDesc.getFrame(acceptor);
 		acceptor.expr.accept(this);
-		chunks.add(new ImcCodeChunk(frame, new ImcMOVE(new ImcMEM(new ImcTEMP(frame.RV)), (ImcExpr)imcode.get(acceptor.expr))));
+		chunks.add(new ImcCodeChunk(frame, new ImcMOVE(new ImcTEMP(frame.RV), (ImcExpr)imcode.get(acceptor.expr))));
 		frame = temp;
 	}
 
