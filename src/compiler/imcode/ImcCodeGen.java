@@ -45,8 +45,8 @@ public class ImcCodeGen implements Visitor
 		acceptor.expr1.accept(this);
 		acceptor.expr2.accept(this);
 
-		// FIXME: Operator IDs don't match.
-		code.put(acceptor, new ImcBINOP(0, (ImcExpr)code.get(acceptor.expr1), (ImcExpr)code.get(acceptor.expr2)));
+		System.out.println(acceptor.oper);
+		code.put(acceptor, new ImcBINOP(acceptor.oper, (ImcExpr)code.get(acceptor.expr1), (ImcExpr)code.get(acceptor.expr2)));
 	}
 
 	public void visit(AbsComp acceptor)

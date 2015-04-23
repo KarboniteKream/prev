@@ -9,18 +9,18 @@ import compiler.*;
  */
 public class ImcBINOP extends ImcExpr {
 
-	public static final int ADD = 0;
-	public static final int SUB = 1;
-	public static final int MUL = 2;
-	public static final int DIV = 3;
-	public static final int EQU = 4;
-	public static final int NEQ = 5;
+	public static final int IOR = 0;
+	public static final int AND = 1;
+	public static final int EQU = 2;
+	public static final int NEQ = 3;
+	public static final int LEQ = 4;
+	public static final int GEQ = 5;
 	public static final int LTH = 6;
 	public static final int GTH = 7;
-	public static final int LEQ = 8;
-	public static final int GEQ = 9;
-	public static final int AND = 10;
-	public static final int OR  = 11;
+	public static final int ADD = 8;
+	public static final int SUB = 9;
+	public static final int MUL = 10;
+	public static final int DIV = 11;
 
 	/** Operator.  */
 	public int op;
@@ -59,7 +59,7 @@ public class ImcBINOP extends ImcExpr {
 		case LEQ: op = "<="; break;
 		case GEQ: op = ">="; break;
 		case AND: op = "&" ; break;
-		case OR : op = "|" ; break;
+		case IOR: op = "|" ; break;
 		}
 		Report.dump(indent, "BINOP op=" + op);
 		limc.dump(indent + 2);
