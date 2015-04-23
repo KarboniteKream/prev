@@ -6,6 +6,7 @@ import compiler.abstr.*;
 import compiler.abstr.tree.*;
 import compiler.frames.*;
 import compiler.seman.*;
+import compiler.seman.type.*;
 
 public class ImcCodeGen implements Visitor
 {
@@ -47,19 +48,43 @@ public class ImcCodeGen implements Visitor
 		acceptor.expr1.accept(this);
 		acceptor.expr2.accept(this);
 
+		ImcExpr expr1 = (ImcExpr)imcode.get(acceptor.expr1);
+		ImcExpr expr2 = (ImcExpr)imcode.get(acceptor.expr2);
+
 		if(acceptor.oper == AbsBinExpr.ASSIGN)
 		{
 			ImcSEQ move = new ImcSEQ();
-			move.stmts.add(new ImcMOVE((ImcExpr)imcode.get(acceptor.expr1), (ImcExpr)imcode.get(acceptor.expr2)));
-			imcode.put(acceptor, new ImcESEQ(move, (ImcExpr)imcode.get(acceptor.expr1)));
+			move.stmts.add(new ImcMOVE(expr1, expr2));
+			imcode.put(acceptor, new ImcESEQ(move, expr1));
+		}
+		else if(acceptor.oper == AbsBinExpr.ARR)
+		{
+			imcode.put(acceptor, new ImcMEM(new ImcBINOP(ImcBINOP.ADD, ((ImcMEM)expr1).expr, new ImcBINOP(ImcBINOP.MUL, expr2, new ImcCONST(((SemArrType)SymbDesc.getType(acceptor.expr1)).type.size())))));
+		}
+		else if(acceptor.oper == AbsBinExpr.DOT)
+		{
+			SemRecType record = (SemRecType)SymbDesc.getType(SymbDesc.getNameDef(acceptor.expr1));
+			int offset = 0;
+
+			for(int i = 0; i < record.getNumComps(); i++)
+			{
+				if(record.getCompName(i).equals(((AbsCompName)acceptor.expr2).name) == true)
+				{
+					break;
+				}
+
+				offset += record.getCompType(i).size();
+			}
+
+			imcode.put(acceptor, new ImcMEM(new ImcBINOP(ImcBINOP.ADD, ((ImcMEM)expr1).expr, new ImcCONST(offset))));
 		}
 		else if(acceptor.oper == AbsBinExpr.MOD)
 		{
-			imcode.put(acceptor, new ImcBINOP(ImcBINOP.SUB, (ImcExpr)imcode.get(acceptor.expr1), new ImcBINOP(ImcBINOP.MUL, (ImcExpr)imcode.get(acceptor.expr2), new ImcBINOP(ImcBINOP.DIV, (ImcExpr)imcode.get(acceptor.expr1), (ImcExpr)imcode.get(acceptor.expr2)))));
+			imcode.put(acceptor, new ImcBINOP(ImcBINOP.SUB, expr1, new ImcBINOP(ImcBINOP.MUL, expr2, new ImcBINOP(ImcBINOP.DIV, expr1, expr2))));
 		}
 		else
 		{
-			imcode.put(acceptor, new ImcBINOP(acceptor.oper, (ImcExpr)imcode.get(acceptor.expr1), (ImcExpr)imcode.get(acceptor.expr2)));
+			imcode.put(acceptor, new ImcBINOP(acceptor.oper, expr1, expr2));
 		}
 	}
 
