@@ -1,22 +1,28 @@
 var a : integer;
 var b : logical;
+var c : ^integer;
+var d : arr [10] arr [20] integer;
+var e : rec { id : integer, name : string, comps : arr [5] integer, data : logical };
 
 fun main(argc : integer) : integer =
 (
-	#{ if true == true then 5 else 3 },
-	#{ if true == false then 4 },
-	#{ if true == false then { if false then 2 } else { if true then 3 } },
-	#{ while true : { if true then 2 else 7 } },
+	{ if true == true then 5 else 3 },
+	{ if true == false then 4 },
+	{ if true == false then { if false then 2 } else { if true then 3 } },
+	{ while true : { if true then 2 else 7 } },
 	{ for argc = 0, 5, 1 : 0 },
-	#true | false,
+	true | false,
 	a + i + j - k,
-	util(1)
+	util(1),
+	'qwe',
+	1+-12,
+	^l^,
+	!false,
+	21 % 5,
+	{ argc = 1 },
+	d[3],
+	d[0][5],
+	e.comps[2] + e.id,
+	m[1]
 )
-{ where var i : integer; var j : integer; fun util(i : integer) : integer = i + j; var k : integer }
-
-# fun main(argc : integer) : integer =
-# (
-# 	{ if true then 1 else 0 },
-# 	0
-# )
-# { where fun util(i : integer) : integer = 0; var i : integer }
+{ where var i : integer; var j : integer; fun util(i : integer) : integer = i + j; var k : integer; var l : ^integer; var m : arr [2] integer }
