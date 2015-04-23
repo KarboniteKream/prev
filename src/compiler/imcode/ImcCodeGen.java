@@ -53,6 +53,10 @@ public class ImcCodeGen implements Visitor
 			move.stmts.add(new ImcMOVE((ImcExpr)imcode.get(acceptor.expr1), (ImcExpr)imcode.get(acceptor.expr2)));
 			imcode.put(acceptor, new ImcESEQ(move, (ImcExpr)imcode.get(acceptor.expr1)));
 		}
+		else if(acceptor.oper == AbsBinExpr.MOD)
+		{
+			imcode.put(acceptor, new ImcBINOP(ImcBINOP.SUB, (ImcExpr)imcode.get(acceptor.expr1), new ImcBINOP(ImcBINOP.MUL, (ImcExpr)imcode.get(acceptor.expr2), new ImcBINOP(ImcBINOP.DIV, (ImcExpr)imcode.get(acceptor.expr1), (ImcExpr)imcode.get(acceptor.expr2)))));
+		}
 		else
 		{
 			imcode.put(acceptor, new ImcBINOP(acceptor.oper, (ImcExpr)imcode.get(acceptor.expr1), (ImcExpr)imcode.get(acceptor.expr2)));
@@ -195,6 +199,28 @@ public class ImcCodeGen implements Visitor
 
 	public void visit(AbsUnExpr acceptor)
 	{
+		acceptor.expr.accept(this);
+
+		if(acceptor.oper == AbsUnExpr.ADD)
+		{
+			imcode.put(acceptor, imcode.get(acceptor.expr));
+		}
+		else if(acceptor.oper == AbsUnExpr.SUB)
+		{
+			imcode.put(acceptor, new ImcBINOP(ImcBINOP.SUB, new ImcCONST(0), (ImcExpr)imcode.get(acceptor.expr)));
+		}
+		else if(acceptor.oper == AbsUnExpr.MEM)
+		{
+			imcode.put(acceptor, ((ImcMEM)imcode.get(acceptor.expr)).expr);
+		}
+		else if(acceptor.oper == AbsUnExpr.VAL)
+		{
+			imcode.put(acceptor, new ImcMEM((ImcExpr)imcode.get(acceptor.expr)));
+		}
+		else if(acceptor.oper == AbsUnExpr.NOT)
+		{
+			imcode.put(acceptor, new ImcBINOP(ImcBINOP.EQU, (ImcExpr)imcode.get(acceptor.expr), new ImcCONST(0)));
+		}
 	}
 
 	public void visit(AbsVarDef acceptor)
