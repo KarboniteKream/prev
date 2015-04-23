@@ -90,7 +90,6 @@ public class ImcCodeGen implements Visitor
 		FrmLabel bodyLabel = FrmLabel.newLabel();
 		FrmLabel endLabel = FrmLabel.newLabel();
 
-		// TODO: Variable.
 		expressions.stmts.add(new ImcMOVE(new ImcMEM((ImcExpr)imcode.get(acceptor.count)), (ImcExpr)imcode.get(acceptor.lo)));
 		expressions.stmts.add(new ImcLABEL(startLabel));
 		expressions.stmts.add(new ImcCJUMP(new ImcBINOP(ImcBINOP.LTH, (ImcExpr)imcode.get(acceptor.count), (ImcExpr)imcode.get(acceptor.hi)), bodyLabel, endLabel));
@@ -123,9 +122,7 @@ public class ImcCodeGen implements Visitor
 	{
 		FrmFrame temp = frame;
 		frame = FrmDesc.getFrame(acceptor);
-		level++;
 		acceptor.expr.accept(this);
-		level--;
 		chunks.add(new ImcCodeChunk(frame, new ImcMOVE(new ImcMEM(new ImcTEMP(frame.RV)), (ImcExpr)imcode.get(acceptor.expr))));
 		frame = temp;
 	}
