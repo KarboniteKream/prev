@@ -66,6 +66,11 @@ public class ImcCodeGen implements Visitor
 			SemRecType record = (SemRecType)SymbDesc.getType(SymbDesc.getNameDef(acceptor.expr1));
 			int offset = 0;
 
+			if(record == null)
+			{
+				record = (SemRecType)SymbDesc.getType(acceptor.expr1);
+			}
+
 			for(int i = 0; i < record.getNumComps(); i++)
 			{
 				if(record.getCompName(i).equals(((AbsCompName)acceptor.expr2).name) == true)
@@ -89,10 +94,7 @@ public class ImcCodeGen implements Visitor
 	}
 
 	public void visit(AbsComp acceptor) {}
-
-	public void visit(AbsCompName acceptor)
-	{
-	}
+	public void visit(AbsCompName acceptor) {}
 
 	public void visit(AbsDefs acceptor)
 	{

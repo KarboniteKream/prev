@@ -3,6 +3,7 @@ var b : logical;
 var c : ^integer;
 var d : arr [10] arr [20] integer;
 var e : rec { id : integer, name : string, comps : arr [5] integer, data : logical };
+var f : rec { a : rec { b : integer, c : string}, b : integer };
 
 fun main(argc : integer) : integer =
 (
@@ -23,6 +24,9 @@ fun main(argc : integer) : integer =
 	d[3],
 	d[0][5],
 	e.comps[2] + e.id,
+	f.a,
+	f.a.c,
+	f.b,
 	m[1]
 )
 { where var i : integer; var j : integer; fun util(i : integer) : integer = i + j; var k : integer; var l : ^integer; var m : arr [2] integer }
