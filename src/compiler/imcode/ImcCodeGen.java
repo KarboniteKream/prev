@@ -34,7 +34,9 @@ public class ImcCodeGen implements Visitor
 		}
 		else if(acceptor.type == AbsAtomConst.STR)
 		{
-			// TODO
+			FrmLabel string = FrmLabel.newLabel();
+			chunks.add(new ImcDataChunk(string, (acceptor.value.length() - 2) * 8));
+			imcode.put(acceptor, new ImcMEM(new ImcNAME(string)));
 		}
 	}
 
@@ -45,7 +47,16 @@ public class ImcCodeGen implements Visitor
 		acceptor.expr1.accept(this);
 		acceptor.expr2.accept(this);
 
-		imcode.put(acceptor, new ImcBINOP(acceptor.oper, (ImcExpr)imcode.get(acceptor.expr1), (ImcExpr)imcode.get(acceptor.expr2)));
+		if(acceptor.oper == AbsBinExpr.ASSIGN)
+		{
+			ImcSEQ move = new ImcSEQ();
+			move.stmts.add(new ImcMOVE((ImcExpr)imcode.get(acceptor.expr1), (ImcExpr)imcode.get(acceptor.expr2)));
+			imcode.put(acceptor, new ImcESEQ(move, (ImcExpr)imcode.get(acceptor.expr1)));
+		}
+		else
+		{
+			imcode.put(acceptor, new ImcBINOP(acceptor.oper, (ImcExpr)imcode.get(acceptor.expr1), (ImcExpr)imcode.get(acceptor.expr2)));
+		}
 	}
 
 	public void visit(AbsComp acceptor) {}
