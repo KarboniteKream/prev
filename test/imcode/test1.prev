@@ -3,11 +3,16 @@ var b : logical;
 
 fun main(argc : integer) : integer =
 (
-	{ if true == true then 5 else 3 },
-	{ if true == false then 4 },
-	true | false,
-	1 + 2
+	#{ if true == true then 5 else 3 },
+	#{ if true == false then 4 },
+	#{ if true == false then { if false then 2 } else { if true then 3 } },
+	#{ while true : { if true then 2 else 7 } },
+	{ for argc = 0, 5, 1 : 0 },
+	#true | false,
+	a + i + j - k,
+	util(1)
 )
+{ where var i : integer; var j : integer; fun util(i : integer) : integer = i + j; var k : integer }
 
 # fun main(argc : integer) : integer =
 # (
