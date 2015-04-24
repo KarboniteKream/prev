@@ -1,5 +1,7 @@
 package compiler;
 
+import java.util.LinkedList;
+
 import compiler.lexan.*;
 import compiler.synan.*;
 import compiler.abstr.*;
@@ -7,6 +9,7 @@ import compiler.abstr.tree.*;
 import compiler.seman.*;
 import compiler.frames.*;
 import compiler.imcode.*;
+import compiler.lincode.*;
 
 /**
  * Osnovni razred prevajalnika, ki vodi izvajanje celotnega procesa prevajanja.
@@ -19,13 +22,13 @@ public class Main {
 	private static String sourceFileName;
 
 	/** Seznam vseh faz prevajalnika. */
-	private static String allPhases = "(lexan|synan|ast|seman|frames|imcode)";
+	private static String allPhases = "(lexan|synan|ast|seman|frames|imcode|lincode)";
 
 	/** Doloca zadnjo fazo prevajanja, ki se bo se izvedla. */
-	private static String execPhase = "imcode";
+	private static String execPhase = "lincode";
 
 	/** Doloca faze, v katerih se bodo izpisali vmesni rezultati. */
-	private static String dumpPhases = "imcode";
+	private static String dumpPhases = "lincode";
 
 	/**
 	 * Metoda, ki izvede celotni proces prevajanja.
@@ -106,6 +109,11 @@ public class Main {
 			source.accept(imcodegen);
 			imcode.dump(imcodegen.chunks);
 			if (execPhase.equals("imcode")) break;
+			// Linearizacija kode.
+			LinCode lincode = new LinCode(dumpPhases.contains("lincode"));
+			lincode.dump(imcodegen.chunks);
+			lincode.run(imcodegen.chunks);
+			if (execPhase.equals("lincode")) break;
 			
 			// Neznana faza prevajanja.
 			if (! execPhase.equals(""))
