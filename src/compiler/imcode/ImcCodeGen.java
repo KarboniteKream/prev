@@ -54,22 +54,26 @@ public class ImcCodeGen implements Visitor
 		if(acceptor.oper == AbsBinExpr.ASSIGN)
 		{
 			ImcSEQ move = new ImcSEQ();
-			move.stmts.add(new ImcMOVE(expr1, expr2));
-			imcode.put(acceptor, new ImcESEQ(move, expr1));
+			ImcTEMP temp = new ImcTEMP(new FrmTemp());
+			move.stmts.add(new ImcMOVE(temp, ((ImcMEM)expr1).expr));
+			move.stmts.add(new ImcMOVE(new ImcMEM(temp), expr2));
+			imcode.put(acceptor, new ImcESEQ(move, new ImcMEM(temp)));
 		}
 		else if(acceptor.oper == AbsBinExpr.ARR)
 		{
-			imcode.put(acceptor, new ImcMEM(new ImcBINOP(ImcBINOP.ADD, ((ImcMEM)expr1).expr, new ImcBINOP(ImcBINOP.MUL, expr2, new ImcCONST(((SemArrType)SymbDesc.getType(acceptor.expr1)).type.size())))));
+			imcode.put(acceptor, new ImcMEM(new ImcBINOP(ImcBINOP.ADD, ((ImcMEM)expr1).expr, new ImcBINOP(ImcBINOP.MUL, expr2, new ImcCONST(((SemArrType)SymbDesc.getType(acceptor.expr1).actualType()).type.size())))));
 		}
 		else if(acceptor.oper == AbsBinExpr.DOT)
 		{
-			SemRecType record = (SemRecType)SymbDesc.getType(SymbDesc.getNameDef(acceptor.expr1));
-			int offset = 0;
+			SemType type = SymbDesc.getType(SymbDesc.getNameDef(acceptor.expr1));
 
-			if(record == null)
+			if(type == null)
 			{
-				record = (SemRecType)SymbDesc.getType(acceptor.expr1);
+				type = SymbDesc.getType(acceptor.expr1);
 			}
+
+			SemRecType record = (SemRecType)type.actualType();
+			int offset = 0;
 
 			for(int i = 0; i < record.getNumComps(); i++)
 			{
@@ -81,11 +85,24 @@ public class ImcCodeGen implements Visitor
 				offset += record.getCompType(i).size();
 			}
 
+			if(expr1 instanceof ImcESEQ == true)
+			{
+				expr1 = ((ImcESEQ)expr1).expr;
+			}
+
 			imcode.put(acceptor, new ImcMEM(new ImcBINOP(ImcBINOP.ADD, ((ImcMEM)expr1).expr, new ImcCONST(offset))));
 		}
 		else if(acceptor.oper == AbsBinExpr.MOD)
 		{
-			imcode.put(acceptor, new ImcBINOP(ImcBINOP.SUB, expr1, new ImcBINOP(ImcBINOP.MUL, expr2, new ImcBINOP(ImcBINOP.DIV, expr1, expr2))));
+			ImcSEQ expressions = new ImcSEQ();
+
+			ImcTEMP left = new ImcTEMP(new FrmTemp());
+			ImcTEMP right = new ImcTEMP(new FrmTemp());
+
+			expressions.stmts.add(new ImcMOVE(left, expr1));
+			expressions.stmts.add(new ImcMOVE(right, expr2));
+
+			imcode.put(acceptor, new ImcESEQ(expressions, new ImcBINOP(ImcBINOP.SUB, left, new ImcBINOP(ImcBINOP.MUL, new ImcBINOP(ImcBINOP.DIV, left, right), right))));
 		}
 		else
 		{
@@ -132,13 +149,13 @@ public class ImcCodeGen implements Visitor
 		FrmLabel bodyLabel = FrmLabel.newLabel();
 		FrmLabel endLabel = FrmLabel.newLabel();
 
-		expressions.stmts.add(new ImcMOVE(new ImcMEM((ImcExpr)imcode.get(acceptor.count)), (ImcExpr)imcode.get(acceptor.lo)));
+		expressions.stmts.add(new ImcMOVE((ImcExpr)imcode.get(acceptor.count), (ImcExpr)imcode.get(acceptor.lo)));
 		expressions.stmts.add(new ImcLABEL(startLabel));
 		expressions.stmts.add(new ImcCJUMP(new ImcBINOP(ImcBINOP.LTH, (ImcExpr)imcode.get(acceptor.count), (ImcExpr)imcode.get(acceptor.hi)), bodyLabel, endLabel));
 		expressions.stmts.add(new ImcLABEL(bodyLabel));
 		ImcCode expression = imcode.get(acceptor.body);
 		expressions.stmts.add(expression instanceof ImcStmt == true ? (ImcStmt)expression : new ImcEXP((ImcExpr)expression));
-		expressions.stmts.add(new ImcMOVE(new ImcMEM((ImcExpr)imcode.get(acceptor.count)), new ImcBINOP(ImcBINOP.ADD, new ImcMEM((ImcExpr)imcode.get(acceptor.count)), (ImcExpr)imcode.get(acceptor.step))));
+		expressions.stmts.add(new ImcMOVE((ImcExpr)imcode.get(acceptor.count), new ImcBINOP(ImcBINOP.ADD, (ImcExpr)imcode.get(acceptor.count), (ImcExpr)imcode.get(acceptor.step))));
 		expressions.stmts.add(new ImcJUMP(startLabel));
 		expressions.stmts.add(new ImcLABEL(endLabel));
 
