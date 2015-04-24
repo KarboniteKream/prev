@@ -1,0 +1,10 @@
+fun main(argc: integer): integer = (
+    ^a,
+    {x = ^a},
+    x^,
+    !true,
+    3-5,
+    0
+) { where var x: ^integer };
+
+var a: integer

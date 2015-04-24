@@ -1,0 +1,8 @@
+var glob: integer;
+
+typ record: rec {a: integer, b: string};
+
+fun main(argc: integer): integer = (
+    f(argc),
+    (3, loc).a
+) { where fun f(floc:integer):integer = 3; var loc:record}

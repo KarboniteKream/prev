@@ -1,0 +1,7 @@
+var i: integer;
+fun main(argc: integer): integer = (
+    {for i=0,5,1:
+        main(i)
+    },
+    0
+)

@@ -1,0 +1,2 @@
+fun main(argc: integer): integer = f(argc);
+fun f(a: integer): integer = 1

@@ -1,0 +1,3 @@
+var a: integer;
+fun f(i: integer): integer = i+1;
+fun m(x: integer): integer = f(a) + f(x)

@@ -1,0 +1,8 @@
+var i: integer;
+fun main(argc: integer): integer = (
+    {while i > 5: (
+        main(i),
+        {i = i + 1}
+    )},
+    0
+)
