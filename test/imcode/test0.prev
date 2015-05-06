@@ -1,0 +1,7 @@
+fun main(argc : integer) : integer =
+(
+	(
+		{ if true then false }
+	),
+	0
+)
