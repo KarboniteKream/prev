@@ -1,5 +1,8 @@
 package compiler.seman;
 
+import java.util.*;
+
+import compiler.*;
 import compiler.Report;
 import compiler.abstr.*;
 import compiler.abstr.tree.*;
@@ -21,8 +24,41 @@ public class SemAn implements Visitor {
 	 * @param dump
 	 *            Ali se izpisujejo vmesni rezultati.
 	 */
-	public SemAn(boolean dump) {
+	public SemAn(boolean dump)
+	{
 		this.dump = dump;
+
+		Position position = new Position(0, 0);
+
+		Vector<AbsPar> parameters = new Vector<AbsPar>();
+		parameters.add(new AbsPar(position, "i", new AbsAtomType(position, AbsAtomType.INT)));
+
+		Vector<SemType> parameterTypes = new Vector<SemType>();
+		parameterTypes.add(new SemAtomType(SemAtomType.INT));
+
+		AbsAtomConst functionExpression = new AbsAtomConst(position, AbsAtomConst.INT, "0");
+		AbsAtomType functionType = new AbsAtomType(position, AbsAtomType.INT);
+
+		AbsFunDef get_int = new AbsFunDef(position, "get_int", parameters, functionType, functionExpression);
+		AbsFunDef put_int = new AbsFunDef(position, "put_int", parameters, functionType, functionExpression);
+		AbsFunDef put_nl = new AbsFunDef(position, "put_nl", parameters, functionType, functionExpression);
+
+		SemFunType type = new SemFunType(parameterTypes, new SemAtomType(SemAtomType.INT));
+
+		try
+		{
+			SymbTable.ins(get_int.name, get_int);
+			SymbTable.ins(put_int.name, put_int);
+			SymbTable.ins(put_nl.name, put_nl);
+
+			SymbDesc.setType(get_int, type);
+			SymbDesc.setType(put_int, type);
+			SymbDesc.setType(put_nl, type);
+		}
+		catch(SemIllegalInsertException e)
+		{
+			Report.error("Internal error. Unable to add built-in functions to the symbol table.");
+		}
 	}
 	
 	/**

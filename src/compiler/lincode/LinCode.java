@@ -72,7 +72,24 @@ public class LinCode
 
 	private Integer executeFunction(String function)
 	{
-		// TODO: Built-in functions.
+		if(function.equals("_get_int") == true)
+		{
+			return (new Scanner(System.in)).nextInt();
+		}
+		else if(function.equals("_put_int") == true)
+		{
+			System.out.print(load(SP + 8));
+			return 0;
+		}
+		else if(function.equals("_put_nl") == true)
+		{
+			for(int i = 0; i < load(SP + 8); i++)
+			{
+				System.out.println();
+			}
+
+			return 0;
+		}
 
 		ImcCodeChunk chunk = chunks.get(function);
 		LinkedList<ImcStmt> statements = ((ImcSEQ)(chunk.lincode)).stmts;

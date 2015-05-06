@@ -22,8 +22,17 @@ public class Frames implements Visitor {
 	 * @param dump
 	 *            Ali se izpisujejo vmesni rezultati.
 	 */
-	public Frames(boolean dump) {
+	public Frames(boolean dump)
+	{
 		this.dump = dump;
+
+		AbsFunDef get_int = (AbsFunDef)SymbTable.fnd("get_int");
+		AbsFunDef put_int = (AbsFunDef)SymbTable.fnd("put_int");
+		AbsFunDef put_nl = (AbsFunDef)SymbTable.fnd("put_nl");
+
+		FrmDesc.setFrame(get_int, new FrmFrame(get_int, 1));
+		FrmDesc.setFrame(put_int, new FrmFrame(put_int, 1));
+		FrmDesc.setFrame(put_nl, new FrmFrame(put_nl, 1));
 	}
 	
 	/**
