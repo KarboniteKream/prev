@@ -1,0 +1,8 @@
+fun main(i : integer) : integer =
+(
+	{ j = 2 },
+	put_int(j),
+	put_nl(2),
+	get_int(0)
+)
+{ where var j : integer }
