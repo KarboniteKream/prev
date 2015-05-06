@@ -4,6 +4,7 @@ import java.util.*;
 
 import compiler.*;
 import compiler.imcode.*;
+import compiler.frames.*;
 
 /**
  * Izracun lineariziranih fragmentov vmesne kode.
@@ -12,7 +13,14 @@ import compiler.imcode.*;
  */
 public class LinCode
 {
+	private HashMap<Integer, Integer> memory;
 	private HashMap<String, ImcCodeChunk> chunks;
+	private HashMap<String, Integer> temps;
+	private HashMap<String, Integer> labels;
+
+	private Integer SP;
+	private Integer FP;
+	private Integer HP;
 
 	/** Ali se izpisujejo vmesni rezultati. */
 	private boolean dump;
@@ -26,7 +34,14 @@ public class LinCode
 	public LinCode(boolean dump) {
 		this.dump = dump;
 
+		memory = new HashMap<Integer, Integer>();
 		chunks = new HashMap<String, ImcCodeChunk>();
+		temps = new HashMap<String, Integer>();
+		labels = new HashMap<String, Integer>();
+
+		SP = 65536;
+		FP = 65536;
+		HP = 1024;
 	}
 
 	/**
@@ -46,42 +61,86 @@ public class LinCode
 			}
 			else
 			{
-				// TODO
+				ImcDataChunk dataChunk = (ImcDataChunk)chunk;
+				labels.put(dataChunk.label.name(), HP);
+				HP += dataChunk.size;
 			}
 		}
 
-		executeFunction("main");
+		executeFunction("_main");
 	}
 
 	private Integer executeFunction(String function)
 	{
+		// TODO: Built-in functions.
+
 		ImcCodeChunk chunk = chunks.get(function);
-		return 0;
+		LinkedList<ImcStmt> statements = ((ImcSEQ)(chunk.lincode)).stmts;
+		FrmFrame frame = chunk.frame;
+		HashMap<String, Integer> oldTemps = temps;
+		temps = new HashMap<String, Integer>();
+
+		store(SP - frame.sizeLocs - 4, FP);
+		FP = SP;
+		SP = SP - frame.size();
+		store(frame.FP, FP);
+
+		for(int i = 0; i < statements.size(); i++)
+		{
+			FrmLabel label = executeStatement(statements.get(i));
+
+			if(label != null)
+			{
+				i = statements.indexOf(new ImcLABEL(label)) - 1;
+			}
+		}
+
+		SP = SP + frame.size();
+		FP = load(SP - frame.sizeLocs - 4);
+
+		Integer returnValue = load(frame.RV);
+		temps = oldTemps;
+
+		return returnValue;
 	}
 
-	private Integer executeStatement(ImcStmt statement)
+	private FrmLabel executeStatement(ImcStmt statement)
 	{
 		if(statement instanceof ImcCJUMP == true)
 		{
-
+			ImcCJUMP cjump = (ImcCJUMP)statement;
+			return (executeExpression(cjump.cond) != 0) ? cjump.trueLabel : cjump.falseLabel;
 		}
 		else if(statement instanceof ImcEXP == true)
 		{
-
+			executeExpression(((ImcEXP)statement).expr);
 		}
 		else if(statement instanceof ImcJUMP == true)
 		{
-
-		}
-		else if(statement instanceof ImcLABEL == true)
-		{
-
+			return ((ImcJUMP)statement).label;
 		}
 		else if(statement instanceof ImcMOVE == true)
 		{
+			ImcMOVE move = (ImcMOVE)statement;
 
+			if(move.dst instanceof ImcTEMP == true)
+			{
+				FrmTemp destination = (FrmTemp)((ImcTEMP)move.dst).temp;
+				Integer source = executeExpression(move.src);
+				store(destination, source);
+			}
+			else if(move.dst instanceof ImcMEM == true)
+			{
+				Integer destination = executeExpression(((ImcMEM)move.dst).expr);
+				Integer source = executeExpression(move.src);
+				store(destination, source);
+			}
+			else
+			{
+				Report.error("Invalid ImcMOVE statement.");
+			}
 		}
-		else
+		else if(statement instanceof ImcSEQ == true)
 		{
 			Report.error("Nested ImcSEQ is not allowed.");
 		}
@@ -108,14 +167,21 @@ public class LinCode
 				case ImcBINOP.GTH: return (left > right) ? 1 : 0;
 				case ImcBINOP.LEQ: return (left <= right) ? 1 : 0;
 				case ImcBINOP.GEQ: return (left >= right) ? 1 : 0;
-				// TODO: Test.
 				case ImcBINOP.AND: return (left * right != 0) ? 1 : 0;
 				case ImcBINOP.IOR: return (Math.abs(left) + Math.abs(right) > 0) ? 1 : 0;
 			}
 		}
 		else if(expression instanceof ImcCALL == true)
 		{
+			ImcCALL call = (ImcCALL)expression;
 
+			for(int i = 0, j = 0; i < call.args.size(); i++, j += 8)
+			{
+				Integer value = executeExpression(call.args.get(i));
+				store(SP + j, value);
+			}
+
+			return executeFunction(call.label.name());
 		}
 		else if(expression instanceof ImcCONST == true)
 		{
@@ -123,15 +189,15 @@ public class LinCode
 		}
 		else if(expression instanceof ImcMEM == true)
 		{
-
+			return load(executeExpression(((ImcMEM)expression).expr));
 		}
 		else if(expression instanceof ImcNAME == true)
 		{
-
+			return labels.get(((ImcNAME)expression).label.name());
 		}
 		else if(expression instanceof ImcTEMP == true)
 		{
-
+			return load(((ImcTEMP)expression).temp);
 		}
 		else
 		{
@@ -139,6 +205,28 @@ public class LinCode
 		}
 
 		return null;
+	}
+
+	private Integer load(Integer address)
+	{
+		Integer value = memory.get(address / 8);
+		return (value == null) ? 0 : value;
+	}
+
+	private Integer load(FrmTemp temp)
+	{
+		Integer value = temps.get(temp.name());
+		return (value == null) ? 0 : value;
+	}
+
+	private void store(Integer address, Integer value)
+	{
+		memory.put(address / 8, value);
+	}
+
+	private void store(FrmTemp temp, Integer value)
+	{
+		temps.put(temp.name(), value);
 	}
 
 	/**

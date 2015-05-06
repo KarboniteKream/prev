@@ -1,0 +1,17 @@
+var a : arr[10] integer;
+
+fun main(argc : integer, argv : ^string) : integer =
+(
+	{ a[5] = 6 },
+	{ i = 0 },
+	{ i = i + 5 },
+	{ if false then { i = 2 } else { i = 4 } },
+	# { j = true | true },
+	util(temp(a[5]))
+)
+{ where var i : integer; var j : logical; fun temp(j : integer) : integer = i };
+
+fun util(i : integer) : integer =
+(
+	{ i = i * 2 }
+)
