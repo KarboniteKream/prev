@@ -15,5 +15,5 @@ $ ./compile.sh PHASE PHASE/FILENAME
 ```
 
 ```
-PHASE/DUMP = lexan|synan|ast|seman|frames|imcode
+PHASE/DUMP = lexan|synan|ast|seman|frames|imcode|lincode
 ```
