@@ -21,6 +21,7 @@ public class LinCode
 	private Integer SP;
 	private Integer FP;
 	private Integer HP;
+	private Integer RV;
 
 	/** Ali se izpisujejo vmesni rezultati. */
 	private boolean dump;
@@ -42,6 +43,7 @@ public class LinCode
 		SP = 65536;
 		FP = 65536;
 		HP = 1024;
+		RV = 0;
 	}
 
 	/**
@@ -68,6 +70,9 @@ public class LinCode
 		}
 
 		executeFunction("_main");
+
+		System.out.println();
+		Report.report("Program returned " + RV + ".");
 	}
 
 	private Integer executeFunction(String function)
@@ -117,6 +122,7 @@ public class LinCode
 		FP = load(SP - frame.sizeLocs - 4);
 
 		Integer returnValue = load(frame.RV);
+		RV = returnValue;
 		temps = oldTemps;
 
 		return returnValue;

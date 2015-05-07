@@ -1,0 +1,18 @@
+
+var p : ^integer;
+var x : integer;
+
+var arP : ^integer;
+var ar  : arr [2] integer;
+
+fun main(i : integer) : integer =
+(
+    {x = 13},
+    {p = ^x},
+    put_int(p^),
+
+    {ar[0] = 1},
+    {ar[1] = 2},
+    {arP = ^ar[0]},
+    1
+);

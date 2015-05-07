@@ -1,0 +1,41 @@
+#fun main(i : integer) : integer = (
+#
+#    {i = get_int(0)},
+#    put_int(put_int({i = get_int(0)+get_int(0)})+put_nl(1)+put_int(i)+put_nl(1)),
+#    1
+#
+#);
+
+#var result : integer;
+#var outputArr : arr [100] integer;
+fun simpleRecursionTest(i : integer) : integer = (put_int(i), {if i == 0 then {z = 1337} else {z = simpleRecursionTest(i-1)} },z){where var z : integer};
+fun main(arg : integer) : integer =
+(
+    #{arg = get_int(0)},
+    #{tmp = get_int(0)},
+    #put_int(1),
+    #{result = arg * tmp},
+    #{for tmp = 0, 100, 1 : ({outputArr[tmp] = arg + tmp})},
+    #{for tmp = 0, 100, 1 : put_int(outputArr[tmp]+put_nl(1))},
+    #put_int(simpleRecursionTest(5)),
+    1
+)
+#{where
+#
+#        fun x (i : integer) : integer = 5;
+#        var tmp : integer;
+#        fun fib (i : integer) : integer =
+#        (
+#            {
+#                if i == 1 | i == 2 then
+#                {
+#                    return = 1
+#                }
+#                else
+#                {
+#                    return = fib(i - 1)# + fib(i - 2)
+#                }
+#            },
+#            return
+#        ){where var return : integer}
+#};

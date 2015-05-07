@@ -1,0 +1,14 @@
+var j:integer;
+fun main(i : integer) : integer =
+(
+	{j = get_int(i)},
+	{b = f(j)},
+	put_int(b),
+	0
+) { where fun f(k:integer) : integer =
+	(
+		{if k == 1 then {a = 1}
+		else {a = f(k-1)*k}},
+		a
+	) {where var a : integer};
+	var b : integer}

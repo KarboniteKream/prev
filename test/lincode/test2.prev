@@ -1,0 +1,5 @@
+fun main(i : integer) : integer =
+(
+	{if i != 0 then {z = 1337} else {z = main(i-1)} },
+	z
+){where var z : integer};

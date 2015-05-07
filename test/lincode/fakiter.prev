@@ -1,0 +1,9 @@
+var j : integer;
+var k : integer;
+fun main(i : integer) : integer = (
+	{j = get_int(i)},
+	{k = 1},
+	{for s = 1, j+1, 1 : {k = k*s}},
+	put_int(k),
+	0
+) {where var s : integer}
