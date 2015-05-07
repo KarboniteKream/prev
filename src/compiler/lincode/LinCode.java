@@ -23,6 +23,8 @@ public class LinCode
 	private Integer HP;
 	private Integer RV;
 
+	private Scanner in;
+
 	/** Ali se izpisujejo vmesni rezultati. */
 	private boolean dump;
 
@@ -44,6 +46,8 @@ public class LinCode
 		FP = 65536;
 		HP = 1024;
 		RV = 0;
+
+		in = new Scanner(System.in);
 	}
 
 	/**
@@ -79,7 +83,7 @@ public class LinCode
 	{
 		if(function.equals("_get_int") == true)
 		{
-			return (new Scanner(System.in)).nextInt();
+			return in.nextInt();
 		}
 		else if(function.equals("_put_int") == true)
 		{
