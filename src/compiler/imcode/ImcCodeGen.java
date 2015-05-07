@@ -123,24 +123,33 @@ public class ImcCodeGen implements Visitor
 
 	public void visit(AbsExprs acceptor)
 	{
+		for(int i = 0; i < acceptor.numExprs(); i++)
+		{
+			acceptor.expr(i).accept(this);
+		}
+
 		if(acceptor.numExprs() == 1)
 		{
-			acceptor.expr(0).accept(this);
 			imcode.put(acceptor, imcode.get(acceptor.expr(0)));
+			return;
+		}
+
+		ImcSEQ expressions = new ImcSEQ();
+
+		for(int i = 0; i < acceptor.numExprs() - 1; i++)
+		{
+			ImcCode expression = imcode.get(acceptor.expr(i));
+			expressions.stmts.add(expression instanceof ImcStmt == true ? (ImcStmt)expression : new ImcEXP((ImcExpr)expression));
+		}
+
+		if(imcode.get(acceptor.expr(acceptor.numExprs() - 1)) instanceof ImcExpr == true)
+		{
+			imcode.put(acceptor, new ImcESEQ(expressions, (ImcExpr)imcode.get(acceptor.expr(acceptor.numExprs() - 1))));
 		}
 		else
 		{
-			ImcSEQ expressions = new ImcSEQ();
-
-			for(int i = 0; i < acceptor.numExprs() - 1; i++)
-			{
-				acceptor.expr(i).accept(this);
-				ImcCode expression = imcode.get(acceptor.expr(i));
-				expressions.stmts.add(expression instanceof ImcStmt == true ? (ImcStmt)expression : new ImcEXP((ImcExpr)expression));
-			}
-
-			acceptor.expr(acceptor.numExprs() - 1).accept(this);
-			imcode.put(acceptor, new ImcESEQ(expressions, (ImcExpr)imcode.get(acceptor.expr(acceptor.numExprs() - 1))));
+			expressions.stmts.add((ImcStmt)imcode.get(acceptor.expr(acceptor.numExprs() - 1)));
+			imcode.put(acceptor, expressions);
 		}
 	}
 
