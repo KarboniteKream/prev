@@ -171,13 +171,18 @@ public class ImcCodeGen implements Visitor
 		FrmLabel bodyLabel = FrmLabel.newLabel();
 		FrmLabel endLabel = FrmLabel.newLabel();
 
+		ImcTEMP tempHi = new ImcTEMP(new FrmTemp());
+		ImcTEMP tempStep = new ImcTEMP(new FrmTemp());
+
 		expressions.stmts.add(new ImcMOVE((ImcExpr)imcode.get(acceptor.count), (ImcExpr)imcode.get(acceptor.lo)));
+		expressions.stmts.add(new ImcMOVE(tempHi, (ImcExpr)imcode.get(acceptor.hi)));
+		expressions.stmts.add(new ImcMOVE(tempStep, (ImcExpr)imcode.get(acceptor.step)));
 		expressions.stmts.add(new ImcLABEL(startLabel));
-		expressions.stmts.add(new ImcCJUMP(new ImcBINOP(ImcBINOP.LTH, (ImcExpr)imcode.get(acceptor.count), (ImcExpr)imcode.get(acceptor.hi)), bodyLabel, endLabel));
+		expressions.stmts.add(new ImcCJUMP(new ImcBINOP(ImcBINOP.LTH, (ImcExpr)imcode.get(acceptor.count), tempHi), bodyLabel, endLabel));
 		expressions.stmts.add(new ImcLABEL(bodyLabel));
 		ImcCode expression = imcode.get(acceptor.body);
 		expressions.stmts.add(expression instanceof ImcStmt == true ? (ImcStmt)expression : new ImcEXP((ImcExpr)expression));
-		expressions.stmts.add(new ImcMOVE((ImcExpr)imcode.get(acceptor.count), new ImcBINOP(ImcBINOP.ADD, (ImcExpr)imcode.get(acceptor.count), (ImcExpr)imcode.get(acceptor.step))));
+		expressions.stmts.add(new ImcMOVE((ImcExpr)imcode.get(acceptor.count), new ImcBINOP(ImcBINOP.ADD, (ImcExpr)imcode.get(acceptor.count), tempStep)));
 		expressions.stmts.add(new ImcJUMP(startLabel));
 		expressions.stmts.add(new ImcLABEL(endLabel));
 
