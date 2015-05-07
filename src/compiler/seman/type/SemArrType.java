@@ -11,7 +11,7 @@ public class SemArrType extends SemType {
 	public final SemType type;
 
 	/** Velikost tabele. */
-	public final int size;
+	public final long size;
 
 	/**
 	 * Ustvari nov opis tabelaricnega tipa.
@@ -21,7 +21,7 @@ public class SemArrType extends SemType {
 	 * @param size
 	 *            Velikost tabele.
 	 */
-	public SemArrType(int size, SemType type) {
+	public SemArrType(long size, SemType type) {
 		this.type = type;
 		this.size = size;
 	}
@@ -41,7 +41,7 @@ public class SemArrType extends SemType {
 		return "ARR(" + size + "," + type.toString() + ")";
 	}
 
-	public int size()
+	public long size()
 	{
 		return size * type.size();
 	}

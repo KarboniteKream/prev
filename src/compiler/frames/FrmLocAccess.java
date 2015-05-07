@@ -19,7 +19,7 @@ public class FrmLocAccess extends FrmAccess {
 	public final FrmFrame frame;
 
 	/** Odmik od FPja.  */
-	public final int offset;
+	public final long offset;
 
 	/** Ustvari nov dostop do lokalne spremenljivke.
 	 * 

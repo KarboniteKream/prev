@@ -78,9 +78,8 @@ public class SemFunType extends SemType {
 		return str;
 	}
 
-	public int size()
+	public long size()
 	{
-		// TODO
 		return 0;
 	}
 }

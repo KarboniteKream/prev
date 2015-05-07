@@ -10,14 +10,14 @@ import compiler.*;
 public class ImcCONST extends ImcExpr {
 
 	/** Vrednost.  */
-	public Integer value;
+	public Long value;
 
 	/**
 	 * Ustvari novo konstanto.
 	 * 
 	 * @param value Vrednost konstante.
 	 */
-	public ImcCONST(Integer value) {
+	public ImcCONST(Long value) {
 		this.value = value;
 	}
 

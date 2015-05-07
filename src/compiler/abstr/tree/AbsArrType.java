@@ -11,7 +11,7 @@ import compiler.abstr.*;
 public class AbsArrType extends AbsType {
 
 	/** Dolzina tabele. */
-	public final int length;
+	public final long length;
 
 	/** Tip elementa tabele. */
 	public final AbsType type;
@@ -26,7 +26,7 @@ public class AbsArrType extends AbsType {
 	 * @param type
 	 *            Tip elementa tabele.
 	 */
-	public AbsArrType(Position pos, int length, AbsType type) {
+	public AbsArrType(Position pos, long length, AbsType type) {
 		super(pos);
 		this.length = length;
 		this.type = type;

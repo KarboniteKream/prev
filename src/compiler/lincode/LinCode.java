@@ -13,15 +13,15 @@ import compiler.frames.*;
  */
 public class LinCode
 {
-	private HashMap<Integer, Integer> memory;
+	private HashMap<Long, Long> memory;
 	private HashMap<String, ImcCodeChunk> chunks;
-	private HashMap<String, Integer> temps;
-	private HashMap<String, Integer> labels;
+	private HashMap<String, Long> temps;
+	private HashMap<String, Long> labels;
 
-	private Integer SP;
-	private Integer FP;
-	private Integer HP;
-	private Integer RV;
+	private Long SP;
+	private Long FP;
+	private Long HP;
+	private Long RV;
 
 	private Scanner in;
 
@@ -37,15 +37,15 @@ public class LinCode
 	public LinCode(boolean dump) {
 		this.dump = dump;
 
-		memory = new HashMap<Integer, Integer>();
+		memory = new HashMap<Long, Long>();
 		chunks = new HashMap<String, ImcCodeChunk>();
-		temps = new HashMap<String, Integer>();
-		labels = new HashMap<String, Integer>();
+		temps = new HashMap<String, Long>();
+		labels = new HashMap<String, Long>();
 
-		SP = 65536;
-		FP = 65536;
-		HP = 1024;
-		RV = 0;
+		SP = 65536L;
+		FP = 65536L;
+		HP = 1024L;
+		RV = 0L;
 
 		in = new Scanner(System.in);
 	}
@@ -79,16 +79,16 @@ public class LinCode
 		Report.report("Program returned " + RV + ".");
 	}
 
-	private Integer executeFunction(String function)
+	private Long executeFunction(String function)
 	{
 		if(function.equals("_get_int") == true)
 		{
-			return in.nextInt();
+			return in.nextLong();
 		}
 		else if(function.equals("_put_int") == true)
 		{
 			System.out.print(load(SP + 8));
-			return 0;
+			return 0L;
 		}
 		else if(function.equals("_put_nl") == true)
 		{
@@ -97,15 +97,15 @@ public class LinCode
 				System.out.println();
 			}
 
-			return 0;
+			return 0L;
 		}
 
 		ImcCodeChunk chunk = chunks.get(function);
 		LinkedList<ImcStmt> statements = ((ImcSEQ)(chunk.lincode)).stmts;
 		FrmFrame frame = chunk.frame;
 
-		HashMap<String, Integer> oldTemps = temps;
-		temps = new HashMap<String, Integer>();
+		HashMap<String, Long> oldTemps = temps;
+		temps = new HashMap<String, Long>();
 
 		store(SP - frame.sizeLocs - 4, FP);
 		FP = SP;
@@ -125,7 +125,7 @@ public class LinCode
 		SP += frame.size();
 		FP = load(SP - frame.sizeLocs - 4);
 
-		Integer returnValue = load(frame.RV);
+		Long returnValue = load(frame.RV);
 		RV = returnValue;
 		temps = oldTemps;
 
@@ -154,13 +154,13 @@ public class LinCode
 			if(move.dst instanceof ImcTEMP == true)
 			{
 				FrmTemp destination = (FrmTemp)((ImcTEMP)move.dst).temp;
-				Integer source = executeExpression(move.src);
+				Long source = executeExpression(move.src);
 				store(destination, source);
 			}
 			else if(move.dst instanceof ImcMEM == true)
 			{
-				Integer destination = executeExpression(((ImcMEM)move.dst).expr);
-				Integer source = executeExpression(move.src);
+				Long destination = executeExpression(((ImcMEM)move.dst).expr);
+				Long source = executeExpression(move.src);
 				store(destination, source);
 			}
 			else
@@ -176,12 +176,12 @@ public class LinCode
 		return null;
 	}
 
-	private Integer executeExpression(ImcExpr expression)
+	private Long executeExpression(ImcExpr expression)
 	{
 		if(expression instanceof ImcBINOP == true)
 		{
-			Integer left = executeExpression(((ImcBINOP)expression).limc);
-			Integer right = executeExpression(((ImcBINOP)expression).rimc);
+			Long left = executeExpression(((ImcBINOP)expression).limc);
+			Long right = executeExpression(((ImcBINOP)expression).rimc);
 
 			switch(((ImcBINOP)expression).op)
 			{
@@ -189,14 +189,14 @@ public class LinCode
 				case ImcBINOP.SUB: return left - right;
 				case ImcBINOP.MUL: return left * right;
 				case ImcBINOP.DIV: return left / right;
-				case ImcBINOP.EQU: return (left == right) ? 1 : 0;
-				case ImcBINOP.NEQ: return (left != right) ? 1 : 0;
-				case ImcBINOP.LTH: return (left < right) ? 1 : 0;
-				case ImcBINOP.GTH: return (left > right) ? 1 : 0;
-				case ImcBINOP.LEQ: return (left <= right) ? 1 : 0;
-				case ImcBINOP.GEQ: return (left >= right) ? 1 : 0;
-				case ImcBINOP.AND: return (left * right != 0) ? 1 : 0;
-				case ImcBINOP.IOR: return (Math.abs(left) + Math.abs(right) > 0) ? 1 : 0;
+				case ImcBINOP.EQU: return (left == right) ? 1L : 0L;
+				case ImcBINOP.NEQ: return (left != right) ? 1L : 0L;
+				case ImcBINOP.LTH: return (left < right) ? 1L : 0L;
+				case ImcBINOP.GTH: return (left > right) ? 1L : 0L;
+				case ImcBINOP.LEQ: return (left <= right) ? 1L : 0L;
+				case ImcBINOP.GEQ: return (left >= right) ? 1L : 0L;
+				case ImcBINOP.AND: return (left * right != 0) ? 1L : 0L;
+				case ImcBINOP.IOR: return (Math.abs(left) + Math.abs(right) > 0) ? 1L : 0L;
 			}
 		}
 		else if(expression instanceof ImcCALL == true)
@@ -205,7 +205,7 @@ public class LinCode
 
 			for(int i = 0, j = 0; i < call.args.size(); i++, j += 8)
 			{
-				Integer value = executeExpression(call.args.get(i));
+				Long value = executeExpression(call.args.get(i));
 				store(SP + j, value);
 			}
 
@@ -235,24 +235,24 @@ public class LinCode
 		return null;
 	}
 
-	private Integer load(Integer address)
+	private Long load(Long address)
 	{
-		Integer value = memory.get(address / 8);
+		Long value = memory.get(address / 8);
 		return (value == null) ? 0 : value;
 	}
 
-	private Integer load(FrmTemp temp)
+	private Long load(FrmTemp temp)
 	{
-		Integer value = temps.get(temp.name());
+		Long value = temps.get(temp.name());
 		return (value == null) ? 0 : value;
 	}
 
-	private void store(Integer address, Integer value)
+	private void store(Long address, Long value)
 	{
 		memory.put(address / 8, value);
 	}
 
-	private void store(FrmTemp temp, Integer value)
+	private void store(FrmTemp temp, Long value)
 	{
 		temps.put(temp.name(), value);
 	}

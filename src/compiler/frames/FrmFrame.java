@@ -24,25 +24,25 @@ public class FrmFrame {
 	public int numPars;
 	
 	/** Velikost bloka parametrov.  */
-	public int sizePars;
+	public long sizePars;
 
 	/** Lokalne spremenljivke podprograma.  */
 	LinkedList<FrmLocAccess> locVars;
 
 	/** Velikost bloka lokalnih spremenljivk.  */
-	public int sizeLocs;
+	public long sizeLocs;
 
 	/** Velikost bloka za oldFP in retAddr.  */
 	public int sizeFPRA;
 
 	/** Velikost bloka zacasnih spremenljivk.  */
-	public int sizeTmps;
+	public long sizeTmps;
 
 	/** Velikost bloka registrov.  */
-	public int sizeRegs;
+	public long sizeRegs;
 
 	/** Velikost izhodnih argumentov.  */
-	public int sizeArgs;
+	public long sizeArgs;
 
 	/** Kazalec FP.  */
 	public FrmTemp FP;
@@ -73,7 +73,7 @@ public class FrmFrame {
 	}
 
 	/** Velikost klicnega zapisa.  */
-	public int size() {
+	public long size() {
 		return sizeLocs + sizeFPRA + sizeTmps + sizeRegs + sizeArgs;
 	}
 

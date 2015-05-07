@@ -231,7 +231,7 @@ public class SynAn {
 				String size = prevSymbol.lexeme;
 				check(Token.RBRACKET);
 				AbsType arrType = parse_type();
-				type = new AbsArrType(new Position(position, prevSymbol.position), Integer.parseInt(size), arrType);
+				type = new AbsArrType(new Position(position, prevSymbol.position), Long.parseLong(size), arrType);
 			break;
 
 			case Token.KW_REC:

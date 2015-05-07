@@ -13,7 +13,7 @@ public class FrmCmpAccess extends FrmAccess {
 	public AbsComp cmp;
 
 	/** Odmik od zacentega naslova strukture.  */
-	public int offset;
+	public long offset;
 
 	/**
 	 * Ustvari nov dostop do komponente zapisa.
@@ -21,7 +21,7 @@ public class FrmCmpAccess extends FrmAccess {
 	 * @param cmp Komponenta zapisa.
 	 * @param offset Odmik od zacetnega naslova strukture.
 	 */
-	public FrmCmpAccess(AbsComp cmp, int offset) {
+	public FrmCmpAccess(AbsComp cmp, long offset) {
 		this.cmp = cmp;
 		this.offset = offset;
 	}

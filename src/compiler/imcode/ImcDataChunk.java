@@ -14,7 +14,7 @@ public class ImcDataChunk extends ImcChunk {
 	public FrmLabel label;
 
 	/** Velikost spremenljivke v pomnilniku.  */
-	public int size;
+	public long size;
 
 	/**
 	 * Ustvari novfragment podatkov.
@@ -22,7 +22,7 @@ public class ImcDataChunk extends ImcChunk {
 	 * @param label Labela podatka.
 	 * @param size Velikost podatka.
 	 */
-	public ImcDataChunk(FrmLabel label, int size) {
+	public ImcDataChunk(FrmLabel label, long size) {
 		this.label = label;
 		this.size = size;
 	}

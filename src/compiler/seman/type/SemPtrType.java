@@ -33,7 +33,7 @@ public class SemPtrType extends SemType {
 		return "PTR(" + type.toString() + ")";
 	}
 
-	public int size()
+	public long size()
 	{
 		return 8;
 	}

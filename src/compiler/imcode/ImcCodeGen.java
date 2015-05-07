@@ -27,11 +27,11 @@ public class ImcCodeGen implements Visitor
 	{
 		if(acceptor.type == AbsAtomConst.INT)
 		{
-			imcode.put(acceptor, new ImcCONST(Integer.parseInt(acceptor.value)));
+			imcode.put(acceptor, new ImcCONST(Long.parseLong(acceptor.value)));
 		}
 		else if(acceptor.type == AbsAtomConst.LOG)
 		{
-			imcode.put(acceptor, new ImcCONST(acceptor.value.equals("true") == true ? 1 : 0));
+			imcode.put(acceptor, new ImcCONST(acceptor.value.equals("true") == true ? 1L : 0L));
 		}
 		else if(acceptor.type == AbsAtomConst.STR)
 		{
@@ -78,7 +78,7 @@ public class ImcCodeGen implements Visitor
 			}
 
 			SemRecType record = (SemRecType)type.actualType();
-			int offset = 0;
+			long offset = 0;
 
 			for(int i = 0; i < record.getNumComps(); i++)
 			{
@@ -273,7 +273,7 @@ public class ImcCodeGen implements Visitor
 		}
 		else if(acceptor.oper == AbsUnExpr.SUB)
 		{
-			imcode.put(acceptor, new ImcBINOP(ImcBINOP.SUB, new ImcCONST(0), (ImcExpr)imcode.get(acceptor.expr)));
+			imcode.put(acceptor, new ImcBINOP(ImcBINOP.SUB, new ImcCONST(0L), (ImcExpr)imcode.get(acceptor.expr)));
 		}
 		else if(acceptor.oper == AbsUnExpr.MEM)
 		{
@@ -285,7 +285,7 @@ public class ImcCodeGen implements Visitor
 		}
 		else if(acceptor.oper == AbsUnExpr.NOT)
 		{
-			imcode.put(acceptor, new ImcBINOP(ImcBINOP.EQU, (ImcExpr)imcode.get(acceptor.expr), new ImcCONST(0)));
+			imcode.put(acceptor, new ImcBINOP(ImcBINOP.EQU, (ImcExpr)imcode.get(acceptor.expr), new ImcCONST(0L)));
 		}
 	}
 

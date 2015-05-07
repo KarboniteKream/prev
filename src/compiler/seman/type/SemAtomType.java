@@ -48,7 +48,7 @@ public class SemAtomType extends SemType {
 		return "";
 	}
 
-	public int size()
+	public long size()
 	{
 		return 8;
 	}

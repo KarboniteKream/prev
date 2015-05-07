@@ -18,7 +18,7 @@ public class FrmParAccess extends FrmAccess {
 	public FrmFrame frame;
 
 	/** Odmik od FPja.  */
-	public int offset;
+	public long offset;
 
 	/** Ustvari nov dostop do parametra.
 	 * 
