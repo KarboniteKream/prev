@@ -94,12 +94,13 @@ public class LinCode
 		ImcCodeChunk chunk = chunks.get(function);
 		LinkedList<ImcStmt> statements = ((ImcSEQ)(chunk.lincode)).stmts;
 		FrmFrame frame = chunk.frame;
+
 		HashMap<String, Integer> oldTemps = temps;
 		temps = new HashMap<String, Integer>();
 
 		store(SP - frame.sizeLocs - 4, FP);
 		FP = SP;
-		SP = SP - frame.size();
+		SP -= frame.size();
 		store(frame.FP, FP);
 
 		for(int i = 0; i < statements.size(); i++)
@@ -112,7 +113,7 @@ public class LinCode
 			}
 		}
 
-		SP = SP + frame.size();
+		SP += frame.size();
 		FP = load(SP - frame.sizeLocs - 4);
 
 		Integer returnValue = load(frame.RV);
@@ -216,7 +217,7 @@ public class LinCode
 		{
 			return load(((ImcTEMP)expression).temp);
 		}
-		else
+		else if(expression instanceof ImcESEQ == true)
 		{
 			Report.error("Nested ImcESEQ is not allowed.");
 		}
