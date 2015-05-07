@@ -123,17 +123,25 @@ public class ImcCodeGen implements Visitor
 
 	public void visit(AbsExprs acceptor)
 	{
-		ImcSEQ expressions = new ImcSEQ();
-
-		for(int i = 0; i < acceptor.numExprs() - 1; i++)
+		if(acceptor.numExprs() == 1)
 		{
-			acceptor.expr(i).accept(this);
-			ImcCode expression = imcode.get(acceptor.expr(i));
-			expressions.stmts.add(expression instanceof ImcStmt == true ? (ImcStmt)expression : new ImcEXP((ImcExpr)expression));
+			acceptor.expr(0).accept(this);
+			imcode.put(acceptor, imcode.get(acceptor.expr(0)));
 		}
+		else
+		{
+			ImcSEQ expressions = new ImcSEQ();
 
-		acceptor.expr(acceptor.numExprs() - 1).accept(this);
-		imcode.put(acceptor, new ImcESEQ(expressions, (ImcExpr)imcode.get(acceptor.expr(acceptor.numExprs() - 1))));
+			for(int i = 0; i < acceptor.numExprs() - 1; i++)
+			{
+				acceptor.expr(i).accept(this);
+				ImcCode expression = imcode.get(acceptor.expr(i));
+				expressions.stmts.add(expression instanceof ImcStmt == true ? (ImcStmt)expression : new ImcEXP((ImcExpr)expression));
+			}
+
+			acceptor.expr(acceptor.numExprs() - 1).accept(this);
+			imcode.put(acceptor, new ImcESEQ(expressions, (ImcExpr)imcode.get(acceptor.expr(acceptor.numExprs() - 1))));
+		}
 	}
 
 	public void visit(AbsFor acceptor)
