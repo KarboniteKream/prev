@@ -61,6 +61,11 @@ public class ImcCodeGen implements Visitor
 		}
 		else if(acceptor.oper == AbsBinExpr.ARR)
 		{
+			if(expr1 instanceof ImcESEQ == true)
+			{
+				expr1 = ((ImcESEQ)expr1).expr;
+			}
+
 			imcode.put(acceptor, new ImcMEM(new ImcBINOP(ImcBINOP.ADD, ((ImcMEM)expr1).expr, new ImcBINOP(ImcBINOP.MUL, expr2, new ImcCONST(((SemArrType)SymbDesc.getType(acceptor.expr1).actualType()).type.size())))));
 		}
 		else if(acceptor.oper == AbsBinExpr.DOT)
