@@ -75,7 +75,6 @@ public class LinCode
 
 		executeFunction("_main");
 
-		System.out.println();
 		Report.report("Program returned " + RV + ".");
 	}
 
