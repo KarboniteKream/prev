@@ -1,7 +1,10 @@
 package compiler.imcode;
 
+import java.util.*;
+
 import compiler.*;
 import compiler.frames.*;
+import compiler.asmcode.*;
 
 /**
  * Fragment kode.
@@ -19,6 +22,9 @@ public class ImcCodeChunk extends ImcChunk {
 	/** Linearna vmesna koda.  */
 	public ImcStmt lincode;
 
+	/** Strojna koda.  */
+	public LinkedList<AsmInstr> asmcode;
+
 	/**
 	 * Ustvari nov fragment kode.
 	 * 
@@ -29,6 +35,7 @@ public class ImcCodeChunk extends ImcChunk {
 		this.frame = frame;
 		this.imcode = imcode;
 		this.lincode = imcode.linear();
+		this.asmcode = null;
 	}
 
 	@Override

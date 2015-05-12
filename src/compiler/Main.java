@@ -22,13 +22,13 @@ public class Main {
 	private static String sourceFileName;
 
 	/** Seznam vseh faz prevajalnika. */
-	private static String allPhases = "(lexan|synan|ast|seman|frames|imcode|lincode)";
+	private static String allPhases = "(lexan|synan|ast|seman|frames|imcode|lincode|asmcode)";
 
 	/** Doloca zadnjo fazo prevajanja, ki se bo se izvedla. */
-	private static String execPhase = "lincode";
+	private static String execPhase = "asmcode";
 
 	/** Doloca faze, v katerih se bodo izpisali vmesni rezultati. */
-	private static String dumpPhases = "lincode";
+	private static String dumpPhases = "asmcode";
 
 	/**
 	 * Metoda, ki izvede celotni proces prevajanja.
@@ -114,6 +114,9 @@ public class Main {
 			lincode.dump(imcodegen.chunks);
 			lincode.run(imcodegen.chunks);
 			if (execPhase.equals("lincode")) break;
+			// Generiranje strojnih ukazov.
+			// TODO
+			if (execPhase.equals("asmcode")) break;
 			
 			// Neznana faza prevajanja.
 			if (! execPhase.equals(""))
