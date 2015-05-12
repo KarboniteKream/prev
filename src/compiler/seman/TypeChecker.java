@@ -132,11 +132,6 @@ public class TypeChecker implements Visitor
 			break;
 
 			case AbsBinExpr.ASSIGN:
-				if(acceptor.expr1 instanceof AbsVarName == false)
-				{
-					Report.warning(acceptor.expr1.position, "Expected VARIABLE, found " + type1.actualType() + ".");
-				}
-
 				if(type1.sameStructureAs(logical) == true)
 				{
 					if(type2.sameStructureAs(logical) == false)
