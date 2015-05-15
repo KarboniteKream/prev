@@ -34,7 +34,7 @@ public class ImcCodeChunk extends ImcChunk {
 	public ImcCodeChunk(FrmFrame frame, ImcStmt imcode) {
 		this.frame = frame;
 		this.imcode = imcode;
-		this.lincode = imcode.linear();
+		this.lincode = null;
 		this.asmcode = null;
 	}
 
