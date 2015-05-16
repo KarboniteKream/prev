@@ -111,6 +111,7 @@ public class Main {
 			if (execPhase.equals("imcode")) break;
 			// Linearizacija kode.
 			LinCode lincode = new LinCode(dumpPhases.contains("lincode"));
+			lincode.generate(imcodegen.chunks);
 			lincode.dump(imcodegen.chunks);
 			lincode.run(imcodegen.chunks);
 			if (execPhase.equals("lincode")) break;

@@ -50,6 +50,18 @@ public class LinCode
 		in = new Scanner(System.in);
 	}
 
+	public void generate(LinkedList<ImcChunk> chunks)
+	{
+		for(ImcChunk chunk : chunks)
+		{
+			if(chunk instanceof ImcCodeChunk == true)
+			{
+				ImcCodeChunk codeChunk = (ImcCodeChunk)chunk;
+				codeChunk.lincode = codeChunk.imcode.linear();
+			}
+		}
+	}
+
 	/**
 	 * Izvede program s klicem funkcije 'main'.
 	 * 
@@ -63,12 +75,6 @@ public class LinCode
 			if(chunk instanceof ImcCodeChunk == true)
 			{
 				ImcCodeChunk codeChunk = (ImcCodeChunk)chunk;
-
-				if(codeChunk.lincode == null)
-				{
-					codeChunk.lincode = codeChunk.imcode.linear();
-				}
-
 				this.chunks.put(codeChunk.frame.label.name(), codeChunk);
 			}
 			else
@@ -270,15 +276,6 @@ public class LinCode
 	 *            Seznam fragmentov vmesne kode.
 	 */
 	public void dump(LinkedList<ImcChunk> chunks) {
-		for(ImcChunk chunk : chunks)
-		{
-			if(chunk instanceof ImcCodeChunk == true)
-			{
-				ImcCodeChunk codeChunk = (ImcCodeChunk)chunk;
-				codeChunk.lincode = codeChunk.imcode.linear();
-			}
-		}
-
 		if (!dump)
 			return;
 		if (Report.dumpFile() == null)
