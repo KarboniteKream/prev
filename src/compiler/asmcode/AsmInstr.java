@@ -38,7 +38,7 @@ public abstract class AsmInstr {
 	public LinkedList<FrmLabel> labels;
 
 	/**
-	 * Opis ukaza strojen kode.
+	 * Opis ukaza strojne kode.
 	 * 
 	 * @param assem
 	 *            Zankovna predstavitev ukaza (glej zgoraj).

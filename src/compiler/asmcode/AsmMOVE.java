@@ -3,7 +3,7 @@ package compiler.asmcode;
 import compiler.frames.*;
 
 /**
- * Opis ukazov za prenos vrednosti ene za"casne spremenljivke v drugo.
+ * Opis ukazov za prenos vrednosti ene zacasne spremenljivke v drugo.
  * 
  * @author sliva
  */
