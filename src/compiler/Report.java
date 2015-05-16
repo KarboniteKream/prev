@@ -157,7 +157,7 @@ public class Report {
 	}
 
 	/**
-	 * Izpise vrstico na datoteko z vmesniki rezultati zamaknjeno v desno.
+	 * Izpise vrstico na datoteko z vmesnimi rezultati, zamaknjeno v desno.
 	 *
 	 * @param indent
 	 *            Sirina zamika.
