@@ -1,0 +1,19 @@
+fun rec_fibb(n:integer):integer=
+  ({if (n==1)|(n==2) then {fibb=1} else {fibb=rec_fibb(n-1)+rec_fibb(n-2)}},
+   fibb)
+  {where var fibb:integer};
+fun itr_fibb(n:integer):integer=
+  ({fibb1=1},{fibb2=1},
+   {if n>1 then
+      {for i=1,n,1:
+         ({tmp=fibb1},{fibb1=fibb2},{fibb2=tmp+fibb2})
+         {where var tmp:integer}}
+      {where var i:integer}},
+   fibb1)
+  {where var fibb1:integer;
+         var fibb2:integer};
+fun main(argc:integer):integer=
+  ({for n=1,10,1:(put_int(rec_fibb(n)),put_nl(1))},
+   {for n=1,10,1:(put_int(itr_fibb(n)),put_nl(1))},
+   0)
+  {where var n:integer}

@@ -1,0 +1,2 @@
+fun main(argc:integer):integer=
+  (put_int(5),put_nl(1),3)

@@ -10,6 +10,7 @@ import compiler.seman.*;
 import compiler.frames.*;
 import compiler.imcode.*;
 import compiler.lincode.*;
+import compiler.asmcode.*;
 
 /**
  * Osnovni razred prevajalnika, ki vodi izvajanje celotnega procesa prevajanja.
@@ -116,7 +117,9 @@ public class Main {
 			lincode.run(imcodegen.chunks);
 			if (execPhase.equals("lincode")) break;
 			// Generiranje strojnih ukazov.
-			// TODO
+			AsmCode asmcode = new AsmCode(dumpPhases.contains("asmcode"));
+			asmcode.generate(imcodegen.chunks);
+			asmcode.dump(imcodegen.chunks);
 			if (execPhase.equals("asmcode")) break;
 			
 			// Neznana faza prevajanja.

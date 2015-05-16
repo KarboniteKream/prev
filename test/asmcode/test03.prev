@@ -1,0 +1,21 @@
+fun primes(nums:^arr[100]logical):integer=
+  ({ps=0},
+   {for n=1,99,1:
+      {if is_prime(n) then ({nums^[n]=true },{ps=ps+1})
+                      else ({nums^[n]=false},{ps=ps+0})}}
+   {where var n:integer},
+   ps)
+  {where var ps:integer;
+         fun is_prime(n:integer):logical=
+           ({p=true},
+            {for i=2,n,1:{if n%2==0 then {p=false}}},
+            p)
+           {where var p:logical;
+                  var i:integer}};
+fun main(argc:integer):integer=
+  (put_int(primes(^nums)),
+   {for n=1,99,1:
+      {if nums[n] then (put_int(n),put_nl(1))}},
+   0)
+  {where var nums:arr[100]logical;
+         var n:integer}
