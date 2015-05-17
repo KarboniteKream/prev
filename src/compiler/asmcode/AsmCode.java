@@ -177,7 +177,7 @@ public class AsmCode
 		{
 			defs.add(temp = new FrmTemp());
 			labels.add(((ImcNAME)expression).label);
-			asmcode.add(new AsmOPER("GETA `d0, `l0", defs, uses, labels));
+			asmcode.add(new AsmOPER("LDA `d0, `l0", defs, uses, labels));
 		}
 
 		return temp;
