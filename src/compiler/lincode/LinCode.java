@@ -70,6 +70,11 @@ public class LinCode
 	 */
 	public void run(LinkedList<ImcChunk> chunks)
 	{
+		if(dump == false)
+		{
+			return;
+		}
+
 		for(ImcChunk chunk : chunks)
 		{
 			if(chunk instanceof ImcCodeChunk == true)
@@ -85,9 +90,14 @@ public class LinCode
 			}
 		}
 
+		if(this.chunks.get("_main") == null)
+		{
+			Report.error("Function main() could not be found.");
+		}
+
 		executeFunction("_main");
 
-		Report.report("Program returned " + RV + ".");
+		System.out.printf("Program returned %d.\n", RV);
 	}
 
 	private Long executeFunction(String function)
