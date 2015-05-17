@@ -25,6 +25,7 @@ public class AsmCode
 			{
 				ImcCodeChunk codeChunk = (ImcCodeChunk)chunk;
 				asmcode = new LinkedList<AsmInstr>();
+				asmcode.add(new AsmLABEL("`l0:", codeChunk.frame.label));
 
 				for(ImcStmt statement : ((ImcSEQ)codeChunk.lincode).stmts)
 				{
@@ -73,10 +74,7 @@ public class AsmCode
 		{
 			asmcode.add(new AsmLABEL("`l0:", ((ImcLABEL)statement).label));
 		}
-		else if(statement instanceof ImcEXP == true)
-		{
-		}
-		else
+		else if(statement instanceof ImcSEQ == true)
 		{
 			Report.error("Nested ImcSEQ is not allowed.");
 		}
@@ -222,7 +220,7 @@ public class AsmCode
 		else if(expression instanceof ImcCALL == true)
 		{
 		}
-		else
+		else if(expression instanceof ImcESEQ == true)
 		{
 			Report.error("Nested ImcESEQ is not allowed.");
 		}
@@ -242,10 +240,17 @@ public class AsmCode
 			return;
 		}
 
+		int i = 0;
+
 		for(ImcChunk chunk : chunks)
 		{
 			if(chunk instanceof ImcCodeChunk == true)
 			{
+				if(i++ > 0)
+				{
+					Report.dump(0, "");
+				}
+
 				ImcCodeChunk codeChunk = (ImcCodeChunk)chunk;
 
 				for(AsmInstr instr : codeChunk.asmcode)
