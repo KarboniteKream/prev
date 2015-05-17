@@ -48,12 +48,13 @@ public class AsmCode
 
 			if(move.dst instanceof ImcMEM == true)
 			{
+				defs.add(parse(((ImcMEM)move.dst).expr));
+				uses.add(parse(move.src));
+				asmcode.add(new AsmOPER("STOI `s0, `d0, 0", defs, uses));
 			}
 			else if(move.dst instanceof ImcTEMP == true)
 			{
-			}
-			else if(move.dst instanceof ImcNAME == true)
-			{
+				asmcode.add(new AsmMOVE("ADDI `d0, `s0, 0", parse(move.dst), parse(move.src)));
 			}
 		}
 		else if(statement instanceof ImcCJUMP == true)
@@ -211,6 +212,9 @@ public class AsmCode
 		}
 		else if(expression instanceof ImcMEM == true)
 		{
+			uses.add(parse(((ImcMEM)expression).expr));
+			defs.add(temp = new FrmTemp());
+			asmcode.add(new AsmOPER("LDOI `d0, `s0, 0", defs, uses));
 		}
 		else if(expression instanceof ImcNAME == true)
 		{
