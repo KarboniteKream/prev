@@ -134,33 +134,30 @@ public class AsmCode
 
 			if(oper.equals("CMP") == true)
 			{
-				uses = defs;
-				defs = new LinkedList<FrmTemp>(Arrays.asList(temp = new FrmTemp()));
-
 				switch(binop.op)
 				{
 					case ImcBINOP.EQU:
-						asmcode.add(new AsmOPER("ZSZI `d0, `s0, 1", defs, uses));
+						asmcode.add(new AsmOPER("ZSZI `d0, `s0, 1", defs, defs));
 					break;
 
 					case ImcBINOP.NEQ:
-						asmcode.add(new AsmOPER("ZSNZI `d0, `s0, 1", defs, uses));
+						asmcode.add(new AsmOPER("ZSNZI `d0, `s0, 1", defs, defs));
 					break;
 
 					case ImcBINOP.LTH:
-						asmcode.add(new AsmOPER("ZSNI `d0, `s0, 1", defs, uses));
+						asmcode.add(new AsmOPER("ZSNI `d0, `s0, 1", defs, defs));
 					break;
 
 					case ImcBINOP.LEQ:
-						asmcode.add(new AsmOPER("ZSNPI `d0, `s0, 1", defs, uses));
+						asmcode.add(new AsmOPER("ZSNPI `d0, `s0, 1", defs, defs));
 					break;
 
 					case ImcBINOP.GTH:
-						asmcode.add(new AsmOPER("ZSPI `d0, `s0, 1", defs, uses));
+						asmcode.add(new AsmOPER("ZSPI `d0, `s0, 1", defs, defs));
 					break;
 
 					case ImcBINOP.GEQ:
-						asmcode.add(new AsmOPER("ZSNNI `d0, `s0, 1", defs, uses));
+						asmcode.add(new AsmOPER("ZSNNI `d0, `s0, 1", defs, defs));
 					break;
 				}
 			}
@@ -174,13 +171,13 @@ public class AsmCode
 			long value = ((ImcCONST)expression).value;
 
 			defs.add(temp = new FrmTemp());
-			uses.add(new FrmTemp());
-			uses.add(temp);
-
 			asmcode.add(new AsmOPER("SETL `d0, " + (value & 0xFFFFL), defs, null));
 
 			if(value > 0xFFFFL)
 			{
+				uses.add(new FrmTemp());
+				uses.add(temp);
+
 				asmcode.add(new AsmOPER("SETML `d0, " + ((value & 0xFFFF0000L) >> 16), uses, null));
 				asmcode.add(new AsmOPER("OR `d0, `s0, `s1", defs, uses));
 			}
@@ -196,6 +193,9 @@ public class AsmCode
 				asmcode.add(new AsmOPER("SETH `d0, " + ((value & 0xFFFF000000000000L) >> 48), uses, null));
 				asmcode.add(new AsmOPER("OR `d0, `s0, `s1", defs, uses));
 			}
+		}
+		else if(expression instanceof ImcMEM == true)
+		{
 		}
 		else if(expression instanceof ImcNAME == true)
 		{
