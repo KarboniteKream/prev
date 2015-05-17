@@ -32,6 +32,15 @@ public class AsmCode
 					parse(statement);
 				}
 
+				if(codeChunk.frame.label.name().equals("_main") == true)
+				{
+					asmcode.add(new AsmOPER("TRAP 0, Halt, 0", null, null));
+				}
+				else
+				{
+					asmcode.add(new AsmOPER("POP 1, 0", null, null));
+				}
+
 				codeChunk.asmcode = asmcode;
 			}
 		}
@@ -55,7 +64,7 @@ public class AsmCode
 			}
 			else if(move.dst instanceof ImcTEMP == true)
 			{
-				asmcode.add(new AsmMOVE("ADDI `d0, `s0, 0", parse(move.dst), parse(move.src)));
+				asmcode.add(new AsmMOVE("SET `d0, `s0", parse(move.dst), parse(move.src)));
 			}
 		}
 		else if(statement instanceof ImcCJUMP == true)
@@ -219,6 +228,18 @@ public class AsmCode
 		}
 		else if(expression instanceof ImcCALL == true)
 		{
+			ImcCALL call = (ImcCALL)expression;
+
+			asmcode.add(new AsmMOVE("SET `d0, `s0", temp = new FrmTemp(), ((ImcTEMP)call.args.get(0)).temp));
+
+			for(int i = 1; i < call.args.size(); i++)
+			{
+				asmcode.add(new AsmMOVE("SET `d0, `s0", new FrmTemp(), ((ImcTEMP)call.args.get(i)).temp));
+			}
+
+			uses.add(temp);
+			labels.add(call.label);
+			asmcode.add(new AsmOPER("PUSHJ `s0, `l0", null, uses, labels));
 		}
 		else if(expression instanceof ImcESEQ == true)
 		{
