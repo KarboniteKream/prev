@@ -44,9 +44,24 @@ public class AsmCode
 
 		if(statement instanceof ImcMOVE == true)
 		{
+			ImcMOVE move = (ImcMOVE)statement;
+
+			if(move.dst instanceof ImcMEM == true)
+			{
+			}
+			else if(move.dst instanceof ImcTEMP == true)
+			{
+			}
+			else if(move.dst instanceof ImcNAME == true)
+			{
+			}
 		}
 		else if(statement instanceof ImcCJUMP == true)
 		{
+			uses.add(parse(((ImcCJUMP)statement).cond));
+			labels.add(((ImcCJUMP)statement).trueLabel);
+
+			asmcode.add(new AsmOPER("BNZ `s0, `l0", null, uses, labels));
 		}
 		else if(statement instanceof ImcJUMP == true)
 		{
