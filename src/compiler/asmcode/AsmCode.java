@@ -34,11 +34,11 @@ public class AsmCode
 
 				if(codeChunk.frame.label.name().equals("_main") == true)
 				{
-					asmcode.add(new AsmOPER("TRAP 0, Halt, 0", null, null));
+					asmcode.add(new AsmOPER("TRAP", "0, Halt, 0", null, null));
 				}
 				else
 				{
-					asmcode.add(new AsmOPER("POP 1, 0", null, null));
+					asmcode.add(new AsmOPER("POP", "1, 0", null, null));
 				}
 
 				codeChunk.asmcode = asmcode;
@@ -60,11 +60,11 @@ public class AsmCode
 			{
 				defs.add(parse(((ImcMEM)move.dst).expr));
 				uses.add(parse(move.src));
-				asmcode.add(new AsmOPER("STOI `s0, `d0, 0", defs, uses));
+				asmcode.add(new AsmOPER("STOI", "`s0, `d0, 0", defs, uses));
 			}
 			else if(move.dst instanceof ImcTEMP == true)
 			{
-				asmcode.add(new AsmMOVE("SET `d0, `s0", parse(move.dst), parse(move.src)));
+				asmcode.add(new AsmMOVE("SET", "`d0, `s0", parse(move.dst), parse(move.src)));
 			}
 		}
 		else if(statement instanceof ImcCJUMP == true)
@@ -72,12 +72,12 @@ public class AsmCode
 			uses.add(parse(((ImcCJUMP)statement).cond));
 			labels.add(((ImcCJUMP)statement).trueLabel);
 
-			asmcode.add(new AsmOPER("BNZ `s0, `l0", null, uses, labels));
+			asmcode.add(new AsmOPER("BNZ", "`s0, `l0", null, uses, labels));
 		}
 		else if(statement instanceof ImcJUMP == true)
 		{
 			labels.add(((ImcJUMP)statement).label);
-			asmcode.add(new AsmOPER("JMP `l0", null, null, labels));
+			asmcode.add(new AsmOPER("JMP", "`l0", null, null, labels));
 		}
 		else if(statement instanceof ImcLABEL == true)
 		{
@@ -139,34 +139,34 @@ public class AsmCode
 			uses.add(parse(binop.rimc));
 			defs.add(temp = new FrmTemp());
 
-			asmcode.add(new AsmOPER(oper + " `d0, `s0, `s1", defs, uses));
+			asmcode.add(new AsmOPER(oper, "`d0, `s0, `s1", defs, uses));
 
 			if(oper.equals("CMP") == true)
 			{
 				switch(binop.op)
 				{
 					case ImcBINOP.EQU:
-						asmcode.add(new AsmOPER("ZSZI `d0, `s0, 1", defs, defs));
+						asmcode.add(new AsmOPER("ZSZI", "`d0, `s0, 1", defs, defs));
 					break;
 
 					case ImcBINOP.NEQ:
-						asmcode.add(new AsmOPER("ZSNZI `d0, `s0, 1", defs, defs));
+						asmcode.add(new AsmOPER("ZSNZI", "`d0, `s0, 1", defs, defs));
 					break;
 
 					case ImcBINOP.LTH:
-						asmcode.add(new AsmOPER("ZSNI `d0, `s0, 1", defs, defs));
+						asmcode.add(new AsmOPER("ZSNI", "`d0, `s0, 1", defs, defs));
 					break;
 
 					case ImcBINOP.LEQ:
-						asmcode.add(new AsmOPER("ZSNPI `d0, `s0, 1", defs, defs));
+						asmcode.add(new AsmOPER("ZSNPI", "`d0, `s0, 1", defs, defs));
 					break;
 
 					case ImcBINOP.GTH:
-						asmcode.add(new AsmOPER("ZSPI `d0, `s0, 1", defs, defs));
+						asmcode.add(new AsmOPER("ZSPI", "`d0, `s0, 1", defs, defs));
 					break;
 
 					case ImcBINOP.GEQ:
-						asmcode.add(new AsmOPER("ZSNNI `d0, `s0, 1", defs, defs));
+						asmcode.add(new AsmOPER("ZSNNI", "`d0, `s0, 1", defs, defs));
 					break;
 				}
 			}
@@ -181,35 +181,35 @@ public class AsmCode
 			long value = Math.abs(constant);
 
 			defs.add(temp = new FrmTemp());
-			asmcode.add(new AsmOPER("SETL `d0, " + (value & 0xFFFFL), defs, null));
+			asmcode.add(new AsmOPER("SETL", "`d0, " + (value & 0xFFFFL), defs, null));
 
 			if(value > 0xFFFFL)
 			{
 				uses.add(new FrmTemp());
 				uses.add(temp);
 
-				asmcode.add(new AsmOPER("SETML `d0, " + ((value & 0xFFFF0000L) >> 16), uses, null));
-				asmcode.add(new AsmOPER("OR `d0, `s0, `s1", defs, uses));
+				asmcode.add(new AsmOPER("SETML", "`d0, " + ((value & 0xFFFF0000L) >> 16), uses, null));
+				asmcode.add(new AsmOPER("OR", "`d0, `s0, `s1", defs, uses));
 			}
 
 			if(value > 0xFFFFFFFFL)
 			{
-				asmcode.add(new AsmOPER("SETMH `d0, " + ((value & 0xFFFF00000000L) >> 32), uses, null));
-				asmcode.add(new AsmOPER("OR `d0, `s0, `s1", defs, uses));
+				asmcode.add(new AsmOPER("SETMH", "`d0, " + ((value & 0xFFFF00000000L) >> 32), uses, null));
+				asmcode.add(new AsmOPER("OR", "`d0, `s0, `s1", defs, uses));
 			}
 
 			if(value > 0xFFFFFFFFFFFFL)
 			{
-				asmcode.add(new AsmOPER("SETH `d0, " + ((value & 0xFFFF000000000000L) >> 48), uses, null));
-				asmcode.add(new AsmOPER("OR `d0, `s0, `s1", defs, uses));
+				asmcode.add(new AsmOPER("SETH", "`d0, " + ((value & 0xFFFF000000000000L) >> 48), uses, null));
+				asmcode.add(new AsmOPER("OR", "`d0, `s0, `s1", defs, uses));
 			}
 
 			if(constant < 0)
 			{
 				defs = new LinkedList<FrmTemp>(Arrays.asList(new FrmTemp(), temp));
 
-				asmcode.add(new AsmOPER("SETL `d0, 0", defs, null));
-				asmcode.add(new AsmOPER("SUB `d0, `s0, `s1", defs, defs));
+				asmcode.add(new AsmOPER("SETL", "`d0, 0", defs, null));
+				asmcode.add(new AsmOPER("SUB", "`d0, `s0, `s1", defs, defs));
 
 				temp = defs.getFirst();
 			}
@@ -218,28 +218,28 @@ public class AsmCode
 		{
 			uses.add(parse(((ImcMEM)expression).expr));
 			defs.add(temp = new FrmTemp());
-			asmcode.add(new AsmOPER("LDOI `d0, `s0, 0", defs, uses));
+			asmcode.add(new AsmOPER("LDOI", "`d0, `s0, 0", defs, uses));
 		}
 		else if(expression instanceof ImcNAME == true)
 		{
 			defs.add(temp = new FrmTemp());
 			labels.add(((ImcNAME)expression).label);
-			asmcode.add(new AsmOPER("LDA `d0, `l0", defs, null, labels));
+			asmcode.add(new AsmOPER("LDA", "`d0, `l0", defs, null, labels));
 		}
 		else if(expression instanceof ImcCALL == true)
 		{
 			ImcCALL call = (ImcCALL)expression;
 
-			asmcode.add(new AsmMOVE("SET `d0, `s0", temp = new FrmTemp(), ((ImcTEMP)call.args.get(0)).temp));
+			asmcode.add(new AsmMOVE("SET", "`d0, `s0", temp = new FrmTemp(), ((ImcTEMP)call.args.get(0)).temp));
 
 			for(int i = 1; i < call.args.size(); i++)
 			{
-				asmcode.add(new AsmMOVE("SET `d0, `s0", new FrmTemp(), ((ImcTEMP)call.args.get(i)).temp));
+				asmcode.add(new AsmMOVE("SET", "`d0, `s0", new FrmTemp(), ((ImcTEMP)call.args.get(i)).temp));
 			}
 
 			uses.add(temp);
 			labels.add(call.label);
-			asmcode.add(new AsmOPER("PUSHJ `s0, `l0", null, uses, labels));
+			asmcode.add(new AsmOPER("PUSHJ", "`s0, `l0", null, uses, labels));
 		}
 		else if(expression instanceof ImcESEQ == true)
 		{

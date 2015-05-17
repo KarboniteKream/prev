@@ -49,9 +49,9 @@ public abstract class AsmInstr {
 	 * @param labels
 	 *            Labele, na katere ukaz skace.
 	 */
-	protected AsmInstr(String assem, LinkedList<FrmTemp> defs,
+	protected AsmInstr(String mnemonic, String assem, LinkedList<FrmTemp> defs,
 			LinkedList<FrmTemp> uses, LinkedList<FrmLabel> labels) {
-		this.assem = assem;
+		this.assem = String.format("%-5s %s", mnemonic, assem);
 		this.defs = defs == null ? new LinkedList<FrmTemp>() : defs;
 		this.uses = uses == null ? new LinkedList<FrmTemp>() : uses;
 		this.labels = labels == null ? new LinkedList<FrmLabel>() : labels;
