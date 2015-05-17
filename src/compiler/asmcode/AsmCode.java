@@ -36,9 +36,34 @@ public class AsmCode
 		}
 	}
 
-	private FrmTemp parse(ImcStmt statement)
+	private void parse(ImcStmt statement)
 	{
-		return null;
+		LinkedList<FrmTemp> defs = new LinkedList<FrmTemp>();
+		LinkedList<FrmTemp> uses = new LinkedList<FrmTemp>();
+		LinkedList<FrmLabel> labels = new LinkedList<FrmLabel>();
+
+		if(statement instanceof ImcMOVE == true)
+		{
+		}
+		else if(statement instanceof ImcCJUMP == true)
+		{
+		}
+		else if(statement instanceof ImcJUMP == true)
+		{
+			labels.add(((ImcJUMP)statement).label);
+			asmcode.add(new AsmOPER("JMP `l0", null, null, labels));
+		}
+		else if(statement instanceof ImcLABEL == true)
+		{
+			asmcode.add(new AsmLABEL("`l0:", ((ImcLABEL)statement).label));
+		}
+		else if(statement instanceof ImcEXP == true)
+		{
+		}
+		else
+		{
+			Report.error("Nested ImcSEQ is not allowed.");
+		}
 	}
 
 	private FrmTemp parse(ImcExpr expression)
@@ -52,14 +77,13 @@ public class AsmCode
 		if(expression instanceof ImcBINOP == true)
 		{
 			ImcBINOP binop = (ImcBINOP)expression;
-			FrmTemp right = null;
 
 			uses.add(parse(binop.limc));
+			FrmTemp right = null;
 
 			if(binop.rimc instanceof ImcCONST == false)
 			{
-				right = parse(binop.rimc);
-				uses.add(right);
+				uses.add(right = parse(binop.rimc));
 			}
 
 			defs.add(temp = new FrmTemp());
@@ -177,7 +201,14 @@ public class AsmCode
 		{
 			defs.add(temp = new FrmTemp());
 			labels.add(((ImcNAME)expression).label);
-			asmcode.add(new AsmOPER("LDA `d0, `l0", defs, uses, labels));
+			asmcode.add(new AsmOPER("LDA `d0, `l0", defs, null, labels));
+		}
+		else if(expression instanceof ImcCALL == true)
+		{
+		}
+		else
+		{
+			Report.error("Nested ImcESEQ is not allowed.");
 		}
 
 		return temp;
