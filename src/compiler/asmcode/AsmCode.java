@@ -47,6 +47,7 @@ public class AsmCode
 
 		LinkedList<FrmTemp> defs = new LinkedList<FrmTemp>();
 		LinkedList<FrmTemp> uses = new LinkedList<FrmTemp>();
+		LinkedList<FrmLabel> labels = new LinkedList<FrmLabel>();
 
 		if(expression instanceof ImcBINOP == true)
 		{
@@ -108,7 +109,6 @@ public class AsmCode
 				asmcode.add(new AsmOPER(oper + " `d0, `s0, `s1", defs, uses));
 			}
 
-			// TODO: OR, AND.
 			if(oper.equals("CMP") == true)
 			{
 				uses = new LinkedList<FrmTemp>();
@@ -144,6 +144,44 @@ public class AsmCode
 					break;
 				}
 			}
+		}
+		else if(expression instanceof ImcTEMP == true)
+		{
+			temp = ((ImcTEMP)expression).temp;
+		}
+		else if(expression instanceof ImcCONST == true)
+		{
+			long value = ((ImcCONST)expression).value;
+
+			defs.add(temp = new FrmTemp());
+			uses.add(new FrmTemp());
+			uses.add(temp);
+
+			asmcode.add(new AsmOPER("SETL `d0, " + (value & 0xFFFFL), defs, null));
+
+			if(value > 0xFFFFL)
+			{
+				asmcode.add(new AsmOPER("SETML `d0, " + ((value & 0xFFFF0000L) >> 16), uses, null));
+				asmcode.add(new AsmOPER("OR `d0, `s0, `s1", defs, uses));
+			}
+
+			if(value > 0xFFFFFFFFL)
+			{
+				asmcode.add(new AsmOPER("SETMH `d0, " + ((value & 0xFFFF00000000L) >> 32), uses, null));
+				asmcode.add(new AsmOPER("OR `d0, `s0, `s1", defs, uses));
+			}
+
+			if(value > 0xFFFFFFFFFFFFL)
+			{
+				asmcode.add(new AsmOPER("SETH `d0, " + ((value & 0xFFFF000000000000L) >> 48), uses, null));
+				asmcode.add(new AsmOPER("OR `d0, `s0, `s1", defs, uses));
+			}
+		}
+		else if(expression instanceof ImcNAME == true)
+		{
+			defs.add(temp = new FrmTemp());
+			labels.add(((ImcNAME)expression).label);
+			asmcode.add(new AsmOPER("GETA `d0, `l0", defs, uses, labels));
 		}
 
 		return temp;
