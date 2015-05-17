@@ -93,17 +93,6 @@ public class AsmCode
 		if(expression instanceof ImcBINOP == true)
 		{
 			ImcBINOP binop = (ImcBINOP)expression;
-
-			uses.add(parse(binop.limc));
-			FrmTemp right = null;
-
-			if(binop.rimc instanceof ImcCONST == false)
-			{
-				uses.add(right = parse(binop.rimc));
-			}
-
-			defs.add(temp = new FrmTemp());
-
 			String oper = null;
 
 			switch(binop.op)
@@ -139,14 +128,11 @@ public class AsmCode
 				break;
 			}
 
-			if(right == null)
-			{
-				asmcode.add(new AsmOPER(oper + "I `d0, `s0, " + ((ImcCONST)binop.rimc).value, defs, uses));
-			}
-			else
-			{
-				asmcode.add(new AsmOPER(oper + " `d0, `s0, `s1", defs, uses));
-			}
+			uses.add(parse(binop.limc));
+			uses.add(parse(binop.rimc));
+			defs.add(temp = new FrmTemp());
+
+			asmcode.add(new AsmOPER(oper + " `d0, `s0, `s1", defs, uses));
 
 			if(oper.equals("CMP") == true)
 			{
@@ -184,7 +170,8 @@ public class AsmCode
 		}
 		else if(expression instanceof ImcCONST == true)
 		{
-			long value = ((ImcCONST)expression).value;
+			long constant = ((ImcCONST)expression).value;
+			long value = Math.abs(constant);
 
 			defs.add(temp = new FrmTemp());
 			asmcode.add(new AsmOPER("SETL `d0, " + (value & 0xFFFFL), defs, null));
@@ -208,6 +195,16 @@ public class AsmCode
 			{
 				asmcode.add(new AsmOPER("SETH `d0, " + ((value & 0xFFFF000000000000L) >> 48), uses, null));
 				asmcode.add(new AsmOPER("OR `d0, `s0, `s1", defs, uses));
+			}
+
+			if(constant < 0)
+			{
+				defs = new LinkedList<FrmTemp>(Arrays.asList(new FrmTemp(), temp));
+
+				asmcode.add(new AsmOPER("SETL `d0, 0", defs, null));
+				asmcode.add(new AsmOPER("SUB `d0, `s0, `s1", defs, defs));
+
+				temp = defs.getFirst();
 			}
 		}
 		else if(expression instanceof ImcMEM == true)
