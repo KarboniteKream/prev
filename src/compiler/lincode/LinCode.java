@@ -70,10 +70,7 @@ public class LinCode
 	 */
 	public void run(LinkedList<ImcChunk> chunks)
 	{
-		if(dump == false)
-		{
-			return;
-		}
+		if(dump == false) return;
 
 		for(ImcChunk chunk : chunks)
 		{
@@ -212,8 +209,8 @@ public class LinCode
 				case ImcBINOP.DIV: return left / right;
 				case ImcBINOP.EQU: return (left == right) ? 1L : 0L;
 				case ImcBINOP.NEQ: return (left != right) ? 1L : 0L;
-				case ImcBINOP.LTH: return (left < right) ? 1L : 0L;
-				case ImcBINOP.GTH: return (left > right) ? 1L : 0L;
+				case ImcBINOP.LTH: return (left < right)  ? 1L : 0L;
+				case ImcBINOP.GTH: return (left > right)  ? 1L : 0L;
 				case ImcBINOP.LEQ: return (left <= right) ? 1L : 0L;
 				case ImcBINOP.GEQ: return (left >= right) ? 1L : 0L;
 				case ImcBINOP.AND: return (left * right != 0) ? 1L : 0L;

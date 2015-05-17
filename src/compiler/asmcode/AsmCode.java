@@ -108,34 +108,18 @@ public class AsmCode
 
 			switch(binop.op)
 			{
-				case ImcBINOP.ADD:
-					oper = "ADD";
-				break;
+				case ImcBINOP.IOR: oper = "OR";  break;
+				case ImcBINOP.AND: oper = "AND"; break;
 
-				case ImcBINOP.SUB:
-					oper = "SUB";
-				break;
-
-				case ImcBINOP.MUL:
-					oper = "MUL";
-				break;
-
-				case ImcBINOP.DIV:
-					oper = "DIV";
-				break;
+				case ImcBINOP.ADD: oper = "ADD"; break;
+				case ImcBINOP.SUB: oper = "SUB"; break;
+				case ImcBINOP.MUL: oper = "MUL"; break;
+				case ImcBINOP.DIV: oper = "DIV"; break;
 
 				case ImcBINOP.EQU: case ImcBINOP.NEQ:
 				case ImcBINOP.LTH: case ImcBINOP.LEQ:
 				case ImcBINOP.GTH: case ImcBINOP.GEQ:
 					oper = "CMP";
-				break;
-
-				case ImcBINOP.IOR:
-					oper = "OR";
-				break;
-
-				case ImcBINOP.AND:
-					oper = "AND";
 				break;
 			}
 
@@ -149,29 +133,12 @@ public class AsmCode
 			{
 				switch(binop.op)
 				{
-					case ImcBINOP.EQU:
-						asmcode.add(new AsmOPER("ZSZI", "`d0, `s0, 1", defs, defs));
-					break;
-
-					case ImcBINOP.NEQ:
-						asmcode.add(new AsmOPER("ZSNZI", "`d0, `s0, 1", defs, defs));
-					break;
-
-					case ImcBINOP.LTH:
-						asmcode.add(new AsmOPER("ZSNI", "`d0, `s0, 1", defs, defs));
-					break;
-
-					case ImcBINOP.LEQ:
-						asmcode.add(new AsmOPER("ZSNPI", "`d0, `s0, 1", defs, defs));
-					break;
-
-					case ImcBINOP.GTH:
-						asmcode.add(new AsmOPER("ZSPI", "`d0, `s0, 1", defs, defs));
-					break;
-
-					case ImcBINOP.GEQ:
-						asmcode.add(new AsmOPER("ZSNNI", "`d0, `s0, 1", defs, defs));
-					break;
+					case ImcBINOP.EQU: asmcode.add(new AsmOPER("ZSZI",  "`d0, `s0, 1", defs, defs)); break;
+					case ImcBINOP.NEQ: asmcode.add(new AsmOPER("ZSNZI", "`d0, `s0, 1", defs, defs)); break;
+					case ImcBINOP.LTH: asmcode.add(new AsmOPER("ZSNI",  "`d0, `s0, 1", defs, defs)); break;
+					case ImcBINOP.LEQ: asmcode.add(new AsmOPER("ZSNPI", "`d0, `s0, 1", defs, defs)); break;
+					case ImcBINOP.GTH: asmcode.add(new AsmOPER("ZSPI",  "`d0, `s0, 1", defs, defs)); break;
+					case ImcBINOP.GEQ: asmcode.add(new AsmOPER("ZSNNI", "`d0, `s0, 1", defs, defs)); break;
 				}
 			}
 		}
@@ -255,15 +222,8 @@ public class AsmCode
 
 	public void dump(LinkedList<ImcChunk> chunks)
 	{
-		if(dump == false)
-		{
-			return;
-		}
-
-		if(Report.dumpFile() == null)
-		{
-			return;
-		}
+		if(dump == false) return;
+		if(Report.dumpFile() == null) return;
 
 		int i = 0;
 
