@@ -52,10 +52,9 @@ public class AsmCode
 		if(expression instanceof ImcBINOP == true)
 		{
 			ImcBINOP binop = (ImcBINOP)expression;
-
-			FrmTemp left = parse(binop.limc);
-			uses.add(left);
 			FrmTemp right = null;
+
+			uses.add(parse(binop.limc));
 
 			if(binop.rimc instanceof ImcCONST == false)
 			{
@@ -111,11 +110,8 @@ public class AsmCode
 
 			if(oper.equals("CMP") == true)
 			{
-				uses = new LinkedList<FrmTemp>();
-				uses.add(temp);
-
-				defs = new LinkedList<FrmTemp>();
-				defs.add(temp = new FrmTemp());
+				uses = defs;
+				defs = new LinkedList<FrmTemp>(Arrays.asList(temp = new FrmTemp()));
 
 				switch(binop.op)
 				{
