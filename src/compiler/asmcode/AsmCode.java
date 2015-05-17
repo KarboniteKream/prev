@@ -83,6 +83,10 @@ public class AsmCode
 		{
 			asmcode.add(new AsmLABEL("`l0:", ((ImcLABEL)statement).label));
 		}
+		else if(statement instanceof ImcEXP == true)
+		{
+			parse(((ImcEXP)statement).expr);
+		}
 		else if(statement instanceof ImcSEQ == true)
 		{
 			Report.error("Nested ImcSEQ is not allowed.");
