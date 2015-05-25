@@ -10,10 +10,12 @@ import compiler.asmcode.*;
 public class TmpAn
 {
 	private boolean dump;
+	private HashMap<FrmTemp, LinkedList<FrmTemp>> graph;
 
 	public TmpAn(boolean dump)
 	{
 		this.dump = dump;
+		graph = new HashMap<FrmTemp, LinkedList<FrmTemp>>();
 	}
 
 	public void analyze(LinkedList<ImcChunk> chunks)
@@ -93,6 +95,31 @@ public class TmpAn
 					{
 						break;
 					}
+				}
+
+				for(AsmInstr instr : codeChunk.asmcode)
+				{
+					if(instr.defs.size() == 0)
+					{
+						continue;
+					}
+
+					FrmTemp temp = instr.defs.getFirst();
+					LinkedList<FrmTemp> temps = graph.get(temp) == null ? new LinkedList<FrmTemp>() : graph.get(temp);
+
+					for(FrmTemp out : instr.out)
+					{
+						if(temp.equals(out) == false && temps.contains(out) == false && (instr instanceof AsmMOVE == false || (instr instanceof AsmMOVE == true && instr.uses.getFirst().equals(out) == false)))
+						{
+							LinkedList<FrmTemp> outTemps = graph.get(out) == null ? new LinkedList<FrmTemp>() : graph.get(out);
+							outTemps.add(temp);
+							graph.put(out, outTemps);
+
+							temps.add(out);
+						}
+					}
+
+					graph.put(temp, temps);
 				}
 			}
 		}
