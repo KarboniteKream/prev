@@ -43,14 +43,9 @@ public class TmpAn
 
 						instr.in = new LinkedList<FrmTemp>(instr.uses);
 
-						for(FrmTemp temp : instr.defs)
-						{
-							instr.out.remove(temp);
-						}
-
 						for(FrmTemp temp : instr.out)
 						{
-							if(instr.in.contains(temp) == false)
+							if(instr.in.contains(temp) == false && instr.defs.contains(temp) == false)
 							{
 								instr.in.add(temp);
 							}
