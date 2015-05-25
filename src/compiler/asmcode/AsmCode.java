@@ -154,35 +154,41 @@ public class AsmCode
 			defs.add(temp = new FrmTemp());
 			asmcode.add(new AsmOPER("SETL", "`d0, " + (value & 0xFFFFL), defs, null));
 
+			LinkedList<FrmTemp> setDef = new LinkedList<FrmTemp>();
+
 			if(value > 0xFFFFL)
 			{
-				uses.add(new FrmTemp());
+				setDef.add(new FrmTemp());
+
+				uses.add(setDef.getFirst());
 				uses.add(temp);
 
-				asmcode.add(new AsmOPER("SETML", "`d0, " + ((value & 0xFFFF0000L) >> 16), uses, null));
+				asmcode.add(new AsmOPER("SETML", "`d0, " + ((value & 0xFFFF0000L) >> 16), setDef, null));
 				asmcode.add(new AsmOPER("OR", "`d0, `s0, `s1", defs, uses));
 			}
 
 			if(value > 0xFFFFFFFFL)
 			{
-				asmcode.add(new AsmOPER("SETMH", "`d0, " + ((value & 0xFFFF00000000L) >> 32), uses, null));
+				asmcode.add(new AsmOPER("SETMH", "`d0, " + ((value & 0xFFFF00000000L) >> 32), setDef, null));
 				asmcode.add(new AsmOPER("OR", "`d0, `s0, `s1", defs, uses));
 			}
 
 			if(value > 0xFFFFFFFFFFFFL)
 			{
-				asmcode.add(new AsmOPER("SETH", "`d0, " + ((value & 0xFFFF000000000000L) >> 48), uses, null));
+				asmcode.add(new AsmOPER("SETH", "`d0, " + ((value & 0xFFFF000000000000L) >> 48), setDef, null));
 				asmcode.add(new AsmOPER("OR", "`d0, `s0, `s1", defs, uses));
 			}
 
 			if(constant < 0)
 			{
-				defs = new LinkedList<FrmTemp>(Arrays.asList(new FrmTemp(), temp));
+				FrmTemp num = new FrmTemp();
+				defs = new LinkedList<FrmTemp>(Arrays.asList(num));
+				uses = new LinkedList<FrmTemp>(Arrays.asList(num, temp));
 
 				asmcode.add(new AsmOPER("SETL", "`d0, 0", defs, null));
-				asmcode.add(new AsmOPER("SUB", "`d0, `s0, `s1", defs, defs));
+				asmcode.add(new AsmOPER("SUB", "`d0, `s0, `s1", defs, uses));
 
-				temp = defs.getFirst();
+				temp = num;
 			}
 		}
 		else if(expression instanceof ImcMEM == true)
