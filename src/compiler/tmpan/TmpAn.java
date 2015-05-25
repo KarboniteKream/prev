@@ -129,5 +129,22 @@ public class TmpAn
 	{
 		if(dump == false) return;
 		if(Report.dumpFile() == null) return;
+
+		for(Map.Entry<FrmTemp, LinkedList<FrmTemp>> entry : graph.entrySet())
+		{
+			LinkedList<FrmTemp> temps = entry.getValue();
+
+			if(temps != null && temps.size() > 0)
+			{
+				String output = entry.getKey().name() + ": ";
+
+				for(FrmTemp temp : entry.getValue())
+				{
+					output += temp.name() + ", ";
+				}
+
+				Report.dump(0, output.substring(0, output.length() - 2));
+			}
+		}
 	}
 }
