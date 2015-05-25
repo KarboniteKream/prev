@@ -26,6 +26,7 @@ import compiler.frames.*;
 public abstract class AsmInstr {
 
 	/** Znakovna predstavitev ukaza. */
+	public String mnemonic;
 	public String assem;
 
 	/** Zacasne spremenljivke, katerih vrednosti ukaz uporabi. */
@@ -51,6 +52,7 @@ public abstract class AsmInstr {
 	 */
 	protected AsmInstr(String mnemonic, String assem, LinkedList<FrmTemp> defs,
 			LinkedList<FrmTemp> uses, LinkedList<FrmLabel> labels) {
+		this.mnemonic = mnemonic;
 		this.assem = String.format("%-5s %s", mnemonic, assem);
 		this.defs = defs == null ? new LinkedList<FrmTemp>() : defs;
 		this.uses = uses == null ? new LinkedList<FrmTemp>() : uses;

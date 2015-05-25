@@ -58,9 +58,9 @@ public class AsmCode
 
 			if(move.dst instanceof ImcMEM == true)
 			{
-				defs.add(parse(((ImcMEM)move.dst).expr));
 				uses.add(parse(move.src));
-				asmcode.add(new AsmOPER("STOI", "`s0, `d0, 0", defs, uses));
+				uses.add(parse(((ImcMEM)move.dst).expr));
+				asmcode.add(new AsmOPER("STOI", "`s0, `s1, 0", null, uses));
 			}
 			else if(move.dst instanceof ImcTEMP == true)
 			{
@@ -85,7 +85,6 @@ public class AsmCode
 		}
 		else if(statement instanceof ImcEXP == true)
 		{
-			parse(((ImcEXP)statement).expr);
 		}
 		else if(statement instanceof ImcSEQ == true)
 		{
