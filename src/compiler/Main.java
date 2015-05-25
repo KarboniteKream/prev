@@ -11,6 +11,7 @@ import compiler.frames.*;
 import compiler.imcode.*;
 import compiler.lincode.*;
 import compiler.asmcode.*;
+import compiler.tmpan.*;
 
 /**
  * Osnovni razred prevajalnika, ki vodi izvajanje celotnega procesa prevajanja.
@@ -23,13 +24,13 @@ public class Main {
 	private static String sourceFileName;
 
 	/** Seznam vseh faz prevajalnika. */
-	private static String allPhases = "(lexan|synan|ast|seman|frames|imcode|lincode|asmcode)";
+	private static String allPhases = "(lexan|synan|ast|seman|frames|imcode|lincode|asmcode|tmpan)";
 
 	/** Doloca zadnjo fazo prevajanja, ki se bo se izvedla. */
-	private static String execPhase = "asmcode";
+	private static String execPhase = "tmpan";
 
 	/** Doloca faze, v katerih se bodo izpisali vmesni rezultati. */
-	private static String dumpPhases = "asmcode";
+	private static String dumpPhases = "tmpan";
 
 	/**
 	 * Metoda, ki izvede celotni proces prevajanja.
@@ -121,6 +122,11 @@ public class Main {
 			asmcode.generate(imcodegen.chunks);
 			asmcode.dump(imcodegen.chunks);
 			if (execPhase.equals("asmcode")) break;
+			// Analiza spremenljivk.
+			TmpAn tmpan = new TmpAn(dumpPhases.contains("tmpan"));
+			tmpan.analyze(imcodegen.chunks);
+			tmpan.dump(imcodegen.chunks);
+			if (execPhase.equals("tmpan")) break;
 			
 			// Neznana faza prevajanja.
 			if (! execPhase.equals(""))
