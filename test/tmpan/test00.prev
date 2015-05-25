@@ -1,0 +1,12 @@
+fun main(argc : integer) : integer =
+(
+	{ a = 0 },
+	{ while a < 10 :
+	(
+		{ b = a + 1 },
+		{ c = c + b },
+		{ a = b * 2 }
+	) },
+	c
+)
+{ where var a : integer; var b : integer; var c : integer }

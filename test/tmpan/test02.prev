@@ -1,0 +1,7 @@
+fun main(i : integer) : integer =
+(
+	{ i = 1 },
+	{ if i == 1 then { i = 2 } else { i = 3 } },
+	0
+)
+{ where var j : integer }

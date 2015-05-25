@@ -1,0 +1,6 @@
+fun main(i : integer) : integer =
+(
+	{ i = i },
+	{ j = i }
+)
+{ where var j : integer }
