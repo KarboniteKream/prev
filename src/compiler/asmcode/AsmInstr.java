@@ -38,6 +38,9 @@ public abstract class AsmInstr {
 	/** Seznam label, na katerih se lahko nadaljuje izvajanje ukaza. */
 	public LinkedList<FrmLabel> labels;
 
+	public LinkedList<FrmTemp> in;
+	public LinkedList<FrmTemp> out;
+
 	/**
 	 * Opis ukaza strojne kode.
 	 * 
@@ -57,6 +60,9 @@ public abstract class AsmInstr {
 		this.defs = defs == null ? new LinkedList<FrmTemp>() : defs;
 		this.uses = uses == null ? new LinkedList<FrmTemp>() : uses;
 		this.labels = labels == null ? new LinkedList<FrmLabel>() : labels;
+
+		in = null;
+		out = null;
 	}
 
 	public String format(HashMap<FrmTemp, String> map) {
