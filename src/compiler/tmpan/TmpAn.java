@@ -55,7 +55,7 @@ public class TmpAn
 
 				for(FrmTemp temp : instr.out)
 				{
-					if(instr.in.contains(temp) == false && instr.defs.contains(temp) == false)
+					if(temp != chunk.frame.FP && instr.in.contains(temp) == false && instr.defs.contains(temp) == false)
 					{
 						instr.in.add(temp);
 					}
@@ -86,7 +86,7 @@ public class TmpAn
 				{
 					for(FrmTemp temp : succInstr.in)
 					{
-						if(instr.out.contains(temp) == false)
+						if(temp != chunk.frame.FP && instr.out.contains(temp) == false)
 						{
 							instr.out.add(temp);
 						}
