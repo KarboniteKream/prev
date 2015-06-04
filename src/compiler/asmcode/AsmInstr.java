@@ -1,6 +1,7 @@
 package compiler.asmcode;
 
 import java.util.*;
+import java.util.regex.*;
 
 import compiler.frames.*;
 
@@ -74,7 +75,7 @@ public abstract class AsmInstr {
 				regName = map.get(temp);
 			if (regName == null)
 				regName = temp.name();
-			fmtAssem = fmtAssem.replaceAll("`s" + i, regName);
+			fmtAssem = fmtAssem.replaceAll("`s" + i, Matcher.quoteReplacement(regName));
 		}
 		for (int i = 0; i < defs.size(); i++) {
 			FrmTemp temp = defs.get(i);
@@ -83,7 +84,7 @@ public abstract class AsmInstr {
 				regName = map.get(temp);
 			if (regName == null)
 				regName = temp.name();
-			fmtAssem = fmtAssem.replaceAll("`d" + i, regName);
+			fmtAssem = fmtAssem.replaceAll("`d" + i, Matcher.quoteReplacement(regName));
 		}
 		for (int i = 0; i < labels.size(); i++) {
 			FrmLabel label = labels.get(i);
