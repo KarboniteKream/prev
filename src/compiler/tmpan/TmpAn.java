@@ -10,119 +10,141 @@ import compiler.asmcode.*;
 public class TmpAn
 {
 	private boolean dump;
-	private HashMap<FrmTemp, LinkedList<FrmTemp>> graph;
 
 	public TmpAn(boolean dump)
 	{
 		this.dump = dump;
-		graph = new HashMap<FrmTemp, LinkedList<FrmTemp>>();
 	}
 
 	public void analyze(LinkedList<ImcChunk> chunks)
 	{
-		for(ImcChunk chunk : chunks)
+		if(dump == true)
 		{
-			if(chunk instanceof ImcCodeChunk == true)
+			for(ImcChunk chunk : chunks)
 			{
-				ImcCodeChunk codeChunk = (ImcCodeChunk)chunk;
-
-				for(AsmInstr instr : codeChunk.asmcode)
+				if(chunk instanceof ImcCodeChunk == true)
 				{
-					instr.in = new LinkedList<FrmTemp>();
-					instr.out = new LinkedList<FrmTemp>();
-				}
-
-				while(true)
-				{
-					int ok = 0;
-
-					for(int i = codeChunk.asmcode.size() - 1; i >= 0; i--)
-					{
-						AsmInstr instr = codeChunk.asmcode.get(i);
-
-						LinkedList<FrmTemp> oldIn = new LinkedList<FrmTemp>(instr.in);
-						LinkedList<FrmTemp> oldOut = new LinkedList<FrmTemp>(instr.out);
-
-						instr.in = new LinkedList<FrmTemp>(instr.uses);
-
-						for(FrmTemp temp : instr.out)
-						{
-							if(instr.in.contains(temp) == false && instr.defs.contains(temp) == false)
-							{
-								instr.in.add(temp);
-							}
-						}
-
-						LinkedList<AsmInstr> succ = new LinkedList<AsmInstr>();
-
-						if(instr.mnemonic.equals("TRAP") == false && instr.mnemonic.equals("POP") == false && instr.mnemonic.equals("JMP") == false)
-						{
-							succ.add(codeChunk.asmcode.get(i + 1));
-						}
-
-						if(instr.mnemonic.equals("BNZ") == true || instr.mnemonic.equals("JMP") == true)
-						{
-							for(AsmInstr label : codeChunk.asmcode)
-							{
-								if(label instanceof AsmLABEL == true && ((AsmLABEL)label).labels.equals(instr.labels) == true)
-								{
-									succ.add(label);
-									break;
-								}
-							}
-						}
-
-						instr.out = new LinkedList<FrmTemp>();
-
-						for(AsmInstr succInstr : succ)
-						{
-							for(FrmTemp temp : succInstr.in)
-							{
-								if(instr.out.contains(temp) == false)
-								{
-									instr.out.add(temp);
-								}
-							}
-						}
-
-						if(instr.in.equals(oldIn) == true && instr.out.equals(oldOut) == true)
-						{
-							ok++;
-						}
-					}
-
-					if(ok == codeChunk.asmcode.size())
-					{
-						break;
-					}
-				}
-
-				for(AsmInstr instr : codeChunk.asmcode)
-				{
-					if(instr.defs.size() == 0)
-					{
-						continue;
-					}
-
-					FrmTemp temp = instr.defs.getFirst();
-					LinkedList<FrmTemp> temps = graph.get(temp) == null ? new LinkedList<FrmTemp>() : graph.get(temp);
-
-					for(FrmTemp out : instr.out)
-					{
-						if(temp.equals(out) == false && temps.contains(out) == false && (instr instanceof AsmMOVE == false || (instr instanceof AsmMOVE == true && instr.uses.getFirst().equals(out) == false)))
-						{
-							LinkedList<FrmTemp> outTemps = graph.get(out) == null ? new LinkedList<FrmTemp>() : graph.get(out);
-							outTemps.add(temp);
-							graph.put(out, outTemps);
-
-							temps.add(out);
-						}
-					}
-
-					graph.put(temp, temps);
+					analyze((ImcCodeChunk)chunk);
 				}
 			}
 		}
+	}
+
+	public void analyze(ImcCodeChunk chunk)
+	{
+		HashMap<FrmTemp, TmpNode> graph = new HashMap<FrmTemp, TmpNode>();
+
+		for(AsmInstr instr : chunk.asmcode)
+		{
+			instr.in = new LinkedList<FrmTemp>();
+			instr.out = new LinkedList<FrmTemp>();
+		}
+
+		while(true)
+		{
+			int ok = 0;
+
+			for(int i = chunk.asmcode.size() - 1; i >= 0; i--)
+			{
+				AsmInstr instr = chunk.asmcode.get(i);
+
+				LinkedList<FrmTemp> oldIn = new LinkedList<FrmTemp>(instr.in);
+				LinkedList<FrmTemp> oldOut = new LinkedList<FrmTemp>(instr.out);
+
+				instr.in = new LinkedList<FrmTemp>(instr.uses);
+
+				for(FrmTemp temp : instr.out)
+				{
+					if(instr.in.contains(temp) == false && instr.defs.contains(temp) == false)
+					{
+						instr.in.add(temp);
+					}
+				}
+
+				LinkedList<AsmInstr> succ = new LinkedList<AsmInstr>();
+
+				if(instr.mnemonic.equals("TRAP") == false && instr.mnemonic.equals("POP") == false && instr.mnemonic.equals("JMP") == false)
+				{
+					succ.add(chunk.asmcode.get(i + 1));
+				}
+
+				if(instr.mnemonic.equals("BNZ") == true || instr.mnemonic.equals("JMP") == true)
+				{
+					for(AsmInstr label : chunk.asmcode)
+					{
+						if(label instanceof AsmLABEL == true && ((AsmLABEL)label).labels.equals(instr.labels) == true)
+						{
+							succ.add(label);
+							break;
+						}
+					}
+				}
+
+				instr.out = new LinkedList<FrmTemp>();
+
+				for(AsmInstr succInstr : succ)
+				{
+					for(FrmTemp temp : succInstr.in)
+					{
+						if(instr.out.contains(temp) == false)
+						{
+							instr.out.add(temp);
+						}
+					}
+				}
+
+				if(instr.in.equals(oldIn) == true && instr.out.equals(oldOut) == true)
+				{
+					ok++;
+				}
+			}
+
+			if(ok == chunk.asmcode.size())
+			{
+				break;
+			}
+		}
+
+		for(AsmInstr instr : chunk.asmcode)
+		{
+			if(instr.defs.size() == 0)
+			{
+				continue;
+			}
+
+			FrmTemp temp = instr.defs.getFirst();
+			TmpNode node = graph.get(temp) == null ? new TmpNode(temp) : graph.get(temp);
+
+			for(FrmTemp out : instr.out)
+			{
+				if(temp.equals(out) == false && (instr instanceof AsmMOVE == false || (instr instanceof AsmMOVE == true && instr.uses.getFirst().equals(out) == false)))
+				{
+					boolean ok = true;
+
+					for(TmpNode edge : node.edges)
+					{
+						if(edge.temp == out)
+						{
+							ok = false;
+							break;
+						}
+					}
+
+					if(ok == true)
+					{
+						TmpNode edge = graph.get(out) == null ? new TmpNode(out) : graph.get(out);
+						edge.edges.add(node);
+						graph.put(out, edge);
+
+						node.edges.add(edge);
+					}
+				}
+			}
+
+			graph.put(temp, node);
+		}
+
+		chunk.graph = new LinkedList<TmpNode>(graph.values());
 	}
 
 	public void dump(LinkedList<ImcChunk> chunks)
@@ -130,20 +152,24 @@ public class TmpAn
 		if(dump == false) return;
 		if(Report.dumpFile() == null) return;
 
-		for(Map.Entry<FrmTemp, LinkedList<FrmTemp>> entry : graph.entrySet())
+		for(ImcChunk chunk : chunks)
 		{
-			LinkedList<FrmTemp> temps = entry.getValue();
-
-			if(temps != null && temps.size() > 0)
+			if(chunk instanceof ImcCodeChunk == true)
 			{
-				String output = entry.getKey().name() + ": ";
-
-				for(FrmTemp temp : entry.getValue())
+				for(TmpNode node : ((ImcCodeChunk)chunk).graph)
 				{
-					output += temp.name() + ", ";
-				}
+					if(node.edges.size() > 0)
+					{
+						String output = node.temp.name() + ": ";
 
-				Report.dump(0, output.substring(0, output.length() - 2));
+						for(TmpNode edge : node.edges)
+						{
+							output += edge.temp.name() + ", ";
+						}
+
+						Report.dump(0, output.substring(0, output.length() - 2));
+					}
+				}
 			}
 		}
 	}

@@ -12,6 +12,7 @@ import compiler.imcode.*;
 import compiler.lincode.*;
 import compiler.asmcode.*;
 import compiler.tmpan.*;
+import compiler.regalloc.*;
 
 /**
  * Osnovni razred prevajalnika, ki vodi izvajanje celotnega procesa prevajanja.
@@ -24,13 +25,15 @@ public class Main {
 	private static String sourceFileName;
 
 	/** Seznam vseh faz prevajalnika. */
-	private static String allPhases = "(lexan|synan|ast|seman|frames|imcode|lincode|asmcode|tmpan)";
+	private static String allPhases = "(lexan|synan|ast|seman|frames|imcode|lincode|asmcode|tmpan|regalloc)";
 
 	/** Doloca zadnjo fazo prevajanja, ki se bo se izvedla. */
-	private static String execPhase = "tmpan";
+	private static String execPhase = "regalloc";
 
 	/** Doloca faze, v katerih se bodo izpisali vmesni rezultati. */
-	private static String dumpPhases = "tmpan";
+	private static String dumpPhases = "regalloc";
+
+	private static int registers = 8;
 
 	/**
 	 * Metoda, ki izvede celotni proces prevajanja.
@@ -59,6 +62,10 @@ public class Main {
 						dumpPhases = phases;
 					else
 						Report.warning("Illegal dump phases '" + phases + "' ignored.");
+					continue;
+				}
+				if (args[argc].startsWith("--registers=")) {
+					registers = Integer.parseInt(args[argc].substring("--registers=".length()));
 					continue;
 				}
 				// Neznano stikalo.
@@ -127,6 +134,11 @@ public class Main {
 			tmpan.analyze(imcodegen.chunks);
 			tmpan.dump(imcodegen.chunks);
 			if (execPhase.equals("tmpan")) break;
+			// Dodeljevanje registrov.
+			RegAlloc regalloc = new RegAlloc(dumpPhases.contains("regalloc"), registers);
+			regalloc.allocate(imcodegen.chunks);
+			regalloc.dump(imcodegen.chunks);
+			if (execPhase.equals("regalloc")) break;
 			
 			// Neznana faza prevajanja.
 			if (! execPhase.equals(""))

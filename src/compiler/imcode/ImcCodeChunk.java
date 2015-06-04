@@ -5,6 +5,7 @@ import java.util.*;
 import compiler.*;
 import compiler.frames.*;
 import compiler.asmcode.*;
+import compiler.tmpan.*;
 
 /**
  * Fragment kode.
@@ -25,6 +26,9 @@ public class ImcCodeChunk extends ImcChunk {
 	/** Strojna koda.  */
 	public LinkedList<AsmInstr> asmcode;
 
+	public LinkedList<TmpNode> graph;
+	public HashMap<FrmTemp, String> registers;
+
 	/**
 	 * Ustvari nov fragment kode.
 	 * 
@@ -36,6 +40,8 @@ public class ImcCodeChunk extends ImcChunk {
 		this.imcode = imcode;
 		this.lincode = null;
 		this.asmcode = null;
+		this.graph = null;
+		this.registers = null;
 	}
 
 	@Override
