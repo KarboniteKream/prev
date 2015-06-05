@@ -63,7 +63,7 @@ public class TmpAn
 
 				LinkedList<AsmInstr> succ = new LinkedList<AsmInstr>();
 
-				if(instr.mnemonic.equals("TRAP") == false && instr.mnemonic.equals("POP") == false && instr.mnemonic.equals("JMP") == false)
+				if(instr.mnemonic.equals("JMP") == false && (i + 1) < chunk.asmcode.size())
 				{
 					succ.add(chunk.asmcode.get(i + 1));
 				}

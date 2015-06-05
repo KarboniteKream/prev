@@ -32,15 +32,6 @@ public class AsmCode
 					parse(statement);
 				}
 
-				if(codeChunk.frame.label.name().equals("_main") == true)
-				{
-					asmcode.add(new AsmOPER("TRAP", "0, Halt, 0", null, null));
-				}
-				else
-				{
-					asmcode.add(new AsmOPER("POP", "1, 0", null, null));
-				}
-
 				codeChunk.asmcode = asmcode;
 			}
 		}
