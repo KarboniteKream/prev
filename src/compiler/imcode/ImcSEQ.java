@@ -6,7 +6,7 @@ import compiler.*;
 
 /**
  * Zaporedje stavkov.
- * 
+ *
  * @author sliva
  */
 public class ImcSEQ extends ImcStmt {

@@ -2,7 +2,7 @@ package compiler.frames;
 
 /**
  * Opis zacasne spremenljivke v programu.
- * 
+ *
  * @author sliva
  */
 public class FrmTemp {
@@ -22,7 +22,7 @@ public class FrmTemp {
 
 	/**
 	 * Vrne ime zacasne spremenljivke.
-	 * 
+	 *
 	 * @return Ime zacasne spremenljivke.
 	 */
 	public String name() {

@@ -7,7 +7,7 @@ import compiler.abstr.*;
 
 /**
  * Opis izrazov.
- * 
+ *
  * @author sliva
  */
 public class AbsExprs extends AbsExpr {
@@ -17,7 +17,7 @@ public class AbsExprs extends AbsExpr {
 
 	/**
 	 * Ustvari nov opis izrazov.
-	 * 
+	 *
 	 * @param pos
 	 *            Polozaj stavcne oblike tega drevesa.
 	 * @param exprs
@@ -32,7 +32,7 @@ public class AbsExprs extends AbsExpr {
 
 	/**
 	 * Vrne izbrani izraz.
-	 * 
+	 *
 	 * @param index
 	 *            Indeks izraza.
 	 * @return Izraz na izbranem mestu.
@@ -43,7 +43,7 @@ public class AbsExprs extends AbsExpr {
 
 	/**
 	 * Vrne stevilo izrazov.
-	 * 
+	 *
 	 * @return Stevilo izrazov.
 	 */
 	public int numExprs() {

@@ -4,7 +4,7 @@ import compiler.frames.*;
 
 /**
  * Opis label.
- * 
+ *
  * @author sliva
  */
 public class AsmLABEL extends AsmInstr {

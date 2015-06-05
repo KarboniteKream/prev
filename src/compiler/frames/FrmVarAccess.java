@@ -4,7 +4,7 @@ import compiler.abstr.tree.*;
 
 /**
  * Dostop do globalne spremenljivke.
- * 
+ *
  * @author sliva
  */
 public class FrmVarAccess extends FrmAccess {
@@ -17,7 +17,7 @@ public class FrmVarAccess extends FrmAccess {
 
 	/**
 	 * Ustvari nov dostop do globalne spremenljivke.
-	 * 
+	 *
 	 * @param var Globalna spremenljivka.
 	 */
 	public FrmVarAccess(AbsVarDef var) {
@@ -29,5 +29,5 @@ public class FrmVarAccess extends FrmAccess {
 	public String toString() {
 		return "VAR(" + var.name + ": label=" + label.name() + ")";
 	}
-	
+
 }

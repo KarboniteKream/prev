@@ -38,7 +38,7 @@ public class SymbTable {
 
 	/**
 	 * Vstavi novo definicijo imena na trenutni nivo gnezdenja.
-	 * 
+	 *
 	 * @param name
 	 *            Ime.
 	 * @param newDef
@@ -70,7 +70,7 @@ public class SymbTable {
 
 	/**
 	 * Odstrani definicijo imena s trenutnega nivoja gnezdenja.
-	 * 
+	 *
 	 * @param name
 	 *            Ime.
 	 * @throws SemIllegalDeleteException
@@ -95,7 +95,7 @@ public class SymbTable {
 
 	/**
 	 * Vrne definicijo imena.
-	 * 
+	 *
 	 * @param name
 	 *            Ime.
 	 * @return Definicija imena ali null, ce definicija imena ne obstaja.

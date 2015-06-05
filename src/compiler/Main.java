@@ -16,7 +16,7 @@ import compiler.regalloc.*;
 
 /**
  * Osnovni razred prevajalnika, ki vodi izvajanje celotnega procesa prevajanja.
- * 
+ *
  * @author sliva
  */
 public class Main {
@@ -37,7 +37,7 @@ public class Main {
 
 	/**
 	 * Metoda, ki izvede celotni proces prevajanja.
-	 * 
+	 *
 	 * @param args
 	 *            Parametri ukazne vrstice.
 	 */
@@ -139,7 +139,7 @@ public class Main {
 			regalloc.allocate(imcodegen.chunks);
 			regalloc.dump(imcodegen.chunks);
 			if (execPhase.equals("regalloc")) break;
-			
+
 			// Neznana faza prevajanja.
 			if (! execPhase.equals(""))
 				Report.warning("Unknown compiler phase specified.");

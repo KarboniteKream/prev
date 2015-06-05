@@ -4,7 +4,7 @@ import java.util.*;
 
 /**
  * Opis funkcijskega tipa.
- * 
+ *
  * @author sliva
  */
 public class SemFunType extends SemType {
@@ -17,7 +17,7 @@ public class SemFunType extends SemType {
 
 	/**
 	 * Ustvari nov opis funkcijskega tipa.
-	 * 
+	 *
 	 * @param parTypes
 	 *            Tipi parametrov.
 	 * @param resultType
@@ -32,7 +32,7 @@ public class SemFunType extends SemType {
 
 	/**
 	 * Vrne stevilo parametrov.
-	 * 
+	 *
 	 * @return Stevilo parametrov.
 	 */
 	public int getNumPars() {
@@ -41,7 +41,7 @@ public class SemFunType extends SemType {
 
 	/**
 	 * Vrne tip zahtevanega parametra.
-	 * 
+	 *
 	 * @param index
 	 *            Indeks zahtevanega parametra.
 	 * @return Tip zahtevanega parametra.
@@ -66,7 +66,7 @@ public class SemFunType extends SemType {
 		} else
 			return false;
 	}
-	
+
 	@Override
 	public String toString() {
 		String str = "";

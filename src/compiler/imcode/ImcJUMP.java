@@ -5,7 +5,7 @@ import compiler.frames.*;
 
 /**
  * Brezpogojni skok.
- * 
+ *
  * @author sliva
  */
 public class ImcJUMP extends ImcStmt {

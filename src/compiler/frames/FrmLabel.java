@@ -2,7 +2,7 @@ package compiler.frames;
 
 /**
  * Opis labele v programu.
- * 
+ *
  * @author sliva
  */
 public class FrmLabel {
@@ -12,7 +12,7 @@ public class FrmLabel {
 
 	/**
 	 * Ustvari novo labelo.
-	 * 
+	 *
 	 * @param name Ime labele.
 	 */
 	private FrmLabel(String name) {
@@ -36,7 +36,7 @@ public class FrmLabel {
 	/** Stevec anonimnih label.  */
 	private static int label_count = 0;
 
-	/** 
+	/**
 	 * Vrne novo anonimno labelo.
 	 *
 	 * @return Nova anonimna labela.
@@ -47,7 +47,7 @@ public class FrmLabel {
 
 	/**
 	 * Vrne novo poimenovano labelo.
-	 * 
+	 *
 	 * @param name Ime nove poimenovane labele.
 	 * @return Nova poimenovana labela.
 	 */

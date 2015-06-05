@@ -4,7 +4,7 @@ import compiler.*;
 
 /**
  * Izraz kot stavek.
- * 
+ *
  * @author sliva
  */
 public class ImcEXP extends ImcStmt {
@@ -14,7 +14,7 @@ public class ImcEXP extends ImcStmt {
 
 	/**
 	 * Ustvari izraz kot stavek.
-	 * 
+	 *
 	 * @param expr
 	 */
 	public ImcEXP(ImcExpr expr) {

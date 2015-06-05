@@ -8,7 +8,7 @@ import compiler.frames.*;
 
 /**
  * Izracun lineariziranih fragmentov vmesne kode.
- * 
+ *
  * @author sliva
  */
 public class LinCode
@@ -30,7 +30,7 @@ public class LinCode
 
 	/**
 	 * Izracun lineariziranih fragmentov vmesne kode.
-	 * 
+	 *
 	 * @param dump
 	 *            Ali se izpisujejo vmesni rezultati.
 	 */
@@ -64,7 +64,7 @@ public class LinCode
 
 	/**
 	 * Izvede program s klicem funkcije 'main'.
-	 * 
+	 *
 	 * @param chunks
 	 *            Seznam fragmentov vmesne kode.
 	 */
@@ -278,7 +278,7 @@ public class LinCode
 	/**
 	 * Izpise linearizirane fragmente vmesne kode na datoteko vmesnih
 	 * rezultatov.
-	 * 
+	 *
 	 * @param chunks
 	 *            Seznam fragmentov vmesne kode.
 	 */

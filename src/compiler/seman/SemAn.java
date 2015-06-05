@@ -10,7 +10,7 @@ import compiler.seman.type.*;
 
 /**
  * Semanticni analizator.
- * 
+ *
  * @author sliva
  */
 public class SemAn implements Visitor {
@@ -20,7 +20,7 @@ public class SemAn implements Visitor {
 
 	/**
 	 * Semanticni analizator.
-	 * 
+	 *
 	 * @param dump
 	 *            Ali se izpisujejo vmesni rezultati.
 	 */
@@ -60,10 +60,10 @@ public class SemAn implements Visitor {
 			Report.error("Internal error. Unable to add built-in functions to the symbol table.");
 		}
 	}
-	
+
 	/**
 	 * Izpise abstraktno sintaksno drevo na datoteko vmesnih rezultatov.
-	 * 
+	 *
 	 * @param tree
 	 *            Abstraktno sintaksno drevo.
 	 */
@@ -73,12 +73,12 @@ public class SemAn implements Visitor {
 		indent = 0;
 		tree.accept(this);
 	}
-	
+
 	// Kot Visitor izpise abstraktno sintaksno drevo:
-	
+
 	/** Trenutni zamik. */
 	private int indent;
-	
+
 	public void visit(AbsArrType arrType) {
 		Report.dump(indent, "AbsArrType " + arrType.position.toString() + ": " + "[" + arrType.length + "]");
 		{
@@ -88,7 +88,7 @@ public class SemAn implements Visitor {
 		}
 		indent += 2; arrType.type.accept(this); indent -= 2;
 	}
-	
+
 	public void visit(AbsAtomConst atomConst) {
 		switch (atomConst.type) {
 		case AbsAtomConst.LOG:
@@ -109,7 +109,7 @@ public class SemAn implements Visitor {
 				Report.dump(indent + 2, "#typed as " + typ.toString());
 		}
 	}
-	
+
 	public void visit(AbsAtomType atomType) {
 		switch (atomType.type) {
 		case AbsAtomType.LOG:
@@ -130,7 +130,7 @@ public class SemAn implements Visitor {
 				Report.dump(indent + 2, "#typed as " + typ.toString());
 		}
 	}
-	
+
 	public void visit(AbsBinExpr binExpr) {
 		switch (binExpr.oper) {
 		case AbsBinExpr.IOR:
@@ -192,7 +192,7 @@ public class SemAn implements Visitor {
 		indent += 2; binExpr.expr1.accept(this); indent -= 2;
 		indent += 2; binExpr.expr2.accept(this); indent -= 2;
 	}
-	
+
 	public void visit(AbsComp comp) {
 		Report.dump(indent, "AbsComp " + comp.position.toString() + ": " + comp.name);
 		{
@@ -202,7 +202,7 @@ public class SemAn implements Visitor {
 		}
 		indent += 2; comp.type.accept(this); indent -= 2;
 	}
-	
+
 	public void visit(AbsCompName compName) {
 		Report.dump(indent, "AbsCompName " + compName.position.toString() + ": " + compName.name);
 		{
@@ -211,7 +211,7 @@ public class SemAn implements Visitor {
 				Report.dump(indent + 2, "#typed as " + typ.toString());
 		}
 	}
-	
+
 	public void visit(AbsDefs defs) {
 		Report.dump(indent, "AbsDefs " + defs.position.toString() + ":");
 		{
@@ -223,7 +223,7 @@ public class SemAn implements Visitor {
 			indent += 2; defs.def(def).accept(this); indent -= 2;
 		}
 	}
-	
+
 	public void visit(AbsExprs exprs) {
 		Report.dump(indent, "AbsExprs " + exprs.position.toString() + ":");
 		{
@@ -235,7 +235,7 @@ public class SemAn implements Visitor {
 			indent += 2; exprs.expr(expr).accept(this); indent -= 2;
 		}
 	}
-	
+
 	public void visit(AbsFor forStmt) {
 		Report.dump(indent, "AbsFor " + forStmt.position.toString() + ":");
 		{
@@ -249,7 +249,7 @@ public class SemAn implements Visitor {
 		indent += 2; forStmt.step.accept(this); indent -= 2;
 		indent += 2; forStmt.body.accept(this); indent -= 2;
 	}
-	
+
 	public void visit(AbsFunCall funCall) {
 		Report.dump(indent, "AbsFunCall " + funCall.position.toString() + ": " + funCall.name);
 		{
@@ -266,7 +266,7 @@ public class SemAn implements Visitor {
 			indent += 2; funCall.arg(arg).accept(this); indent -= 2;
 		}
 	}
-	
+
 	public void visit(AbsFunDef funDef) {
 		Report.dump(indent, "AbsFunDef " + funDef.position.toString() + ": " + funDef.name);
 		{
@@ -280,7 +280,7 @@ public class SemAn implements Visitor {
 		indent += 2; funDef.type.accept(this); indent -= 2;
 		indent += 2; funDef.expr.accept(this); indent -= 2;
 	}
-	
+
 	public void visit(AbsIfThen ifThen) {
 		Report.dump(indent, "AbsIfThen " + ifThen.position.toString() + ":");
 		{
@@ -288,10 +288,10 @@ public class SemAn implements Visitor {
 			if (typ != null)
 				Report.dump(indent + 2, "#typed as " + typ.toString());
 		}
-		indent += 2; ifThen.cond.accept(this); indent -= 2;		
-		indent += 2; ifThen.thenBody.accept(this); indent -= 2;		
+		indent += 2; ifThen.cond.accept(this); indent -= 2;
+		indent += 2; ifThen.thenBody.accept(this); indent -= 2;
 	}
-	
+
 	public void visit(AbsIfThenElse ifThenElse) {
 		Report.dump(indent, "AbsIfThenElse " + ifThenElse.position.toString() + ":");
 		{
@@ -299,11 +299,11 @@ public class SemAn implements Visitor {
 			if (typ != null)
 				Report.dump(indent + 2, "#typed as " + typ.toString());
 		}
-		indent += 2; ifThenElse.cond.accept(this); indent -= 2;		
-		indent += 2; ifThenElse.thenBody.accept(this); indent -= 2;		
-		indent += 2; ifThenElse.elseBody.accept(this); indent -= 2;		
+		indent += 2; ifThenElse.cond.accept(this); indent -= 2;
+		indent += 2; ifThenElse.thenBody.accept(this); indent -= 2;
+		indent += 2; ifThenElse.elseBody.accept(this); indent -= 2;
 	}
-	
+
 	public void visit(AbsPar par) {
 		Report.dump(indent, "AbsPar " + par.position.toString() + ": " + par.name);
 		{
@@ -313,7 +313,7 @@ public class SemAn implements Visitor {
 		}
 		indent += 2; par.type.accept(this); indent -= 2;
 	}
-	
+
 	public void visit(AbsPtrType ptrType) {
 		Report.dump(indent, "AbsPtrType " + ptrType.position.toString() + ":");
 		{
@@ -323,7 +323,7 @@ public class SemAn implements Visitor {
 		}
 		indent += 2; ptrType.type.accept(this); indent -= 2;
 	}
-	
+
 	public void visit(AbsRecType recType) {
 		Report.dump(indent, "AbsRecType " + recType.position.toString() + ":");
 		{
@@ -335,7 +335,7 @@ public class SemAn implements Visitor {
 			indent += 2; recType.comp(comp).accept(this); indent -= 2;
 		}
 	}
-	
+
 	public void visit(AbsTypeDef typeDef) {
 		Report.dump(indent, "AbsTypeDef " + typeDef.position.toString() + ": " + typeDef.name);
 		{
@@ -345,7 +345,7 @@ public class SemAn implements Visitor {
 		}
 		indent += 2; typeDef.type.accept(this); indent -= 2;
 	}
-	
+
 	public void visit(AbsTypeName typeName) {
 		Report.dump(indent, "AbsTypeName " + typeName.position.toString() + ": " + typeName.name);
 		{
@@ -359,7 +359,7 @@ public class SemAn implements Visitor {
 				Report.dump(indent + 2, "#typed as " + typ.toString());
 		}
 	}
-	
+
 	public void visit(AbsUnExpr unExpr) {
 		switch (unExpr.oper) {
 		case AbsUnExpr.ADD:
@@ -387,7 +387,7 @@ public class SemAn implements Visitor {
 		}
 		indent += 2; unExpr.expr.accept(this); indent -= 2;
 	}
-	
+
 	public void visit(AbsVarDef varDef) {
 		Report.dump(indent, "AbsVarDef " + varDef.position.toString() + ": " + varDef.name);
 		{
@@ -397,7 +397,7 @@ public class SemAn implements Visitor {
 		}
 		indent += 2; varDef.type.accept(this); indent -= 2;
 	}
-	
+
 	public void visit(AbsVarName varName) {
 		Report.dump(indent, "AbsVarName " + varName.position.toString() + ": " + varName.name);
 		{
@@ -406,7 +406,7 @@ public class SemAn implements Visitor {
 				Report.dump(indent + 2, "#defined at " + def.position.toString());
 		}
 	}
-	
+
 	public void visit(AbsWhere where) {
 		Report.dump(indent, "AbsWhere " + where.position.toString() + ":");
 		{
@@ -417,7 +417,7 @@ public class SemAn implements Visitor {
 		indent += 2; where.expr.accept(this); indent -= 2;
 		indent += 2; where.defs.accept(this); indent -= 2;
 	}
-	
+
 	public void visit(AbsWhile whileStmt) {
 		Report.dump(indent, "AbsWhile " + whileStmt.position.toString() + ":");
 		{
@@ -428,5 +428,5 @@ public class SemAn implements Visitor {
 		indent += 2; whileStmt.cond.accept(this); indent -= 2;
 		indent += 2; whileStmt.body.accept(this); indent -= 2;
 	}
-	
+
 }

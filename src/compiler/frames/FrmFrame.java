@@ -6,7 +6,7 @@ import compiler.abstr.tree.*;
 
 /**
  * Klicni zapis funkcije.
- * 
+ *
  * @author sliva
  */
 public class FrmFrame {
@@ -22,7 +22,7 @@ public class FrmFrame {
 
 	/** Stevilo parametrov.  */
 	public int numPars;
-	
+
 	/** Velikost bloka parametrov.  */
 	public long sizePars;
 
@@ -52,7 +52,7 @@ public class FrmFrame {
 
 	/**
 	 * Ustvari nov klicni zapis funkcije.
-	 * 
+	 *
 	 * @param fun Funkcija.
 	 * @param level Staticni nivo funkcije.
 	 */
@@ -88,5 +88,5 @@ public class FrmFrame {
 					"FP=" + FP.name() + "," +
 					"RV=" + RV.name() + ")");
 	}
-	
+
 }

@@ -4,7 +4,7 @@ import compiler.*;
 
 /**
  * Opis imena tipa.
- * 
+ *
  * @author sliva
  */
 public class SemTypeName extends SemType {
@@ -17,7 +17,7 @@ public class SemTypeName extends SemType {
 
 	/**
 	 * Ustvari nov opis imena tipa.
-	 * 
+	 *
 	 * @param name
 	 *            Ime tipa.
 	 */
@@ -28,7 +28,7 @@ public class SemTypeName extends SemType {
 
 	/**
 	 * Doloci dejanski tipa.
-	 * 
+	 *
 	 * @param type
 	 *            Tip.
 	 */
@@ -41,7 +41,7 @@ public class SemTypeName extends SemType {
 
 	/**
 	 * Vrne dejanski tip.
-	 * 
+	 *
 	 * @return Dejanski tip.
 	 */
 	public SemType getType() {

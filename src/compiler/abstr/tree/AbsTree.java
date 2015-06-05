@@ -5,7 +5,7 @@ import compiler.abstr.*;
 
 /**
  * Asbtraktno sintaksno drevo.
- * 
+ *
  * @author sliva
  */
 public abstract class AbsTree {
@@ -14,7 +14,7 @@ public abstract class AbsTree {
 
 	/**
 	 * Ustvari novo abstraktno sintaksno drevo.
-	 * 
+	 *
 	 * @param pos
 	 *            Polozaj stavcne oblike tega drevesa.
 	 */

@@ -2,7 +2,7 @@ package compiler;
 
 /**
  * Doloca polozaj dela izvornega besedila v izvorni datoteki.
- * 
+ *
  * @author sliva
  */
 public class Position {
@@ -19,7 +19,7 @@ public class Position {
 
 	/**
 	 * Ustvari nov polozaj dela izvornega besedila.
-	 * 
+	 *
 	 * @param begLine
 	 *            Vrstica zacetka dela besedila.
 	 * @param begColumn
@@ -38,7 +38,7 @@ public class Position {
 
 	/**
 	 * Ustvari nov polozaj znaka izvornega besedila.
-	 * 
+	 *
 	 * @param line
 	 *            Vrstica znaka v izvornem besedilu.
 	 * @param column
@@ -51,7 +51,7 @@ public class Position {
 	/**
 	 * Ustvari nov polozaj dela izvornega besedila na osnovi polozaja prvega in
 	 * zadnjega dela izvornega besedila.
-	 * 
+	 *
 	 * @param begPos
 	 *            Polozaj prvega dela izvornega besedila.
 	 * @param endPos

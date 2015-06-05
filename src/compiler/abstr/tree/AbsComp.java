@@ -5,7 +5,7 @@ import compiler.abstr.*;
 
 /**
  * Opis komponente strukture.
- * 
+ *
  * @author sliva
  *
  */
@@ -19,7 +19,7 @@ public class AbsComp extends AbsDef {
 
 	/**
 	 * Ustvari nov opis komponente.
-	 * 
+	 *
 	 * @param pos
 	 *            Polozaj stavcne oblike tega drevesa.
 	 * @param name
@@ -32,7 +32,7 @@ public class AbsComp extends AbsDef {
 		this.name = name;
 		this.type = type;
 	}
-	
+
 	@Override public void accept(Visitor visitor) { visitor.visit(this); }
 
 }

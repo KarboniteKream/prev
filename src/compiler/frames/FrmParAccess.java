@@ -6,7 +6,7 @@ import compiler.seman.type.*;
 
 /**
  * Dostop do argumenta funkcije.
- * 
+ *
  * @author sliva
  */
 public class FrmParAccess extends FrmAccess {
@@ -21,14 +21,14 @@ public class FrmParAccess extends FrmAccess {
 	public long offset;
 
 	/** Ustvari nov dostop do parametra.
-	 * 
+	 *
 	 * @param par Parameter.
 	 * @param frame Klicni zapis.
 	 */
 	public FrmParAccess(AbsPar par, FrmFrame frame) {
 		this.par = par;
 		this.frame = frame;
-		
+
 		SemType type = SymbDesc.getType(this.par).actualType();
 		this.offset = 0 + frame.sizePars;
 		frame.sizePars = frame.sizePars + type.size();
@@ -39,5 +39,5 @@ public class FrmParAccess extends FrmAccess {
 	public String toString() {
 		return "PAR(" + par.name + ": offset=" + offset + ")";
 	}
-	
+
 }

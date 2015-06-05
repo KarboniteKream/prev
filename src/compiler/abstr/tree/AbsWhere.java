@@ -5,20 +5,20 @@ import compiler.abstr.*;
 
 /**
  * Opis izraza z definicijami.
- * 
+ *
  * @author sliva
  */
 public class AbsWhere extends AbsExpr {
 
 	/** Izraz. */
 	public final AbsExpr expr;
-	
+
 	/** Definicije v izrazu. */
 	public final AbsDefs defs;
-	
+
 	/**
 	 * Ustvari nov izraz z definicijami.
-	 * 
+	 *
 	 * @param pos
 	 *            Polozaj stavcne oblike tega drevesa.
 	 * @param expr
@@ -31,7 +31,7 @@ public class AbsWhere extends AbsExpr {
 		this.expr = expr;
 		this.defs = defs;
 	}
-	
+
 	@Override public void accept(Visitor visitor) { visitor.visit(this); }
 
 }

@@ -4,23 +4,23 @@ import compiler.*;
 
 /**
  * Leksikalni simbol.
- * 
+ *
  * @author sliva
  */
 public class Symbol {
-	
+
 	/** Vrsta simbola. */
 	public final int token;
 
 	/** Znakovna predstavitev simbola. */
 	public final String lexeme;
-	
+
 	/** Polozaj simbola v izvorni datoteki. */
 	public final Position position;
 
 	/**
 	 * Ustvari nov leksikalni simbol.
-	 * 
+	 *
 	 * @param token
 	 *            Vrsta simbola.
 	 * @param lexeme
@@ -42,7 +42,7 @@ public class Symbol {
 
 	/**
 	 * Ustvari nov leksikalni simbol.
-	 * 
+	 *
 	 * @param token
 	 *            Vrsta simbola.
 	 * @param lexeme
@@ -62,7 +62,7 @@ public class Symbol {
 		switch (token) {
 
 		case Token.EOF       : tokenName = "EOF"       ; break;
-		
+
 		case Token.IDENTIFIER: tokenName = "IDENTIFIER"; break;
 
 		case Token.LOG_CONST : tokenName = "LOG_CONST" ; break;
@@ -72,40 +72,40 @@ public class Symbol {
 		case Token.AND       : tokenName = "AND"       ; break;
 		case Token.IOR       : tokenName = "IOR"       ; break;
 		case Token.NOT       : tokenName = "NOT"       ; break;
-		
+
 		case Token.EQU       : tokenName = "EQU"       ; break;
 		case Token.NEQ       : tokenName = "NEQ"       ; break;
 		case Token.LTH       : tokenName = "LTH"       ; break;
 		case Token.GTH       : tokenName = "GTH"       ; break;
 		case Token.LEQ       : tokenName = "LEQ"       ; break;
 		case Token.GEQ       : tokenName = "GEQ"       ; break;
-		
+
 		case Token.MUL       : tokenName = "MUL"       ; break;
 		case Token.DIV       : tokenName = "DIV"       ; break;
 		case Token.MOD       : tokenName = "MOD"       ; break;
 		case Token.ADD       : tokenName = "ADD"       ; break;
 		case Token.SUB       : tokenName = "SUB"       ; break;
-		
+
 		case Token.PTR		 : tokenName = "PTR"       ; break;
-		
+
 		case Token.LPARENT   : tokenName = "LPARENT"   ; break;
 		case Token.RPARENT   : tokenName = "RPARENT"   ; break;
 		case Token.LBRACKET  : tokenName = "LBRACKET"  ; break;
 		case Token.RBRACKET  : tokenName = "RBRACKET"  ; break;
 		case Token.LBRACE    : tokenName = "LBRACE"    ; break;
 		case Token.RBRACE    : tokenName = "RBRACE"    ; break;
-		
+
 		case Token.DOT	     : tokenName = "DOT"       ; break;
 		case Token.COLON     : tokenName = "COLON"     ; break;
 		case Token.SEMIC     : tokenName = "SEMIC"     ; break;
 		case Token.COMMA     : tokenName = "COMMA"     ; break;
-		
+
 		case Token.ASSIGN    : tokenName = "ASSIGN"    ; break;
-		
+
 		case Token.LOGICAL   : tokenName = "LOGICAL"   ; break;
 		case Token.INTEGER   : tokenName = "INTEGER"   ; break;
 		case Token.STRING    : tokenName = "STRING"    ; break;
-		
+
 		case Token.KW_ARR    : tokenName = "ARR"       ; break;
 		case Token.KW_ELSE   : tokenName = "ELSE"      ; break;
 		case Token.KW_FOR    : tokenName = "FOR"       ; break;

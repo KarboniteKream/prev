@@ -7,7 +7,7 @@ import compiler.seman.type.*;
 
 /**
  * Dostop do lokalne spremenljivke.
- * 
+ *
  * @author sliva
  */
 public class FrmLocAccess extends FrmAccess {
@@ -22,14 +22,14 @@ public class FrmLocAccess extends FrmAccess {
 	public final long offset;
 
 	/** Ustvari nov dostop do lokalne spremenljivke.
-	 * 
+	 *
 	 * @param var Lokalna spremenljivka.
 	 * @param frame Klicni zapis.
 	 */
 	public FrmLocAccess(AbsVarDef var, FrmFrame frame) {
 		this.var = var;
 		this.frame = frame;
-		
+
 		SemType type = SymbDesc.getType(this.var).actualType();
 		this.offset = 0 - frame.sizeLocs - type.size();
 		frame.sizeLocs = frame.sizeLocs + type.size();
@@ -39,5 +39,5 @@ public class FrmLocAccess extends FrmAccess {
 	public String toString() {
 		return "LOC(" + var.name + ": offset=" + offset + ")";
 	}
-	
+
 }

@@ -2,7 +2,7 @@ package compiler.seman.type;
 
 /**
  * Opis tabelaricnega tipa.
- * 
+ *
  * @author sliva
  */
 public class SemArrType extends SemType {
@@ -15,7 +15,7 @@ public class SemArrType extends SemType {
 
 	/**
 	 * Ustvari nov opis tabelaricnega tipa.
-	 * 
+	 *
 	 * @param type
 	 *            Tip elementa tabele.
 	 * @param size

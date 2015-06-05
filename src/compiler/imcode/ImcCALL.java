@@ -7,7 +7,7 @@ import compiler.frames.*;
 
 /**
  * Klic funkcije.
- * 
+ *
  * @author sliva
  */
 public class ImcCALL extends ImcExpr {
@@ -20,7 +20,7 @@ public class ImcCALL extends ImcExpr {
 
 	/**
 	 * Ustvari nov klic funkcije.
-	 * 
+	 *
 	 * @param label Labela funkcije.
 	 */
 	public ImcCALL(FrmLabel label) {

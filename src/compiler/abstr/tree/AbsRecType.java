@@ -7,7 +7,7 @@ import compiler.abstr.*;
 
 /**
  * Opis strukture.
- * 
+ *
  * @author sliva
  */
 public class AbsRecType extends AbsType {
@@ -17,7 +17,7 @@ public class AbsRecType extends AbsType {
 
 	/**
 	 * Ustvari nov opis strukture.
-	 * 
+	 *
 	 * @param pos
 	 *            Polozaj stavcne oblike tega drevesa.
 	 * @param comps
@@ -32,7 +32,7 @@ public class AbsRecType extends AbsType {
 
 	/**
 	 * Vrne izbrano komponento.
-	 * 
+	 *
 	 * @param index
 	 *            Indeks koponente.
 	 * @return Komponenta na izbranem mestu v strukturi.
@@ -43,7 +43,7 @@ public class AbsRecType extends AbsType {
 
 	/**
 	 * Vrne stevilo komponent v strukturi.
-	 * 
+	 *
 	 * @return Stevilo komponent v strukturi.
 	 */
 	public int numComps() {

@@ -4,7 +4,7 @@ import compiler.*;
 
 /**
  * Definicija.
- * 
+ *
  * @author sliva
  */
 public abstract class AbsDef extends AbsTree {

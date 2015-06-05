@@ -9,7 +9,7 @@ import compiler.tmpan.*;
 
 /**
  * Fragment kode.
- * 
+ *
  * @author sliva
  */
 public class ImcCodeChunk extends ImcChunk {
@@ -31,7 +31,7 @@ public class ImcCodeChunk extends ImcChunk {
 
 	/**
 	 * Ustvari nov fragment kode.
-	 * 
+	 *
 	 * @param frame Klicni zapis funkcije.
 	 * @param imcode Vmesna koda funckije.
 	 */

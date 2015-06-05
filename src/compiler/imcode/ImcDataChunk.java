@@ -5,7 +5,7 @@ import compiler.frames.*;
 
 /**
  * Fragment podatkov.
- * 
+ *
  * @author sliva
  */
 public class ImcDataChunk extends ImcChunk {
@@ -18,7 +18,7 @@ public class ImcDataChunk extends ImcChunk {
 
 	/**
 	 * Ustvari novfragment podatkov.
-	 * 
+	 *
 	 * @param label Labela podatka.
 	 * @param size Velikost podatka.
 	 */

@@ -1,6 +1,6 @@
 /**
  * Semanticni analizator.
- * 
+ *
  * @author sliva
  *
  */

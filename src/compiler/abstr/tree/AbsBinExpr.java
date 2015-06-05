@@ -5,7 +5,7 @@ import compiler.abstr.*;
 
 /**
  * Binarni izraz.
- * 
+ *
  * @author sliva
  */
 public class AbsBinExpr extends AbsExpr {
@@ -38,7 +38,7 @@ public class AbsBinExpr extends AbsExpr {
 
 	/**
 	 * Ustvari nov binarni izraz.
-	 * 
+	 *
 	 * @param pos
 	 *            Polozaj stavcne oblike tega drevesa.
 	 * @param oper

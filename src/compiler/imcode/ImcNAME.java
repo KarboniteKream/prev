@@ -5,7 +5,7 @@ import compiler.frames.*;
 
 /**
  * Ime.
- * 
+ *
  * @author sliva
  */
 public class ImcNAME extends ImcExpr {
@@ -15,7 +15,7 @@ public class ImcNAME extends ImcExpr {
 
 	/**
 	 * Ustvari novo ime.
-	 * 
+	 *
 	 * @param label Labela.
 	 */
 	public ImcNAME(FrmLabel label) {

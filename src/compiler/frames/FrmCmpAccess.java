@@ -17,7 +17,7 @@ public class FrmCmpAccess extends FrmAccess {
 
 	/**
 	 * Ustvari nov dostop do komponente zapisa.
-	 * 
+	 *
 	 * @param cmp Komponenta zapisa.
 	 * @param offset Odmik od zacetnega naslova strukture.
 	 */
@@ -30,5 +30,5 @@ public class FrmCmpAccess extends FrmAccess {
 	public String toString() {
 		return "CMP(" + cmp.name + ": offset=" + offset + ")";
 	}
-	
+
 }

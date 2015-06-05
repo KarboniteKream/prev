@@ -8,7 +8,7 @@ import compiler.abstr.tree.*;
 
 /**
  * Sintaksni analizator.
- * 
+ *
  * @author sliva
  */
 public class SynAn {
@@ -24,7 +24,7 @@ public class SynAn {
 
 	/**
 	 * Ustvari nov sintaksni analizator.
-	 * 
+	 *
 	 * @param lexAn
 	 *            Leksikalni analizator.
 	 * @param dump
@@ -845,7 +845,7 @@ public class SynAn {
 
 	/**
 	 * Izpise produkcijo v datoteko z vmesnimi rezultati.
-	 * 
+	 *
 	 * @param production
 	 *            Produkcija, ki naj bo izpisana.
 	 */

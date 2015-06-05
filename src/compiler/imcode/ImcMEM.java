@@ -4,7 +4,7 @@ import compiler.*;
 
 /**
  * Dostop do pomnilnika.
- * 
+ *
  * @author sliva
  */
 public class ImcMEM extends ImcExpr {
@@ -14,7 +14,7 @@ public class ImcMEM extends ImcExpr {
 
 	/**
 	 * Ustvari nov dostop do pomnilnika.
-	 * 
+	 *
 	 * @param expr Naslov.
 	 */
 	public ImcMEM(ImcExpr expr) {

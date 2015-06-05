@@ -4,7 +4,7 @@ import compiler.*;
 
 /**
  * Opis atomarnih podatkovnih tipov.
- * 
+ *
  * @author sliva
  */
 public class SemAtomType extends SemType {
@@ -19,7 +19,7 @@ public class SemAtomType extends SemType {
 
 	/**
 	 * Ustvari nov opis atomarnega tipa.
-	 * 
+	 *
 	 * @param type
 	 *            Atomarni tip.
 	 */

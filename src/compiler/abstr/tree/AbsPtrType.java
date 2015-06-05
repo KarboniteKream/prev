@@ -5,7 +5,7 @@ import compiler.abstr.*;
 
 /**
  * Opis kazalcnega tipa.
- * 
+ *
  * @author sliva
  */
 public class AbsPtrType extends AbsType {
@@ -15,7 +15,7 @@ public class AbsPtrType extends AbsType {
 
 	/**
 	 * Ustvari nov opis kazalcnega tipa.
-	 * 
+	 *
 	 * @param pos
 	 *            Polozaj stavcne oblike tega drevesa.
 	 * @param type
@@ -25,7 +25,7 @@ public class AbsPtrType extends AbsType {
 		super(pos);
 		this.type = type;
 	}
-	
+
 	@Override public void accept(Visitor visitor) { visitor.visit(this); }
 
 }

@@ -6,7 +6,7 @@ import compiler.abstr.tree.*;
 
 /**
  * Shranjevanje klicnih zapisov.
- * 
+ *
  * @author sliva
  */
 public class FrmDesc {
@@ -16,17 +16,17 @@ public class FrmDesc {
 
 	/**
 	 * Poveze funkcijo s klicnim zapisom.
-	 * 
+	 *
 	 * @param fun Funkcija.
 	 * @param frame Klicni zapis.
 	 */
 	public static void setFrame(AbsFunDef fun, FrmFrame frame) {
 		FrmDesc.frames.put(fun, frame);
 	}
-	
+
 	/**
 	 * Vrne klicni zapis funkcije.
-	 * 
+	 *
 	 * @param fun Funkcija.
 	 * @return Klicni zapis.
 	 */
@@ -39,17 +39,17 @@ public class FrmDesc {
 
 	/**
 	 * Poveze spremenljivko, parameter ali komponento z opisom dostopa.
-	 * 
+	 *
 	 * @param var Spremenljivka, parameter ali komponenta.
 	 * @param access Opis dostopa.
 	 */
 	public static void setAccess(AbsDef var, FrmAccess access) {
 		FrmDesc.acceses.put(var, access);
 	}
-	
+
 	/**
 	 * Vrne opis dostopa do spremenljivke, parametra ali komponente.
-	 * 
+	 *
 	 * @param var Spremenljivka, parameter ali komponenta.
 	 * @return Opis dostopa.
 	 */

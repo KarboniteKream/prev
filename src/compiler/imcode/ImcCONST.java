@@ -4,7 +4,7 @@ import compiler.*;
 
 /**
  * Konstanta.
- * 
+ *
  * @author sliva
  */
 public class ImcCONST extends ImcExpr {
@@ -14,7 +14,7 @@ public class ImcCONST extends ImcExpr {
 
 	/**
 	 * Ustvari novo konstanto.
-	 * 
+	 *
 	 * @param value Vrednost konstante.
 	 */
 	public ImcCONST(Long value) {

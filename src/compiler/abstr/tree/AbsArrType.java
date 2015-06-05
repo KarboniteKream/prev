@@ -5,7 +5,7 @@ import compiler.abstr.*;
 
 /**
  * Opis tabela.
- * 
+ *
  * @author sliva
  */
 public class AbsArrType extends AbsType {
@@ -18,7 +18,7 @@ public class AbsArrType extends AbsType {
 
 	/**
 	 * Ustvari nov opis tabele.
-	 * 
+	 *
 	 * @param pos
 	 *            Polozaj stavcne oblike tega drevesa.
 	 * @param length
@@ -31,7 +31,7 @@ public class AbsArrType extends AbsType {
 		this.length = length;
 		this.type = type;
 	}
-	
+
 	@Override public void accept(Visitor visitor) { visitor.visit(this); }
 
 }

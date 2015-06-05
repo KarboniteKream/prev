@@ -5,29 +5,29 @@ import compiler.abstr.*;
 
 /**
  * Zanka z eksplicitnim stevcem.
- * 
+ *
  * @author sliva
  */
 public class AbsFor extends AbsExpr {
-	
+
 	/** Stevec. */
 	public final AbsExpr count;
-	
+
 	/** Spodnja meja. */
 	public final AbsExpr lo;
-	
+
 	/** Zgornja meja. */
 	public final AbsExpr hi;
-	
+
 	/** Korak. */
 	public final AbsExpr step;
-	
+
 	/** Jedro stavka. */
 	public final AbsExpr body;
-	
+
 	/**
 	 * Ustvari zanko z eksplicitnim stevcem.
-	 * 
+	 *
 	 * @param pos
 	 *            Polozaj stavcne oblike tega drevesa.
 	 * @param count

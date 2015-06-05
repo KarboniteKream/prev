@@ -7,7 +7,7 @@ import compiler.seman.type.*;
 
 /**
  * Opisi posameznih definicij.
- * 
+ *
  * @author sliva
  */
 public class SymbDesc {
@@ -17,7 +17,7 @@ public class SymbDesc {
 
 	/**
 	 * Doloci globino nivoja vidnosti za dano definicijo imena.
-	 * 
+	 *
 	 * @param node
 	 *            Vozlisce drevesa.
 	 * @param nodeScope
@@ -29,7 +29,7 @@ public class SymbDesc {
 
 	/**
 	 * Vrne globino nivoja vidnosti za dano definicijo imena.
-	 * 
+	 *
 	 * @param node
 	 *            Vozlisce drevesa.
 	 * @return Globina nivoja vidnosti.
@@ -44,7 +44,7 @@ public class SymbDesc {
 
 	/**
 	 * Poveze vozlisce drevesa z definicijo imena.
-	 * 
+	 *
 	 * @param node
 	 *            Vozlisce drevesa.
 	 * @param def
@@ -56,7 +56,7 @@ public class SymbDesc {
 
 	/**
 	 * Vrne definicijo imena, ki je povezano z vozliscem.
-	 * 
+	 *
 	 * @param node
 	 *            Vozlisce drevesa.
 	 * @return Definicija imena.
@@ -71,7 +71,7 @@ public class SymbDesc {
 
 	/**
 	 * Poveze vozlisce drevesa z opisom tipa.
-	 * 
+	 *
 	 * @param node
 	 *            Vozlisce drevesa.
 	 * @param typ
@@ -83,7 +83,7 @@ public class SymbDesc {
 
 	/**
 	 * Vrne opis tipa, ki je povezano z vozliscem.
-	 * 
+	 *
 	 * @param node
 	 *            Vozlisce drevesa.
 	 * @return Opis tipa.

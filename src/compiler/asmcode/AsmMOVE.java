@@ -4,7 +4,7 @@ import compiler.frames.*;
 
 /**
  * Opis ukazov za prenos vrednosti ene zacasne spremenljivke v drugo.
- * 
+ *
  * @author sliva
  */
 public class AsmMOVE extends AsmInstr {

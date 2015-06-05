@@ -8,20 +8,20 @@ import compiler.frames.*;
 /*
  * Znakovna predstavitev ukaza naj vsebuje obliko, ki je primerna za izpis v zbirnik.
  * Edina razlika je v tem, da znakovna predstavitev namesto registrov in label vsebuje
- * 
+ *
  * - `d0, `d1, ... : za zacasne spremenljivke, ki jih ukaz definira;
  * - `s0, `s1, ... : za zacasne spremenljikve, ki jih ukaz uporablja;
  * - `l0, `l1, ... : za labele.
- * 
+ *
  * Primera:
  * 1.) Ukaz ADD T0,T0,T1 opisemo kot
  *        "ADD `d0,`s0,`s1" pri defs={T0}, uses={T0,T1}, labels={}
  * 2.) Ukaz BR T3,L5 opisemo kot
  *        "BR `s0,`l0" pri defs={}, uses={T3}, labels={L5}
- *        
+ *
  * Metoda 'format' izpise ukaz, a ce argument ni nic (po fazi dodeljevanja registrov),
  * zacasne spremenljivke nadomesti s pravimi registri.
- * 
+ *
  */
 
 public abstract class AsmInstr {
@@ -46,7 +46,7 @@ public abstract class AsmInstr {
 
 	/**
 	 * Opis ukaza strojne kode.
-	 * 
+	 *
 	 * @param assem
 	 *            Zankovna predstavitev ukaza (glej zgoraj).
 	 * @param defs

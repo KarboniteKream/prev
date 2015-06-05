@@ -11,7 +11,7 @@ import java.io.PrintStream;
  * spremenljivke {@link compiler.Report#reporting}. Opozorila o napakah so se
  * izpisejo, kadar je mozno nadaljevati prevajanje, obvestila o napakah pa so
  * uporabljena takrat, ko nadaljevanje prevajanja ni mozno.
- * 
+ *
  * @author sliva
  */
 public class Report {
@@ -21,7 +21,7 @@ public class Report {
 
 	/**
 	 * Izpise obvestilo o poteku prevajanja.
-	 * 
+	 *
 	 * @param message
 	 *            Obvestilo o poteku prevajanja.
 	 */
@@ -32,7 +32,7 @@ public class Report {
 
 	/**
 	 * Izpise obvestilo o poteku prevajanja, ki je vezano na del izvorne kode.
-	 * 
+	 *
 	 * @param pos
 	 *            Polozaj dela izvorne kode, na katerega se nanasa obvestilo.
 	 * @param message
@@ -44,7 +44,7 @@ public class Report {
 
 	/**
 	 * Izpise opozorilo o napaki.
-	 * 
+	 *
 	 * @param message
 	 *            Opozorilo o napaki.
 	 */
@@ -54,7 +54,7 @@ public class Report {
 
 	/**
 	 * Izpise opozorilo o napaki, ki je vezana na del izvorne kode.
-	 * 
+	 *
 	 * @param pos
 	 *            Polozaj dela izvorne kode, na katerega se nanasa opozorilo o
 	 *            napaki.
@@ -67,7 +67,7 @@ public class Report {
 
 	/**
 	 * Izpise opozorilo o napaki, ki je vezana na znak izvorne kode.
-	 * 
+	 *
 	 * @param line
 	 *            Vrstica znaka, na katerega se nanasa opozorilo o napaki.
 	 * @param column
@@ -81,7 +81,7 @@ public class Report {
 
 	/**
 	 * Izpise obvestilo o napaki in konca prevajanje.
-	 * 
+	 *
 	 * @param message
 	 *            Obvestilo o napaki.
 	 */
@@ -93,7 +93,7 @@ public class Report {
 	/**
 	 * Izpise obvestilo o napaki, ki je vezana na del izvorne kode, in konca
 	 * prevajanje.
-	 * 
+	 *
 	 * @param pos
 	 *            Polozaj dela izvorne kode, na katerega se nanasa obvestilo o
 	 *            napaki.
@@ -107,7 +107,7 @@ public class Report {
 	/**
 	 * Izpise obvestilo o napaki, ki je vezana na znak izvorne kode, in konca
 	 * prevajanje.
-	 * 
+	 *
 	 * @param line
 	 *            Vrstica znaka, na katerega se nanasa opozorilo o napaki.
 	 * @param column
@@ -118,13 +118,13 @@ public class Report {
 	public static void error(int line, int column, String message) {
 		error(new Position(line, column), message);
 	}
-	
+
 	/** Datoteka z vmesnimi rezultati prevajanja. */
 	private static PrintStream dumpFile = null;
 
 	/**
 	 * Odpre datoteko z vmesnimi rezultati.
-	 * 
+	 *
 	 * @param sourceFileName
 	 *            Ime datoteke z vmesnimi rezultati.
 	 */
@@ -136,7 +136,7 @@ public class Report {
 			Report.warning("Cannot produce dump file '" + dumpFileName + "'.");
 		}
 	}
-	
+
 	/**
 	 * Zapre datoteko z vmesnimi rezultati.
 	 */
@@ -144,10 +144,10 @@ public class Report {
 		dumpFile.close();
 		dumpFile = null;
 	}
-	
+
 	/**
 	 * Vrne datoteko z vmesnimi rezultati.
-	 * 
+	 *
 	 * @return Datoteka z vmesnimi rezultati.
 	 */
 	public static PrintStream dumpFile() {
@@ -168,5 +168,5 @@ public class Report {
 		for (int i = 0; i < indent; i++) dumpFile.print(" ");
 		dumpFile.println(line);
 	}
-	
+
 }

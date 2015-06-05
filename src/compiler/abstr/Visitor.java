@@ -6,7 +6,7 @@ import compiler.abstr.tree.*;
  * @author sliva
  */
 public interface Visitor {
-	
+
 	public void visit(AbsArrType    acceptor);
 	public void visit(AbsAtomConst  acceptor);
 	public void visit(AbsAtomType   acceptor);

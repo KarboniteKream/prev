@@ -7,7 +7,7 @@ import compiler.abstr.*;
 
 /**
  * Seznam definicij.
- * 
+ *
  * @author sliva
  */
 public class AbsDefs extends AbsTree {
@@ -17,7 +17,7 @@ public class AbsDefs extends AbsTree {
 
 	/**
 	 * Ustvari nov seznam definicij.
-	 * 
+	 *
 	 * @param pos
 	 *            Polozaj stavcne oblike tega drevesa.
 	 * @param defs
@@ -32,7 +32,7 @@ public class AbsDefs extends AbsTree {
 
 	/**
 	 * Vrne izbrano definicijo.
-	 * 
+	 *
 	 * @param index
 	 *            Indeks definicije.
 	 * @return Definicija na izbranem mestu v seznamu.
@@ -43,13 +43,13 @@ public class AbsDefs extends AbsTree {
 
 	/**
 	 * Vrne stevilo definicij v seznamu.
-	 * 
+	 *
 	 * @return Stevilo definicij v seznamu.
 	 */
 	public int numDefs() {
 		return defs.length;
 	}
-	
+
 	@Override public void accept(Visitor visitor) { visitor.visit(this); }
 
 }

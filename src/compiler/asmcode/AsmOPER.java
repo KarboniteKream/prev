@@ -6,7 +6,7 @@ import compiler.frames.*;
 
 /**
  * Opis ukazov, ki se jih ne opise z AsmLABEL in AsmMOVE.
- * 
+ *
  * @author sliva
  */
 public class AsmOPER extends AsmInstr {

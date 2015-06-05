@@ -5,7 +5,7 @@ import compiler.abstr.*;
 
 /**
  * Definicija spremenljivke.
- * 
+ *
  * @author sliva
  */
 public class AbsVarDef extends AbsDef {
@@ -18,7 +18,7 @@ public class AbsVarDef extends AbsDef {
 
 	/**
 	 * Ustvari novo definicijo spremenljivke.
-	 * 
+	 *
 	 * @param pos
 	 *            Polozaj stavcne oblike tega drevesa.
 	 * @param name

@@ -4,7 +4,7 @@ import compiler.*;
 
 /**
  * Prenos.
- * 
+ *
  * @author sliva
  */
 public class ImcMOVE extends ImcStmt {
@@ -16,7 +16,7 @@ public class ImcMOVE extends ImcStmt {
 	public ImcExpr src;
 
 	/** Ustvari nov prenos.
-	 * 
+	 *
 	 * @param dst Ponor.
 	 * @param src Izvor.
 	 */

@@ -9,7 +9,7 @@ import compiler.seman.type.*;
 
 /**
  * Preverjanje tipov.
- * 
+ *
  * @author sliva
  */
 public class TypeChecker implements Visitor

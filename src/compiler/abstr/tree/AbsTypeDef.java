@@ -5,7 +5,7 @@ import compiler.abstr.*;
 
 /**
  * Definicija tipa.
- * 
+ *
  * @author sliva
  */
 public class AbsTypeDef extends AbsDef {
@@ -18,7 +18,7 @@ public class AbsTypeDef extends AbsDef {
 
 	/**
 	 * Ustvari novo definicijo tipa.
-	 * 
+	 *
 	 * @param pos
 	 *            Polozaj stavcne oblike tega drevesa.
 	 * @param name
@@ -31,7 +31,7 @@ public class AbsTypeDef extends AbsDef {
 		this.name = name;
 		this.type = type;
 	}
-	
+
 	@Override public void accept(Visitor visitor) { visitor.visit(this); }
 
 }

@@ -5,7 +5,7 @@ import compiler.abstr.*;
 
 /**
  * Opis imena tipa.
- * 
+ *
  * @author sliva
  */
 public class AbsTypeName extends AbsType {
@@ -15,7 +15,7 @@ public class AbsTypeName extends AbsType {
 
 	/**
 	 * Ustvari nov opis imena tipa.
-	 * 
+	 *
 	 * @param pos
 	 *            Polozaj stavcne oblike tega drevesa.
 	 * @param name

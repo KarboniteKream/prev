@@ -4,7 +4,7 @@ import compiler.*;
 
 /**
  * Stavki v izrazu.
- * 
+ *
  * @author sliva
  */
 public class ImcESEQ extends ImcExpr {
@@ -17,7 +17,7 @@ public class ImcESEQ extends ImcExpr {
 
 	/**
 	 * Ustvari stavke v izrazu.
-	 * 
+	 *
 	 * @param stmt Stavki.
 	 * @param expr Izraz.
 	 */

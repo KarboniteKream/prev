@@ -5,7 +5,7 @@ import compiler.frames.*;
 
 /**
  * Zacasna spremenljivka.
- * 
+ *
  * @author sliva
  */
 public class ImcTEMP extends ImcExpr {
@@ -15,7 +15,7 @@ public class ImcTEMP extends ImcExpr {
 
 	/**
 	 * Ustvari novo zacasno spremenljivko.
-	 * 
+	 *
 	 * @param temp Zacasna spremenljivka.
 	 */
 	public ImcTEMP(FrmTemp temp) {

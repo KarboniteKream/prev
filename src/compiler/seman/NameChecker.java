@@ -6,7 +6,7 @@ import compiler.Report;
 
 /**
  * Preverjanje in razresevanje imen (razen imen komponent).
- * 
+ *
  * @author sliva
  */
 public class NameChecker implements Visitor

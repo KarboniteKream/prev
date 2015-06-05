@@ -2,7 +2,7 @@ package compiler.seman.type;
 
 /**
  * Opis kazalcnega tipa.
- * 
+ *
  * @author sliva
  */
 public class SemPtrType extends SemType {
@@ -12,7 +12,7 @@ public class SemPtrType extends SemType {
 
 	/**
 	 * Ustvari nov opis kazalcnega tipa.
-	 * 
+	 *
 	 * @param type
 	 */
 	public SemPtrType(SemType type) {

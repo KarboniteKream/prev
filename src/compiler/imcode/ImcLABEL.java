@@ -5,7 +5,7 @@ import compiler.frames.*;
 
 /**
  * Labela.
- * 
+ *
  * @author sliva
  */
 public class ImcLABEL extends ImcStmt {
@@ -15,7 +15,7 @@ public class ImcLABEL extends ImcStmt {
 
 	/**
 	 * Ustvari novo labelo.
-	 * 
+	 *
 	 * @param label Labela.
 	 */
 	public ImcLABEL(FrmLabel label) {

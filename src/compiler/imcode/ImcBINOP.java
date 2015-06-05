@@ -4,7 +4,7 @@ import compiler.*;
 
 /**
  * Binarna operacija.
- * 
+ *
  * @author sliva
  */
 public class ImcBINOP extends ImcExpr {
@@ -33,7 +33,7 @@ public class ImcBINOP extends ImcExpr {
 
 	/**
 	 * Ustvari novo binarno operacijo.
-	 * 
+	 *
 	 * @param op Operator.
 	 * @param limc Levi podizraz.
 	 * @param rimc Desni podizraz.

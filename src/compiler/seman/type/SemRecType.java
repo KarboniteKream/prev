@@ -4,7 +4,7 @@ import java.util.*;
 
 /**
  * Opis tipa zapisa.
- * 
+ *
  * @author sliva
  */
 public class SemRecType extends SemType {
@@ -17,7 +17,7 @@ public class SemRecType extends SemType {
 
 	/**
 	 * Ustvari nov opis zapisa.
-	 * 
+	 *
 	 * @param compNames
 	 *            Imena komponent.
 	 * @param compTypes
@@ -34,7 +34,7 @@ public class SemRecType extends SemType {
 
 	/**
 	 * Vrne stevilo komponent.
-	 * 
+	 *
 	 * @return Stevilo komponent.
 	 */
 	public int getNumComps() {
@@ -43,7 +43,7 @@ public class SemRecType extends SemType {
 
 	/**
 	 * Vrne ime zahtevane komponente.
-	 * 
+	 *
 	 * @param index
 	 *            Indeks zahtevane komponente.
 	 * @return Ime zahtevane komponente.
@@ -54,7 +54,7 @@ public class SemRecType extends SemType {
 
 	/**
 	 * Vrne tip zahtevane komponente.
-	 * 
+	 *
 	 * @param index
 	 *            Indeks zahtevane komponente.
 	 * @return Tip zahtevane komponente.

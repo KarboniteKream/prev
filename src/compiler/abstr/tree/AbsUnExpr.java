@@ -5,7 +5,7 @@ import compiler.abstr.*;
 
 /**
  * Unarni izraz.
- * 
+ *
  * @author sliva
  */
 public class AbsUnExpr extends AbsExpr {
@@ -24,7 +24,7 @@ public class AbsUnExpr extends AbsExpr {
 
 	/**
 	 * Ustvari nov binarni izraz.
-	 * 
+	 *
 	 * @param pos
 	 *            Polozaj stavcne oblike tega drevesa.
 	 * @param oper

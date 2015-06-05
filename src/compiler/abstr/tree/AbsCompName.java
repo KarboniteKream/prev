@@ -5,17 +5,17 @@ import compiler.abstr.*;
 
 /**
  * Ime komponente strukture v izrazu.
- * 
+ *
  * @author sliva
  */
 public class AbsCompName extends AbsExpr {
-	
+
 	/** Ime komponente. */
 	public final String name;
 
 	/**
 	 * Ustvari nov opis imena komponente v izrazu.
-	 * 
+	 *
 	 * @param pos
 	 *            Polozaj stavcne oblike tega drevesa.
 	 * @param name

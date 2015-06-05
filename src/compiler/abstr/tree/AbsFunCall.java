@@ -7,20 +7,20 @@ import compiler.abstr.*;
 
 /**
  * Klic funkcije.
- * 
+ *
  * @author sliva
  */
 public class AbsFunCall extends AbsExpr {
-	
+
 	/** Ime funkcije. */
 	public final String name;
-	
+
 	/** Argumenti funkcije. */
 	private final AbsExpr args[];
 
 	/**
 	 * Ustvari nov opis klica funkcije.
-	 * 
+	 *
 	 * @param pos
 	 *            Polozaj stavcne oblike tega drevesa.
 	 * @param name
@@ -38,7 +38,7 @@ public class AbsFunCall extends AbsExpr {
 
 	/**
 	 * Vrne izbrani argument.
-	 * 
+	 *
 	 * @param index
 	 *            Indeks argumenta.
 	 * @return Argument na izbranem mestu.
@@ -49,7 +49,7 @@ public class AbsFunCall extends AbsExpr {
 
 	/**
 	 * Vrne stevilo argumentov.
-	 * 
+	 *
 	 * @return Stevilo argumentov.
 	 */
 	public int numArgs() {

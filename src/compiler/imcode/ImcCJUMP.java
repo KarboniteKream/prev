@@ -5,7 +5,7 @@ import compiler.frames.*;
 
 /**
  * Pogojni skok.
- * 
+ *
  * @author sliva
  */
 public class ImcCJUMP extends ImcStmt {
@@ -21,7 +21,7 @@ public class ImcCJUMP extends ImcStmt {
 
 	/**
 	 * Ustvari nov pogojni skok.
-	 * 
+	 *
 	 * @param cond Pogoj.
 	 * @param trueLabel Labela skoka, ce je pogoj izpolnjen.
 	 * @param falseLabel Labela skoka, ce pogoj ni izpolnjen.
