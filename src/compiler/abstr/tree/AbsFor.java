@@ -11,7 +11,7 @@ import compiler.abstr.*;
 public class AbsFor extends AbsExpr {
 	
 	/** Stevec. */
-	public final AbsVarName count;
+	public final AbsExpr count;
 	
 	/** Spodnja meja. */
 	public final AbsExpr lo;
@@ -41,7 +41,7 @@ public class AbsFor extends AbsExpr {
 	 * @param body
 	 *            Jedro zanke.
 	 */
-	public AbsFor(Position pos, AbsVarName count, AbsExpr lo, AbsExpr hi, AbsExpr step, AbsExpr body) {
+	public AbsFor(Position pos, AbsExpr count, AbsExpr lo, AbsExpr hi, AbsExpr step, AbsExpr body) {
 		super(pos);
 		this.count = count;
 		this.lo = lo;

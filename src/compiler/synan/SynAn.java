@@ -800,10 +800,9 @@ public class SynAn {
 		}
 		else if(currSymbol.token == Token.KW_FOR)
 		{
-			dump("atom_expression_braces -> for identifier = expression, expression, expression : expression");
+			dump("atom_expression_braces -> for expression = expression, expression, expression : expression");
 			prepareNext();
-			check(Token.IDENTIFIER);
-			AbsVarName count = new AbsVarName(prevSymbol.position, prevSymbol.lexeme);
+			AbsExpr count = parse_expression();
 			check(Token.ASSIGN);
 			AbsExpr lo = parse_expression();
 			check(Token.COMMA);
