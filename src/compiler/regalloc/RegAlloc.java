@@ -99,7 +99,6 @@ public class RegAlloc
 		}
 
 		TmpNode node = chunk.graph.removeFirst();
-		System.out.println(node.temp.name());
 		node.spill = TmpNode.POTENTIAL_SPILL;
 		stack.add(node);
 
@@ -141,22 +140,74 @@ public class RegAlloc
 
 			if(ok == false)
 			{
-				node.spill = TmpNode.ACTUAL_SPILL;
-				repeat = true;
-				break;
+				if(node.spill == TmpNode.POTENTIAL_SPILL)
+				{
+					node.spill = TmpNode.ACTUAL_SPILL;
+					repeat = true;
+					break;
+				}
+				else
+				{
+					Report.error("Unable to allocate a register to " + node.temp.name());
+				}
 			}
 		}
 
 		if(repeat == true)
 		{
-			startOver();
+			startOver(chunk);
 		}
 
 		return repeat;
 	}
 
-	private void startOver()
+	private void startOver(ImcCodeChunk chunk)
 	{
+		for(TmpNode node : chunk.graph)
+		{
+			if(node.spill != TmpNode.ACTUAL_SPILL)
+			{
+				continue;
+			}
+
+			int def = 0;
+
+			while(def < chunk.asmcode.size())
+			{
+				if(chunk.asmcode.get(def++).defs.contains(node.temp) == true)
+				{
+					break;
+				}
+			}
+
+			long offset = chunk.frame.sizeLocs + chunk.frame.sizeFPRA + chunk.frame.sizeTmps;
+			chunk.frame.sizeTmps += 8;
+
+			chunk.asmcode.add(def, new AsmOPER("STOI", "`s0, `s1, -" + offset, null, new LinkedList<FrmTemp>(Arrays.asList(node.temp, chunk.frame.FP))));
+			chunk.asmcode.get(def).spill = true;
+
+			boolean ok = false;
+
+			for(int i = chunk.asmcode.size() - 1; i > def; i--)
+			{
+				AsmInstr instr = chunk.asmcode.get(i);
+
+				if(instr.uses.contains(node.temp) == true && instr.spill == false)
+				{
+					ok = true;
+					instr.spill = true;
+
+					chunk.asmcode.add(i, new AsmOPER("LDOI", "`d0, `s0, -" + offset, new LinkedList<FrmTemp>(Arrays.asList(node.temp)), new LinkedList<FrmTemp>(Arrays.asList(chunk.frame.FP))));
+					chunk.asmcode.get(i).spill = true;
+					break;
+				}
+			}
+
+			if(ok == false)
+			{
+				Report.error("Insufficient number of registers.");
+			}
+		}
 	}
 
 	public void dump(LinkedList<ImcChunk> chunks)
