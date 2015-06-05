@@ -67,7 +67,7 @@ public class SynAn {
 		{
 			Symbol symbol = new Symbol(token, "", null);
 			String tokenName = symbol.toString().substring(0, symbol.toString().length() - 1);
-			Report.error(currSymbol.position, "Got " + currSymbol.toString().substring(0, currSymbol.toString().indexOf(':')) + ", expected " + tokenName + ".");
+			Report.error(currSymbol.position, "Expected " + tokenName + ", found " + currSymbol.toString().substring(0, currSymbol.toString().indexOf(':')) + ".");
 		}
 
 		prepareNext();
@@ -126,7 +126,7 @@ public class SynAn {
 		else if(currSymbol.token == Token.COMMA)
 		{
 			dump("definitions' -> ; definition definitions'");
-			Report.warning(currSymbol.position, "Got COMMA, expected SEMIC.");
+			Report.warning(currSymbol.position, "Expected SEMIC, found COMMA.");
 			prepareNext();
 			definitions.add(parse_definition());
 			parse_definitions_(definitions);
