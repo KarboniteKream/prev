@@ -1,0 +1,8 @@
+fun main(argc : integer) : integer =
+(
+	{ i = 1 },
+	{ argc = i },
+	# { i = i + j + 2 },
+	0
+)
+{ where var i : integer; var j : integer }
