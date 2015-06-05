@@ -419,7 +419,7 @@ public class SemAn implements Visitor {
 	}
 	
 	public void visit(AbsWhile whileStmt) {
-		Report.dump(indent, "AbsWhileName " + whileStmt.position.toString() + ":");
+		Report.dump(indent, "AbsWhile " + whileStmt.position.toString() + ":");
 		{
 			SemType typ = SymbDesc.getType(whileStmt);
 			if (typ != null)

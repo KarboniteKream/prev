@@ -248,7 +248,7 @@ public class Abstr implements Visitor {
 	}
 	
 	public void visit(AbsWhile where) {
-		Report.dump(indent, "AbsWhileName " + where.position.toString() + ":");
+		Report.dump(indent, "AbsWhile " + where.position.toString() + ":");
 		indent += 2; where.cond.accept(this); indent -= 2;
 		indent += 2; where.body.accept(this); indent -= 2;
 	}
