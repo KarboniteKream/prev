@@ -180,10 +180,10 @@ public class RegAlloc
 				}
 			}
 
-			long offset = chunk.frame.sizeLocs + chunk.frame.sizeFPRA + chunk.frame.sizeTmps;
+			long offset = -(chunk.frame.sizeLocs + chunk.frame.sizeFPRA + chunk.frame.sizeTmps);
 			chunk.frame.sizeTmps += 8;
 
-			chunk.asmcode.add(def, new AsmOPER("STOI", "`s0, `s1, -" + offset, null, new LinkedList<FrmTemp>(Arrays.asList(node.temp, chunk.frame.FP))));
+			chunk.asmcode.add(def, new AsmOPER("STOI", "`s0,`s1," + offset, null, new LinkedList<FrmTemp>(Arrays.asList(node.temp, chunk.frame.FP))));
 			chunk.asmcode.get(def).spill = true;
 
 			boolean ok = false;
@@ -197,7 +197,7 @@ public class RegAlloc
 					ok = true;
 					instr.spill = true;
 
-					chunk.asmcode.add(i, new AsmOPER("LDOI", "`d0, `s0, -" + offset, new LinkedList<FrmTemp>(Arrays.asList(node.temp)), new LinkedList<FrmTemp>(Arrays.asList(chunk.frame.FP))));
+					chunk.asmcode.add(i, new AsmOPER("LDOI", "`d0,`s0," + offset, new LinkedList<FrmTemp>(Arrays.asList(node.temp)), new LinkedList<FrmTemp>(Arrays.asList(chunk.frame.FP))));
 					chunk.asmcode.get(i).spill = true;
 					break;
 				}
