@@ -78,7 +78,7 @@ public class RegAlloc
 				{
 					done = false;
 
-					stack.add(node);
+					stack.push(node);
 
 					for(TmpNode edge : chunk.graph)
 					{
@@ -113,11 +113,10 @@ public class RegAlloc
 	private boolean select(ImcCodeChunk chunk)
 	{
 		boolean repeat = false;
-		Iterator<TmpNode> iterator = stack.descendingIterator();
 
-		while(iterator.hasNext() == true)
+		while(stack.size() > 0)
 		{
-			TmpNode node = iterator.next();
+			TmpNode node = stack.pop();
 			chunk.graph.add(node);
 
 			int regs[] = new int[registers];
