@@ -121,19 +121,37 @@ public class RegAlloc
 			chunk.graph.add(node);
 
 			int regs[] = new int[registers];
+			boolean ok = false;
 
 			for(TmpNode edge : node.edges)
 			{
 				regs[edge.register] = 1;
 			}
 
-			boolean ok = false;
 			for(int i = 0; i < registers; i++)
 			{
 				if(regs[i] == 0)
 				{
 					node.register = i;
 					ok = true;
+					break;
+				}
+			}
+
+			for(AsmInstr instr : chunk.asmcode)
+			{
+				if(instr.mnemonic.equals("PUSHJ") == true && instr.defs.contains(node.temp) == true)
+				{
+					for(int i = registers - 1; i >= 0; i--)
+					{
+						if(regs[i] == 1)
+						{
+							node.register = i + 1;
+							break;
+						}
+					}
+
+					ok = node.register < registers;
 					break;
 				}
 			}
@@ -148,7 +166,7 @@ public class RegAlloc
 				}
 				else
 				{
-					Report.error("Unable to allocate a register to " + node.temp.name());
+					Report.error("Unable to allocate a register to " + node.temp.name() + ".");
 				}
 			}
 		}
