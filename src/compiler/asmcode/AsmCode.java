@@ -168,14 +168,9 @@ public class AsmCode
 
 			if(constant < 0)
 			{
-				FrmTemp num = new FrmTemp();
-				defs = new LinkedList<FrmTemp>(Arrays.asList(num));
-				uses = new LinkedList<FrmTemp>(Arrays.asList(num, temp));
-
-				chunk.asmcode.add(new AsmOPER("SETL", "`d0,0", defs, null));
-				chunk.asmcode.add(new AsmOPER("SUB", "`d0,`s0,`s1", defs, uses));
-
-				temp = num;
+				uses = new LinkedList<FrmTemp>(Arrays.asList(temp));
+				defs = new LinkedList<FrmTemp>(Arrays.asList(temp = new FrmTemp()));
+				chunk.asmcode.add(new AsmOPER("NEG", "`d0,0,`s0", defs, uses));
 			}
 		}
 		else if(expression instanceof ImcMEM == true)
