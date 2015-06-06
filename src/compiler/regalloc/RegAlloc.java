@@ -214,42 +214,21 @@ public class RegAlloc
 				continue;
 			}
 
-			int def = 0;
-
-			while(def < chunk.asmcode.size())
-			{
-				if(chunk.asmcode.get(def++).defs.contains(node.temp) == true)
-				{
-					break;
-				}
-			}
-
-			long offset = -(chunk.frame.sizeLocs + chunk.frame.sizeFPRA + chunk.frame.sizeTmps);
+			long offset = -(8 + chunk.frame.sizeLocs + chunk.frame.sizeFPRA + chunk.frame.sizeTmps);
 			chunk.frame.sizeTmps += 8;
 
-			chunk.asmcode.add(def, new AsmOPER("STOI", "`s0,`s1," + offset, null, new LinkedList<FrmTemp>(Arrays.asList(node.temp, chunk.frame.FP))));
-			chunk.asmcode.get(def).spill = true;
+			int def = 0;
+			while(chunk.asmcode.get(def++).defs.contains(node.temp) == false) {}
 
-			boolean ok = false;
+			chunk.asmcode.add(def, new AsmOPER("STO", "`s0,`s1," + offset, null, new LinkedList<FrmTemp>(Arrays.asList(node.temp, chunk.frame.FP))));
 
 			for(int i = chunk.asmcode.size() - 1; i > def; i--)
 			{
-				AsmInstr instr = chunk.asmcode.get(i);
-
-				if(instr.uses.contains(node.temp) == true && instr.spill == false)
+				if(chunk.asmcode.get(i).uses.contains(node.temp) == true)
 				{
-					ok = true;
-					instr.spill = true;
-
-					chunk.asmcode.add(i, new AsmOPER("LDOI", "`d0,`s0," + offset, new LinkedList<FrmTemp>(Arrays.asList(node.temp)), new LinkedList<FrmTemp>(Arrays.asList(chunk.frame.FP))));
-					chunk.asmcode.get(i).spill = true;
+					chunk.asmcode.add(i, new AsmOPER("LDO", "`d0,`s0," + offset, new LinkedList<FrmTemp>(Arrays.asList(node.temp)), new LinkedList<FrmTemp>(Arrays.asList(chunk.frame.FP))));
 					break;
 				}
-			}
-
-			if(ok == false)
-			{
-				Report.error("Insufficient number of registers.");
 			}
 		}
 	}

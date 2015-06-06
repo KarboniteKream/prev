@@ -42,8 +42,6 @@ public abstract class AsmInstr {
 	public LinkedList<FrmTemp> in;
 	public LinkedList<FrmTemp> out;
 
-	public boolean spill;
-
 	/**
 	 * Opis ukaza strojne kode.
 	 *
@@ -66,8 +64,6 @@ public abstract class AsmInstr {
 
 		in = null;
 		out = null;
-
-		spill = false;
 	}
 
 	public String format(HashMap<FrmTemp, String> map) {

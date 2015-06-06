@@ -32,7 +32,7 @@ public class TmpAn
 
 	public void analyze(ImcCodeChunk chunk)
 	{
-		HashMap<FrmTemp, TmpNode> graph = new HashMap<FrmTemp, TmpNode>();
+		LinkedHashMap<FrmTemp, TmpNode> graph = new LinkedHashMap<FrmTemp, TmpNode>();
 
 		for(AsmInstr instr : chunk.asmcode)
 		{

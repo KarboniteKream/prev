@@ -66,6 +66,10 @@ public class Main {
 				}
 				if (args[argc].startsWith("--registers=")) {
 					registers = Integer.parseInt(args[argc].substring("--registers=".length()));
+					if (registers < 2 || registers > 250) {
+						Report.warning("Invalid number of registers, defaulting to 8.");
+						registers = 8;
+					}
 					continue;
 				}
 				// Neznano stikalo.
