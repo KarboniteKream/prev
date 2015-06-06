@@ -99,13 +99,39 @@ public class RegAlloc
 			return false;
 		}
 
-		TmpNode node = chunk.graph.removeFirst();
-		node.spill = TmpNode.POTENTIAL_SPILL;
-		stack.add(node);
+		TmpNode spill = null;
+		int length = 0;
 
-		for(TmpNode edge : node.edges)
+		for(TmpNode node : chunk.graph)
 		{
-			edge.edges.remove(node);
+			int def = 0;
+
+			while(chunk.asmcode.get(def).defs.contains(node.temp) == false)
+			{
+				def++;
+			}
+
+			int use = chunk.asmcode.size() - 1;
+
+			while(chunk.asmcode.get(use).uses.contains(node.temp) == false)
+			{
+				use--;
+			}
+
+			if(use - def > length)
+			{
+				spill = node;
+				length = use - def;
+			}
+		}
+
+		chunk.graph.remove(spill);
+		spill.spill = TmpNode.POTENTIAL_SPILL;
+		stack.push(spill);
+
+		for(TmpNode edge : spill.edges)
+		{
+			edge.edges.remove(spill);
 		}
 
 		return true;
