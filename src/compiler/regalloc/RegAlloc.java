@@ -46,6 +46,7 @@ public class RegAlloc
 
 				codeChunk.registers = new HashMap<FrmTemp, String>();
 				codeChunk.registers.put(codeChunk.frame.FP, "$251");
+				codeChunk.registers.put(codeChunk.frame.SP, "$250");
 
 				for(TmpNode node : codeChunk.graph)
 				{

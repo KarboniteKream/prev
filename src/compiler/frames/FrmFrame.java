@@ -50,6 +50,9 @@ public class FrmFrame {
 	/** Spremenljivka z rezultatom funkcije.  */
 	public FrmTemp RV;
 
+	/** Kazalec SP.  */
+	public FrmTemp SP;
+
 	/**
 	 * Ustvari nov klicni zapis funkcije.
 	 *
@@ -70,6 +73,7 @@ public class FrmFrame {
 		this.sizeArgs = 0;
 		FP = new FrmTemp();
 		RV = new FrmTemp();
+		SP = new FrmTemp();
 	}
 
 	/** Velikost klicnega zapisa.  */
@@ -86,7 +90,8 @@ public class FrmFrame {
 					"sizeArgs=" + sizeArgs + "," +
 					"size=" + size() + "," +
 					"FP=" + FP.name() + "," +
-					"RV=" + RV.name() + ")");
+					"RV=" + RV.name() + "," +
+					"SP=" + SP.name() + ")");
 	}
 
 }
