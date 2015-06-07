@@ -240,17 +240,18 @@ public class AsmCode
 				for(int j = i + 1; j < chunk.asmcode.size(); j++)
 				{
 					AsmInstr use = chunk.asmcode.get(j);
+					int idx = use.uses.indexOf(def);
 
-					if(use.uses.indexOf(def) == 1 && (ok = use.uses.remove(def)) == true)
+					if(idx == 1 && (ok = use.uses.remove(def)) == true)
 					{
 						use.assem = use.assem.substring(0, use.assem.lastIndexOf(',') + 1) + constant;
 					}
-					else if(use.mnemonic.equals("STO") == true && use.uses.indexOf(def) == 0 && (ok = use.uses.remove(def)) == true)
+					else if(use.mnemonic.equals("STO") == true && idx == 0 && (ok = use.uses.remove(def)) == true)
 					{
 						use.mnemonic = "STCO";
 						use.assem = constant + ",`s0" + use.assem.substring(use.assem.lastIndexOf(','));
 					}
-					else if(use instanceof AsmMOVE == true && use.uses.contains(def) == true && (ok = use.uses.remove(def)) == true)
+					else if(use instanceof AsmMOVE == true && idx == 0 && (ok = use.uses.remove(def)) == true)
 					{
 						chunk.asmcode.remove(j);
 						chunk.asmcode.add(j, new AsmOPER("SET", use.assem.substring(0, use.assem.indexOf(',') + 1) + constant, use.defs, use.uses));
@@ -260,6 +261,25 @@ public class AsmCode
 				if(ok == true)
 				{
 					chunk.asmcode.remove(i--);
+				}
+			}
+			else if(instr instanceof AsmLABEL == true)
+			{
+				AsmInstr next = chunk.asmcode.get(i + 1);
+
+				if(next instanceof AsmLABEL == true)
+				{
+					for(int j = i + 2; j < chunk.asmcode.size(); j++)
+					{
+						AsmInstr temp = chunk.asmcode.get(j);
+
+						if(temp instanceof AsmOPER == true && temp.labels.remove(next.labels.getFirst()) == true)
+						{
+							temp.labels.add(instr.labels.getFirst());
+						}
+					}
+
+					chunk.asmcode.remove(i + 1);
 				}
 			}
 		}
