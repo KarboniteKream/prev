@@ -230,7 +230,7 @@ public class AsmCode
 		{
 			AsmInstr instr = chunk.asmcode.get(i);
 
-			if(instr instanceof AsmOPER == true && instr.mnemonic.equals("SET") == true && instr.uses.size() == 0)
+			if(instr.mnemonic.equals("SET") == true && instr.uses.size() == 0)
 			{
 				FrmTemp def = instr.defs.getFirst();
 				String constant = instr.assem.substring(instr.assem.indexOf(',') + 1);
@@ -280,6 +280,17 @@ public class AsmCode
 					}
 
 					chunk.asmcode.remove(i + 1);
+				}
+			}
+			else
+			{
+				AsmInstr use = chunk.asmcode.get(i + 1);
+
+				if(use instanceof AsmMOVE == true && use.uses.contains(instr.defs.getFirst()) == true)
+				{
+					instr.defs.set(0, use.defs.getFirst());
+					chunk.asmcode.remove(i + 1);
+					i--;
 				}
 			}
 		}
