@@ -1,11 +1,9 @@
-### Compiling
-
+#### Compiling
 ```sh
 $ javac -cp src src/compiler/Main.java
 ```
 
-### Running
-
+#### Running
 ```sh
 $ java -cp src compiler.Main --phase=PHASE --dump=DUMP [--registers=8] FILE.prev
 ```
@@ -14,6 +12,7 @@ or
 $ ./compile.sh PHASE PHASE/FILENAME [REGISTERS]
 ```
 
+#### Options
 ```
 PHASE/DUMP = lexan|synan|ast|seman|frames|imcode|lincode|asmcode|tmpan|regalloc
 ```
