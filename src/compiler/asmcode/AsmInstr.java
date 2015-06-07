@@ -57,7 +57,7 @@ public abstract class AsmInstr {
 	protected AsmInstr(String mnemonic, String assem, LinkedList<FrmTemp> defs,
 			LinkedList<FrmTemp> uses, LinkedList<FrmLabel> labels) {
 		this.mnemonic = mnemonic;
-		this.assem = String.format("%-5s %s", mnemonic, assem);
+		this.assem = assem;
 		this.defs = defs == null ? new LinkedList<FrmTemp>() : defs;
 		this.uses = uses == null ? new LinkedList<FrmTemp>() : uses;
 		this.labels = labels == null ? new LinkedList<FrmLabel>() : labels;
@@ -67,7 +67,7 @@ public abstract class AsmInstr {
 	}
 
 	public String format(HashMap<FrmTemp, String> map) {
-		String fmtAssem = assem;
+		String fmtAssem = String.format("%-5s %s", mnemonic, assem);
 		for (int i = 0; i < uses.size(); i++) {
 			FrmTemp temp = uses.get(i);
 			String regName = null;
