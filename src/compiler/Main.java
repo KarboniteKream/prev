@@ -131,6 +131,7 @@ public class Main {
 			// Generiranje strojnih ukazov.
 			AsmCode asmcode = new AsmCode(dumpPhases.contains("asmcode"));
 			asmcode.generate(imcodegen.chunks);
+			asmcode.optimize(imcodegen.chunks);
 			asmcode.dump(imcodegen.chunks);
 			if (execPhase.equals("asmcode")) break;
 			// Analiza spremenljivk.

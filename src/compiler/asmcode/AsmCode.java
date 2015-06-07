@@ -137,6 +137,13 @@ public class AsmCode
 			long value = Math.abs(constant);
 
 			defs.add(temp = new FrmTemp());
+
+			if(constant < 0 && value <= 0xFFFFL)
+			{
+				chunk.asmcode.add(new AsmOPER("NEG", "`d0,0," + value, defs, null));
+				return temp;
+			}
+
 			chunk.asmcode.add(new AsmOPER("SET", "`d0," + (value & 0xFFFFL), defs, null));
 
 			LinkedList<FrmTemp> setDef = new LinkedList<FrmTemp>();
@@ -204,6 +211,58 @@ public class AsmCode
 		}
 
 		return temp;
+	}
+
+	public void optimize(LinkedList<ImcChunk> chunks)
+	{
+		for(ImcChunk chunk : chunks)
+		{
+			if(chunk instanceof ImcCodeChunk == true)
+			{
+				optimize((ImcCodeChunk)chunk);
+			}
+		}
+	}
+
+	private void optimize(ImcCodeChunk chunk)
+	{
+		for(int i = 0; i < chunk.asmcode.size() - 1; i++)
+		{
+			AsmInstr instr = chunk.asmcode.get(i);
+
+			if(instr instanceof AsmOPER == true && instr.mnemonic.equals("SET") == true && instr.uses.size() == 0)
+			{
+				FrmTemp def = instr.defs.getFirst();
+				String constant = instr.assem.substring(instr.assem.indexOf(',') + 1);
+
+				boolean ok = false;
+
+				for(int j = i + 1; j < chunk.asmcode.size(); j++)
+				{
+					AsmInstr use = chunk.asmcode.get(j);
+
+					if(use.uses.indexOf(def) == 1 && (ok = use.uses.remove(def)) == true)
+					{
+						use.assem = use.assem.substring(0, use.assem.lastIndexOf(',') + 1) + constant;
+					}
+					else if(use.mnemonic.equals("STO") == true && use.uses.indexOf(def) == 0 && (ok = use.uses.remove(def)) == true)
+					{
+						use.mnemonic = "STCO";
+						use.assem = constant + ",`s0" + use.assem.substring(use.assem.lastIndexOf(','));
+					}
+					else if(use instanceof AsmMOVE == true && use.uses.contains(def) == true && (ok = use.uses.remove(def)) == true)
+					{
+						chunk.asmcode.remove(j);
+						chunk.asmcode.add(j, new AsmOPER("SET", use.assem.substring(0, use.assem.indexOf(',') + 1) + constant, use.defs, use.uses));
+					}
+				}
+
+				if(ok == true)
+				{
+					chunk.asmcode.remove(i--);
+				}
+			}
+		}
 	}
 
 	public void dump(LinkedList<ImcChunk> chunks)
