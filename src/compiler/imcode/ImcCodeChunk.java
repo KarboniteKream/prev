@@ -40,6 +40,7 @@ public class ImcCodeChunk extends ImcChunk {
 		this.imcode = imcode;
 		this.lincode = null;
 		this.asmcode = null;
+
 		this.graph = null;
 		this.registers = null;
 	}

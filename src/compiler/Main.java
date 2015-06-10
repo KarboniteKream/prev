@@ -147,6 +147,7 @@ public class Main {
 			if (execPhase.equals("regalloc")) break;
 			// Sestavljanje prevajalnika.
 			Build build = new Build(dumpPhases.contains("build"));
+			build.build(imcodegen.chunks);
 			build.dump(imcodegen.chunks);
 			if (execPhase.equals("build")) break;
 

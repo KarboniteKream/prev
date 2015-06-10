@@ -15,7 +15,7 @@ public class FrmLabel {
 	 *
 	 * @param name Ime labele.
 	 */
-	private FrmLabel(String name) {
+	public FrmLabel(String name) {
 		this.name = name;
 	}
 
@@ -54,5 +54,4 @@ public class FrmLabel {
 	public static FrmLabel newLabel(String name) {
 		return new FrmLabel("_" + name);
 	}
-
 }
