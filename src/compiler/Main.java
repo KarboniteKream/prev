@@ -13,6 +13,7 @@ import compiler.lincode.*;
 import compiler.asmcode.*;
 import compiler.tmpan.*;
 import compiler.regalloc.*;
+import compiler.build.*;
 
 /**
  * Osnovni razred prevajalnika, ki vodi izvajanje celotnega procesa prevajanja.
@@ -25,13 +26,13 @@ public class Main {
 	private static String sourceFileName;
 
 	/** Seznam vseh faz prevajalnika. */
-	private static String allPhases = "(lexan|synan|ast|seman|frames|imcode|lincode|asmcode|tmpan|regalloc)";
+	private static String allPhases = "(lexan|synan|ast|seman|frames|imcode|lincode|asmcode|tmpan|regalloc|build)";
 
 	/** Doloca zadnjo fazo prevajanja, ki se bo se izvedla. */
-	private static String execPhase = "regalloc";
+	private static String execPhase = "build";
 
 	/** Doloca faze, v katerih se bodo izpisali vmesni rezultati. */
-	private static String dumpPhases = "regalloc";
+	private static String dumpPhases = "build";
 
 	private static int registers = 8;
 
@@ -86,7 +87,7 @@ public class Main {
 			Report.error("Source file name not specified.");
 
 		// Odpiranje datoteke z vmesnimi rezultati.
-		if (dumpPhases != null) Report.openDumpFile(sourceFileName);
+		if (dumpPhases != null) Report.openDumpFile(sourceFileName, dumpPhases.equals("build"));
 
 		// Izvajanje faz prevajanja.
 		while (true) {
@@ -144,6 +145,10 @@ public class Main {
 			regalloc.allocate(imcodegen.chunks);
 			regalloc.dump(imcodegen.chunks);
 			if (execPhase.equals("regalloc")) break;
+			// Sestavljanje prevajalnika.
+			Build build = new Build(dumpPhases.contains("build"));
+			build.dump(imcodegen.chunks);
+			if (execPhase.equals("build")) break;
 
 			// Neznana faza prevajanja.
 			if (! execPhase.equals(""))
