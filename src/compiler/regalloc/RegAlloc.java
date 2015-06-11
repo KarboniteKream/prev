@@ -52,6 +52,30 @@ public class RegAlloc
 				{
 					codeChunk.registers.put(node.temp, "$" + node.register);
 				}
+
+				int maxRegister = 0;
+
+				for(AsmInstr instr : codeChunk.asmcode)
+				{
+					if(instr.defs.size() == 0)
+					{
+						continue;
+					}
+
+					if(instr.mnemonic.equals("PUSHJ") == false)
+					{
+						int register = Integer.parseInt(codeChunk.registers.get(instr.defs.getFirst()).substring(1));
+
+						if(register > maxRegister)
+						{
+							maxRegister = register;
+						}
+
+						continue;
+					}
+
+					codeChunk.registers.put(instr.defs.getFirst(), "$" + (maxRegister + 1));
+				}
 			}
 		}
 	}
@@ -168,16 +192,8 @@ public class RegAlloc
 			{
 				if(instr.mnemonic.equals("PUSHJ") == true && instr.defs.contains(node.temp) == true)
 				{
-					for(int i = registers - 1; i >= 0; i--)
-					{
-						if(regs[i] == 1)
-						{
-							node.register = i + 1;
-							break;
-						}
-					}
-
-					ok = node.register < registers;
+					node.register = registers - 1;
+					ok = true;
 					break;
 				}
 			}

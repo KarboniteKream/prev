@@ -282,7 +282,7 @@ public class AsmCode
 					chunk.asmcode.remove(i + 1);
 				}
 			}
-			else
+			else if(instr.mnemonic.equals("PUSHJ") == false)
 			{
 				AsmInstr use = chunk.asmcode.get(i + 1);
 
