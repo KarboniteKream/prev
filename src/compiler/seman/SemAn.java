@@ -30,32 +30,69 @@ public class SemAn implements Visitor {
 
 		Position position = new Position(0, 0);
 
-		Vector<AbsPar> parameters = new Vector<AbsPar>();
-		parameters.add(new AbsPar(position, "i", new AbsAtomType(position, AbsAtomType.INT)));
+		Vector<AbsPar> intPars = new Vector<AbsPar>();
+		intPars.add(new AbsPar(position, "i", new AbsAtomType(position, AbsAtomType.INT)));
 
-		Vector<SemType> parameterTypes = new Vector<SemType>();
-		parameterTypes.add(new SemAtomType(SemAtomType.INT));
+		Vector<AbsPar> strPars = new Vector<AbsPar>();
+		strPars.add(new AbsPar(position, "i", new AbsAtomType(position, AbsAtomType.STR)));
 
-		AbsAtomConst functionExpression = new AbsAtomConst(position, AbsAtomConst.INT, "0");
-		AbsAtomType functionType = new AbsAtomType(position, AbsAtomType.INT);
+		Vector<AbsPar> getCharAtPars = new Vector<AbsPar>();
+		getCharAtPars.add(new AbsPar(position, "s", new AbsAtomType(position, AbsAtomType.STR)));
+		getCharAtPars.add(new AbsPar(position, "i", new AbsAtomType(position, AbsAtomType.INT)));
 
-		AbsFunDef get_int = new AbsFunDef(position, "get_int", parameters, functionType, functionExpression);
-		AbsFunDef put_int = new AbsFunDef(position, "put_int", parameters, functionType, functionExpression);
-		AbsFunDef put_nl = new AbsFunDef(position, "put_nl", parameters, functionType, functionExpression);
+		Vector<AbsPar> putCharAtPars = new Vector<AbsPar>();
+		putCharAtPars.add(new AbsPar(position, "s", new AbsAtomType(position, AbsAtomType.STR)));
+		putCharAtPars.add(new AbsPar(position, "c", new AbsAtomType(position, AbsAtomType.INT)));
+		putCharAtPars.add(new AbsPar(position, "i", new AbsAtomType(position, AbsAtomType.INT)));
 
-		SemFunType type = new SemFunType(parameterTypes, new SemAtomType(SemAtomType.INT));
+		Vector<SemType> intParTypes = new Vector<SemType>();
+		intParTypes.add(new SemAtomType(SemAtomType.INT));
+
+		Vector<SemType> strParTypes = new Vector<SemType>();
+		strParTypes.add(new SemAtomType(SemAtomType.STR));
+
+		Vector<SemType> getCharAtParTypes = new Vector<SemType>();
+		getCharAtParTypes.add(new SemAtomType(SemAtomType.STR));
+		getCharAtParTypes.add(new SemAtomType(SemAtomType.INT));
+
+		Vector<SemType> putCharAtParTypes = new Vector<SemType>();
+		putCharAtParTypes.add(new SemAtomType(SemAtomType.STR));
+		putCharAtParTypes.add(new SemAtomType(SemAtomType.INT));
+		putCharAtParTypes.add(new SemAtomType(SemAtomType.INT));
+
+		AbsAtomConst intConst = new AbsAtomConst(position, AbsAtomConst.INT, "0");
+		AbsAtomConst strConst = new AbsAtomConst(position, AbsAtomConst.STR, "");
+
+		AbsAtomType intType = new AbsAtomType(position, AbsAtomType.INT);
+		AbsAtomType strType = new AbsAtomType(position, AbsAtomType.STR);
+
+		AbsFunDef get_int = new AbsFunDef(position, "get_int", intPars, intType, intConst);
+		AbsFunDef put_int = new AbsFunDef(position, "put_int", intPars, intType, intConst);
+		AbsFunDef put_nl = new AbsFunDef(position, "put_nl", intPars, intType, intConst);
+		AbsFunDef put_str = new AbsFunDef(position, "put_str", strPars, intType, intConst);
+		AbsFunDef get_char_at = new AbsFunDef(position, "get_char_at", getCharAtPars, intType, intConst);
+		AbsFunDef put_char_at = new AbsFunDef(position, "put_char_at", putCharAtPars, strType, strConst);
+
+		SemFunType intFun = new SemFunType(intParTypes, new SemAtomType(SemAtomType.INT));
+		SemFunType strFun = new SemFunType(strParTypes, new SemAtomType(SemAtomType.STR));
 
 		try
 		{
 			SymbTable.ins(get_int.name, get_int);
 			SymbTable.ins(put_int.name, put_int);
 			SymbTable.ins(put_nl.name, put_nl);
+			SymbTable.ins(put_str.name, put_str);
+			SymbTable.ins(get_char_at.name, get_char_at);
+			SymbTable.ins(put_char_at.name, put_char_at);
 
-			SymbDesc.setType(get_int, type);
-			SymbDesc.setType(put_int, type);
-			SymbDesc.setType(put_nl, type);
+			SymbDesc.setType(get_int, intFun);
+			SymbDesc.setType(put_int, intFun);
+			SymbDesc.setType(put_nl, intFun);
+			SymbDesc.setType(put_str, strFun);
+			SymbDesc.setType(get_char_at, new SemFunType(getCharAtParTypes, new SemAtomType(SemAtomType.INT)));
+			SymbDesc.setType(put_char_at, new SemFunType(putCharAtParTypes, new SemAtomType(SemAtomType.STR)));
 		}
-		catch(SemIllegalInsertException e)
+		catch(SemIllegalInsertException __)
 		{
 			Report.error("Internal error. Unable to add built-in functions to the symbol table.");
 		}

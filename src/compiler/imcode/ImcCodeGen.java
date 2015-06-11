@@ -36,8 +36,8 @@ public class ImcCodeGen implements Visitor
 		else if(acceptor.type == AbsAtomConst.STR)
 		{
 			FrmLabel string = FrmLabel.newLabel();
-			chunks.add(new ImcDataChunk(string, (acceptor.value.length() - 2) * 8));
-			imcode.put(acceptor, new ImcMEM(new ImcNAME(string)));
+			chunks.add(new ImcDataChunk(string, ImcDataChunk.BYTE, "\"" + acceptor.value.substring(1, acceptor.value.length() - 1) + "\",0"));
+			imcode.put(acceptor, new ImcNAME(string));
 		}
 	}
 

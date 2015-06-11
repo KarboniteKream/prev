@@ -117,6 +117,18 @@ public class LinCode
 
 			return 0L;
 		}
+		else if(function.equals("_put_str") == true)
+		{
+			// TODO
+		}
+		else if(function.equals("_get_char_at") == true)
+		{
+			// TODO
+		}
+		else if(function.equals("_put_char_at") == true)
+		{
+			// TODO
+		}
 
 		ImcCodeChunk chunk = chunks.get(function);
 		LinkedList<ImcStmt> statements = ((ImcSEQ)(chunk.lincode)).stmts;

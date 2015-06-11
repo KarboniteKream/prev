@@ -29,10 +29,16 @@ public class Frames implements Visitor {
 		AbsFunDef get_int = (AbsFunDef)SymbTable.fnd("get_int");
 		AbsFunDef put_int = (AbsFunDef)SymbTable.fnd("put_int");
 		AbsFunDef put_nl = (AbsFunDef)SymbTable.fnd("put_nl");
+		AbsFunDef put_str = (AbsFunDef)SymbTable.fnd("put_str");
+		AbsFunDef get_char_at = (AbsFunDef)SymbTable.fnd("get_char_at");
+		AbsFunDef put_char_at = (AbsFunDef)SymbTable.fnd("put_char_at");
 
 		FrmDesc.setFrame(get_int, new FrmFrame(get_int, 1));
 		FrmDesc.setFrame(put_int, new FrmFrame(put_int, 1));
 		FrmDesc.setFrame(put_nl, new FrmFrame(put_nl, 1));
+		FrmDesc.setFrame(put_str, new FrmFrame(put_str, 1));
+		FrmDesc.setFrame(get_char_at, new FrmFrame(get_char_at, 1));
+		FrmDesc.setFrame(put_char_at, new FrmFrame(put_char_at, 1));
 	}
 
 	/**
