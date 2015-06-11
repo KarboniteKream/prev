@@ -95,6 +95,8 @@ public class Build
 		if(Report.dumpFile() == null) return;
 
 		int labelLength = 4;
+		boolean dataSegment = false;
+		int i = 0;
 
 		for(ImcChunk chunk : chunks)
 		{
@@ -106,6 +108,8 @@ public class Build
 				{
 					labelLength = length;
 				}
+
+				dataSegment = true;
 			}
 			else if(chunk instanceof ImcCodeChunk == true)
 			{
@@ -124,7 +128,29 @@ public class Build
 			}
 		}
 
-		int i = 0;
+		if(dataSegment == true)
+		{
+			Report.dump(labelLength + 1, "LOC   Data_Segment");
+			Report.dump(labelLength + 1, "GREG  @");
+
+			for(ImcChunk chunk : chunks)
+			{
+				if(chunk instanceof ImcDataChunk == true)
+				{
+					ImcDataChunk dataChunk = (ImcDataChunk)chunk;
+					String data = "";
+
+					for(long j = 0; j < (dataChunk.size / 8) - 1; j++)
+					{
+						data += "0,";
+					}
+
+					Report.dump(0, String.format("%-" + labelLength + "s ", dataChunk.label.name()) + "BYTE  " + data + "0");
+				}
+			}
+
+			Report.dump(0, "");
+		}
 
 		for(ImcChunk chunk : chunks)
 		{
