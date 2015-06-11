@@ -28,27 +28,27 @@ public class Build
 
 				if(codeChunk.frame.sizeLocs + 16 < 256)
 				{
-					prologue.add(new AsmOPER("SUB", "$0,$250," + (codeChunk.frame.sizeLocs + 16), null, null));
+					prologue.add(new AsmOPER("SUB", "$0,$250," + (codeChunk.frame.sizeLocs + 16)));
 				}
 				else
 				{
-					prologue.add(new AsmOPER("SET", "$0," + (codeChunk.frame.sizeLocs + 16), null, null));
-					prologue.add(new AsmOPER("SUB", "$0,$250,$0", null, null));
+					prologue.add(new AsmOPER("SET", "$0," + (codeChunk.frame.sizeLocs + 16)));
+					prologue.add(new AsmOPER("SUB", "$0,$250,$0"));
 				}
 
-				prologue.add(new AsmOPER("STO", "$251,$0,0", null, null));
-				prologue.add(new AsmOPER("GET", "$1,rJ", null, null));
-				prologue.add(new AsmOPER("STO", "$1,$0,8", null, null));
+				prologue.add(new AsmOPER("STO", "$251,$0,0"));
+				prologue.add(new AsmOPER("GET", "$1,rJ"));
+				prologue.add(new AsmOPER("STO", "$1,$0,8"));
 				prologue.add(new AsmMOVE("SET", "`d0,`s0", codeChunk.frame.FP, codeChunk.frame.SP));
 
 				if(codeChunk.frame.size() < 256)
 				{
-					prologue.add(new AsmOPER("SUB", "$250,$250," + codeChunk.frame.size(), null, null));
+					prologue.add(new AsmOPER("SUB", "$250,$250," + codeChunk.frame.size()));
 				}
 				else
 				{
-					prologue.add(new AsmOPER("SET", "$0," + codeChunk.frame.size(), null, null));
-					prologue.add(new AsmOPER("SUB", "$250,$250,$0", null, null));
+					prologue.add(new AsmOPER("SET", "$0," + codeChunk.frame.size()));
+					prologue.add(new AsmOPER("SUB", "$250,$250,$0"));
 				}
 
 				if(codeChunk.registers.get(codeChunk.frame.RV).equals("$0") == false)
@@ -60,18 +60,18 @@ public class Build
 
 				if(codeChunk.frame.sizeLocs + 16 < 256)
 				{
-					epilogue.add(new AsmOPER("SUB", "$1,$251," + (codeChunk.frame.sizeLocs + 16), null, null));
+					epilogue.add(new AsmOPER("SUB", "$1,$251," + (codeChunk.frame.sizeLocs + 16)));
 				}
 				else
 				{
-					epilogue.add(new AsmOPER("SET", "$1," + (codeChunk.frame.sizeLocs + 16), null, null));
-					epilogue.add(new AsmOPER("SUB", "$1,$251,$1", null, null));
+					epilogue.add(new AsmOPER("SET", "$1," + (codeChunk.frame.sizeLocs + 16)));
+					epilogue.add(new AsmOPER("SUB", "$1,$251,$1"));
 				}
 
-				epilogue.add(new AsmOPER("LDO", "$251,$1,0", null, null));
-				epilogue.add(new AsmOPER("LDO", "$1,$1,8", null, null));
-				epilogue.add(new AsmOPER("PUT", "rJ,$1", null, null));
-				epilogue.add(new AsmOPER("POP", "1,0", null, null));
+				epilogue.add(new AsmOPER("LDO", "$251,$1,0"));
+				epilogue.add(new AsmOPER("LDO", "$1,$1,8"));
+				epilogue.add(new AsmOPER("PUT", "rJ,$1"));
+				epilogue.add(new AsmOPER("POP", "1,0"));
 
 				codeChunk.asmcode.addAll(1, prologue);
 				codeChunk.asmcode.addAll(epilogue);
@@ -81,15 +81,15 @@ public class Build
 		ImcCodeChunk main = new ImcCodeChunk(null, null);
 		main.asmcode = new LinkedList<AsmInstr>();
 
-		main.asmcode.add(new AsmOPER("LOC", "#100", null, null));
+		main.asmcode.add(new AsmOPER("LOC", "#100"));
 		main.asmcode.add(new AsmLABEL("`l0", new FrmLabel("Main")));
-		main.asmcode.add(new AsmOPER("PUT", "rG,250", null, null));
-		main.asmcode.add(new AsmOPER("SET", "$251,8", null, null));
-		main.asmcode.add(new AsmOPER("SL", "$251,$251,60", null, null));
-		main.asmcode.add(new AsmOPER("SUB", "$251,$251,1", null, null));
-		main.asmcode.add(new AsmOPER("SET", "$250,$251", null, null));
-		main.asmcode.add(new AsmOPER("PUSHJ", "$0,_main", null, null));
-		main.asmcode.add(new AsmOPER("TRAP", "0,Halt,0", null, null));
+		main.asmcode.add(new AsmOPER("PUT", "rG,250"));
+		main.asmcode.add(new AsmOPER("SET", "$251,8"));
+		main.asmcode.add(new AsmOPER("SL", "$251,$251,60"));
+		main.asmcode.add(new AsmOPER("SUB", "$251,$251,1"));
+		main.asmcode.add(new AsmOPER("SET", "$250,$251"));
+		main.asmcode.add(new AsmOPER("PUSHJ", "$0,_main"));
+		main.asmcode.add(new AsmOPER("TRAP", "0,Halt,0"));
 
 		chunks.addFirst(main);
 	}
@@ -176,7 +176,7 @@ public class Build
 					{
 						if((j + 1) >= codeChunk.asmcode.size())
 						{
-							codeChunk.asmcode.add(new AsmOPER("SWYM", "", null, null));
+							codeChunk.asmcode.add(new AsmOPER("SWYM", ""));
 						}
 
 						Report.dump(0, String.format("%-" + labelLength + "s %s", instr.labels.getFirst().name(), codeChunk.asmcode.get(++j).format(codeChunk.registers)));

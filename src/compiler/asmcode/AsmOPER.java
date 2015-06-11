@@ -19,4 +19,8 @@ public class AsmOPER extends AsmInstr {
 		super(mnemonic, assem, defs, uses, null);
 	}
 
+	public AsmOPER(String mnemonic, String assem)
+	{
+		super(mnemonic, assem, null, null, null);
+	}
 }
