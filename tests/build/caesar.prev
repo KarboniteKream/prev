@@ -1,0 +1,19 @@
+fun main(i : integer) : integer =
+(
+	{ r = get_int(r) },
+	{ s = get_str(s) },
+	{ c = 1 },
+	{ i = 0 },
+	{ while c != 0 :
+	(
+		{ c = get_char_at(s, i) },
+		{ if c >= 65 & c <= 90 then ( { c = c + r }, { if c > 90 then { c = c - 26 } } ) },
+		{ if c >= 97 & c <= 122 then ( { c = c + r }, { if c > 122 then { c = c - 26 } } ) },
+		put_char_at(s, c, i),
+		{ i = i + 1}
+	) },
+	put_str(s),
+	put_nl(1),
+	0
+)
+{ where var s : string; var c : integer; var i : integer; var r : integer }

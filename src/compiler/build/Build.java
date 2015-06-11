@@ -122,7 +122,7 @@ public class Build
 			get_int.asmcode.add(new AsmLABEL("`l0", new FrmLabel("LGINT3")));
 			get_int.asmcode.add(new AsmOPER("POP", "1,0"));
 
-			chunks.add(0, get_int);
+			chunks.addFirst(get_int);
 		}
 
 		if(functions.contains("_put_int") == true)
@@ -151,7 +151,7 @@ public class Build
 			put_int.asmcode.add(new AsmOPER("TRAP", "0,Fputs,StdOut"));
 			put_int.asmcode.add(new AsmOPER("POP", "0,0"));
 
-			chunks.add(1, put_int);
+			chunks.addFirst(put_int);
 		}
 
 		if(functions.contains("_put_nl") == true)
@@ -170,18 +170,18 @@ public class Build
 			put_nl.asmcode.add(new AsmLABEL("`l0", new FrmLabel("LNL2")));
 			put_nl.asmcode.add(new AsmOPER("POP", "0,0"));
 
-			chunks.add(2, put_nl);
-			chunks.add(2, new ImcDataChunk(new FrmLabel("NL"), ImcDataChunk.BYTE, "10,0"));
+			chunks.addFirst(put_nl);
+			chunks.addFirst(new ImcDataChunk(new FrmLabel("NL"), ImcDataChunk.BYTE, "10,0"));
 		}
 
 		if(functions.contains("_put_int") == true || functions.contains("_get_int") == true)
 		{
-			chunks.add(new ImcDataChunk(new FrmLabel("INT"), ImcDataChunk.OCTA, "0,0,0"));
+			chunks.addFirst(new ImcDataChunk(new FrmLabel("INT"), ImcDataChunk.OCTA, "0,0,0"));
 		}
 
 		if(functions.contains("_get_int") == true)
 		{
-			chunks.add(new ImcDataChunk(new FrmLabel("PIN"), ImcDataChunk.OCTA, "INT,21"));
+			chunks.addFirst(new ImcDataChunk(new FrmLabel("PIN"), ImcDataChunk.OCTA, "INT,21"));
 		}
 
 		if(functions.contains("_get_str") == true)
@@ -208,13 +208,13 @@ public class Build
 			get_str.asmcode.add(new AsmOPER("ADD", "$252,$252,1"));
 			get_str.asmcode.add(new AsmOPER("POP", "1,0"));
 
-			chunks.add(1, get_str);
+			chunks.addFirst(get_str);
 		}
 
 		if(functions.contains("_get_str") == true)
 		{
-			chunks.add(new ImcDataChunk(new FrmLabel("STR"), ImcDataChunk.OCTA, "0,0,0,0,0,0,0,0,0,0"));
-			chunks.add(new ImcDataChunk(new FrmLabel("SIN"), ImcDataChunk.OCTA, "STR,80"));
+			chunks.addFirst(new ImcDataChunk(new FrmLabel("STR"), ImcDataChunk.OCTA, "0,0,0,0,0,0,0,0,0,0"));
+			chunks.addFirst(new ImcDataChunk(new FrmLabel("SIN"), ImcDataChunk.OCTA, "STR,80"));
 		}
 
 		if(functions.contains("_put_str") == true)
@@ -227,7 +227,7 @@ public class Build
 			put_str.asmcode.add(new AsmOPER("TRAP", "0,Fputs,StdOut"));
 			put_str.asmcode.add(new AsmOPER("POP", "0,0"));
 
-			chunks.add(1, put_str);
+			chunks.addFirst(put_str);
 		}
 
 		if(functions.contains("_get_char_at") == true)
@@ -241,7 +241,7 @@ public class Build
 			get_char_at.asmcode.add(new AsmOPER("LDB", "$0,$0,$1"));
 			get_char_at.asmcode.add(new AsmOPER("POP", "1,0"));
 
-			chunks.add(1, get_char_at);
+			chunks.addFirst(get_char_at);
 		}
 
 		if(functions.contains("_put_char_at") == true)
@@ -256,7 +256,7 @@ public class Build
 			put_char_at.asmcode.add(new AsmOPER("STB", "$2,$0,$1"));
 			put_char_at.asmcode.add(new AsmOPER("POP", "0,0"));
 
-			chunks.add(1, put_char_at);
+			chunks.addFirst(put_char_at);
 		}
 
 		ImcCodeChunk main = new ImcCodeChunk(null, null);
