@@ -190,7 +190,7 @@ public class Build
 		main.asmcode.add(new AsmOPER("LOC", "#100"));
 		main.asmcode.add(new AsmLABEL("`l0", new FrmLabel("Main")));
 		main.asmcode.add(new AsmOPER("PUT", "rG,250"));
-		main.asmcode.add(new AsmOPER("SET", "$251,8"));
+		main.asmcode.add(new AsmOPER("SET", "$251,7"));
 		main.asmcode.add(new AsmOPER("SL", "$251,$251,60"));
 		main.asmcode.add(new AsmOPER("SUB", "$251,$251,1"));
 		main.asmcode.add(new AsmOPER("SET", "$250,$251"));
@@ -259,7 +259,7 @@ public class Build
 							data += "0,";
 						}
 
-						Report.dump(0, String.format("%-" + labelLength + "s ", dataChunk.label.name()) + "BYTE  " + data + "0");
+						Report.dump(0, String.format("%-" + labelLength + "s ", dataChunk.label.name()) + "OCTA  " + data + "0");
 					}
 					else
 					{
