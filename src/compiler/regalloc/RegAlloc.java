@@ -214,19 +214,19 @@ public class RegAlloc
 				continue;
 			}
 
-			long offset = -(8 + chunk.frame.sizeLocs + chunk.frame.sizeFPRA + chunk.frame.sizeTmps);
+			long offset = chunk.frame.sizeArgs + chunk.frame.sizeTmps;
 			chunk.frame.sizeTmps += 8;
 
 			int def = 0;
 			while(chunk.asmcode.get(def++).defs.contains(node.temp) == false) {}
 
-			chunk.asmcode.add(def, new AsmOPER("STO", "`s0,`s1," + offset, null, new LinkedList<FrmTemp>(Arrays.asList(node.temp, chunk.frame.FP))));
+			chunk.asmcode.add(def, new AsmOPER("STO", "`s0,`s1," + offset, null, new LinkedList<FrmTemp>(Arrays.asList(node.temp, chunk.frame.SP))));
 
 			for(int i = chunk.asmcode.size() - 1; i > def; i--)
 			{
 				if(chunk.asmcode.get(i).uses.contains(node.temp) == true)
 				{
-					chunk.asmcode.add(i, new AsmOPER("LDO", "`d0,`s0," + offset, new LinkedList<FrmTemp>(Arrays.asList(node.temp)), new LinkedList<FrmTemp>(Arrays.asList(chunk.frame.FP))));
+					chunk.asmcode.add(i, new AsmOPER("LDO", "`d0,`s0," + offset, new LinkedList<FrmTemp>(Arrays.asList(node.temp)), new LinkedList<FrmTemp>(Arrays.asList(chunk.frame.SP))));
 					break;
 				}
 			}
