@@ -94,6 +94,36 @@ public class Build
 		if(dump == false) return;
 		if(Report.dumpFile() == null) return;
 
+		int labelLength = 4;
+
+		for(ImcChunk chunk : chunks)
+		{
+			if(chunk instanceof ImcDataChunk == true)
+			{
+				int length = ((ImcDataChunk)chunk).label.name().length();
+
+				if(length > labelLength)
+				{
+					labelLength = length;
+				}
+			}
+			else if(chunk instanceof ImcCodeChunk == true)
+			{
+				for(AsmInstr instr : ((ImcCodeChunk)chunk).asmcode)
+				{
+					if(instr.labels.size() > 0)
+					{
+						int length = instr.labels.getFirst().name().length();
+
+						if(length > labelLength)
+						{
+							labelLength = length;
+						}
+					}
+				}
+			}
+		}
+
 		int i = 0;
 
 		for(ImcChunk chunk : chunks)
@@ -118,11 +148,11 @@ public class Build
 							codeChunk.asmcode.add(new AsmOPER("SWYM", "", null, null));
 						}
 
-						Report.dump(0, String.format("%-8s", instr.format(codeChunk.registers)) + codeChunk.asmcode.get(++j).format(codeChunk.registers));
+						Report.dump(0, String.format("%-" + labelLength + "s %s", instr.labels.getFirst().name(), codeChunk.asmcode.get(++j).format(codeChunk.registers)));
 					}
 					else
 					{
-						Report.dump(8, instr.format(codeChunk.registers));
+						Report.dump(labelLength + 1, instr.format(codeChunk.registers));
 					}
 				}
 			}
