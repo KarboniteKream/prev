@@ -55,10 +55,13 @@ public class RegAlloc
 
 				LinkedHashMap<FrmTemp, TmpNode> graph = tmpan.analyze(codeChunk);
 
-				for(AsmInstr instr : codeChunk.asmcode)
+				for(int i = 0; i < codeChunk.asmcode.size(); i++)
 				{
+					AsmInstr instr = codeChunk.asmcode.get(i);
+
 					if(instr.mnemonic.equals("PUSHJ") == true)
 					{
+						AsmInstr next = codeChunk.asmcode.get(i + 1);
 						LinkedList<TmpNode> edges = graph.get(instr.defs.getFirst()).edges;
 						int maxRegister = 0;
 
@@ -73,6 +76,11 @@ public class RegAlloc
 						}
 
 						codeChunk.registers.put(instr.defs.getFirst(), "$" + (edges.size() == 0 ? 0 : maxRegister + 1));
+
+						if(next.mnemonic.equals("SET") == true && codeChunk.registers.get(next.defs.getFirst()).equals(codeChunk.registers.get(next.uses.getFirst())) == true)
+						{
+							codeChunk.asmcode.remove(i + 1);
+						}
 					}
 				}
 			}
@@ -242,7 +250,6 @@ public class RegAlloc
 				if(chunk.asmcode.get(i).uses.contains(node.temp) == true)
 				{
 					chunk.asmcode.add(i, new AsmOPER("LDO", "`d0,`s0," + offset, new LinkedList<FrmTemp>(Arrays.asList(node.temp)), new LinkedList<FrmTemp>(Arrays.asList(chunk.frame.SP))));
-					break;
 				}
 			}
 		}

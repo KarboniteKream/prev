@@ -108,9 +108,9 @@ public class AsmCode
 				break;
 			}
 
+			defs.add(temp = new FrmTemp());
 			uses.add(parse(binop.limc));
 			uses.add(parse(binop.rimc));
-			defs.add(temp = new FrmTemp());
 
 			chunk.asmcode.add(new AsmOPER(oper, "`d0,`s0,`s1", defs, uses));
 
