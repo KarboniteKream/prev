@@ -69,18 +69,19 @@ public class SemAn implements Visitor {
 		AbsFunDef get_int = new AbsFunDef(position, "get_int", intPars, intType, intConst);
 		AbsFunDef put_int = new AbsFunDef(position, "put_int", intPars, intType, intConst);
 		AbsFunDef put_nl = new AbsFunDef(position, "put_nl", intPars, intType, intConst);
+		AbsFunDef get_str = new AbsFunDef(position, "get_str", strPars, strType, strConst);
 		AbsFunDef put_str = new AbsFunDef(position, "put_str", strPars, intType, intConst);
 		AbsFunDef get_char_at = new AbsFunDef(position, "get_char_at", getCharAtPars, intType, intConst);
 		AbsFunDef put_char_at = new AbsFunDef(position, "put_char_at", putCharAtPars, strType, strConst);
 
 		SemFunType intFun = new SemFunType(intParTypes, new SemAtomType(SemAtomType.INT));
-		SemFunType strFun = new SemFunType(strParTypes, new SemAtomType(SemAtomType.STR));
 
 		try
 		{
 			SymbTable.ins(get_int.name, get_int);
 			SymbTable.ins(put_int.name, put_int);
 			SymbTable.ins(put_nl.name, put_nl);
+			SymbTable.ins(get_str.name, get_str);
 			SymbTable.ins(put_str.name, put_str);
 			SymbTable.ins(get_char_at.name, get_char_at);
 			SymbTable.ins(put_char_at.name, put_char_at);
@@ -88,7 +89,8 @@ public class SemAn implements Visitor {
 			SymbDesc.setType(get_int, intFun);
 			SymbDesc.setType(put_int, intFun);
 			SymbDesc.setType(put_nl, intFun);
-			SymbDesc.setType(put_str, strFun);
+			SymbDesc.setType(get_str, new SemFunType(strParTypes, new SemAtomType(SemAtomType.STR)));
+			SymbDesc.setType(put_str, new SemFunType(strParTypes, new SemAtomType(SemAtomType.INT)));
 			SymbDesc.setType(get_char_at, new SemFunType(getCharAtParTypes, new SemAtomType(SemAtomType.INT)));
 			SymbDesc.setType(put_char_at, new SemFunType(putCharAtParTypes, new SemAtomType(SemAtomType.STR)));
 		}

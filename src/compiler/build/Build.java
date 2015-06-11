@@ -100,7 +100,7 @@ public class Build
 			get_int.asmcode = new LinkedList<AsmInstr>();
 
 			get_int.asmcode.add(new AsmLABEL("`l0", new FrmLabel("_get_int")));
-			get_int.asmcode.add(new AsmOPER("LDA", "$255,IN"));
+			get_int.asmcode.add(new AsmOPER("LDA", "$255,PIN"));
 			get_int.asmcode.add(new AsmOPER("TRAP", "0,Fgets,StdIn"));
 			get_int.asmcode.add(new AsmOPER("LDA", "$255,INT"));
 			get_int.asmcode.add(new AsmOPER("LDB", "$1,$255,0"));
@@ -176,12 +176,45 @@ public class Build
 
 		if(functions.contains("_put_int") == true || functions.contains("_get_int") == true)
 		{
-			chunks.addFirst(new ImcDataChunk(new FrmLabel("INT"), ImcDataChunk.OCTA, "0,0,0"));
+			chunks.add(new ImcDataChunk(new FrmLabel("INT"), ImcDataChunk.OCTA, "0,0,0"));
 		}
 
 		if(functions.contains("_get_int") == true)
 		{
-			chunks.addFirst(new ImcDataChunk(new FrmLabel("IN"), ImcDataChunk.OCTA, "INT,21"));
+			chunks.add(new ImcDataChunk(new FrmLabel("PIN"), ImcDataChunk.OCTA, "INT,21"));
+		}
+
+		if(functions.contains("_get_str") == true)
+		{
+			ImcCodeChunk get_str = new ImcCodeChunk(null, null);
+			get_str.asmcode = new LinkedList<AsmInstr>();
+
+			get_str.asmcode.add(new AsmLABEL("`l0", new FrmLabel("_get_str")));
+			get_str.asmcode.add(new AsmOPER("LDA", "$255,SIN"));
+			get_str.asmcode.add(new AsmOPER("TRAP", "0,Fgets,StdIn"));
+			get_str.asmcode.add(new AsmOPER("LDA", "$255,STR"));
+			get_str.asmcode.add(new AsmOPER("SET", "$0,$252"));
+			get_str.asmcode.add(new AsmLABEL("`l0", new FrmLabel("LGSTR1")));
+			get_str.asmcode.add(new AsmOPER("LDB", "$1,$255"));
+			get_str.asmcode.add(new AsmOPER("ADD", "$255,$255,1"));
+			get_str.asmcode.add(new AsmOPER("CMP", "$2,$1,10"));
+			get_str.asmcode.add(new AsmOPER("BZ", "$2,LGSTR2"));
+			get_str.asmcode.add(new AsmOPER("STB", "$1,$252"));
+			get_str.asmcode.add(new AsmOPER("ADD", "$252,$252,1"));
+			get_str.asmcode.add(new AsmOPER("JMP", "LGSTR1"));
+			get_str.asmcode.add(new AsmLABEL("`l0", new FrmLabel("LGSTR2")));
+			get_str.asmcode.add(new AsmOPER("SET", "$1,0"));
+			get_str.asmcode.add(new AsmOPER("STB", "$1,$252"));
+			get_str.asmcode.add(new AsmOPER("ADD", "$252,$252,1"));
+			get_str.asmcode.add(new AsmOPER("POP", "1,0"));
+
+			chunks.add(1, get_str);
+		}
+
+		if(functions.contains("_get_str") == true)
+		{
+			chunks.add(new ImcDataChunk(new FrmLabel("STR"), ImcDataChunk.OCTA, "0,0,0,0,0,0,0,0,0,0"));
+			chunks.add(new ImcDataChunk(new FrmLabel("SIN"), ImcDataChunk.OCTA, "STR,80"));
 		}
 
 		if(functions.contains("_put_str") == true)
@@ -232,10 +265,12 @@ public class Build
 		main.asmcode.add(new AsmOPER("LOC", "#100"));
 		main.asmcode.add(new AsmLABEL("`l0", new FrmLabel("Main")));
 		main.asmcode.add(new AsmOPER("PUT", "rG,250"));
-		main.asmcode.add(new AsmOPER("SET", "$251,7"));
-		main.asmcode.add(new AsmOPER("SL", "$251,$251,60"));
-		main.asmcode.add(new AsmOPER("SUB", "$251,$251,1"));
-		main.asmcode.add(new AsmOPER("SET", "$250,$251"));
+		main.asmcode.add(new AsmOPER("SET", "$250,7"));
+		main.asmcode.add(new AsmOPER("SL", "$250,$250,60"));
+		main.asmcode.add(new AsmOPER("SUB", "$250,$250,1"));
+		main.asmcode.add(new AsmOPER("SET", "$251,$250"));
+		main.asmcode.add(new AsmOPER("SET", "$252,4"));
+		main.asmcode.add(new AsmOPER("SL", "$252,$252,60"));
 		main.asmcode.add(new AsmOPER("PUSHJ", "$0,_main"));
 		main.asmcode.add(new AsmOPER("TRAP", "0,Halt,0"));
 

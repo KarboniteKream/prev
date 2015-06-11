@@ -117,6 +117,10 @@ public class LinCode
 
 			return 0L;
 		}
+		else if(function.equals("_get_str") == true)
+		{
+			// TODO
+		}
 		else if(function.equals("_put_str") == true)
 		{
 			// TODO
