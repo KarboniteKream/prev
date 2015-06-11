@@ -30,7 +30,7 @@ public class TmpAn
 		}
 	}
 
-	public void analyze(ImcCodeChunk chunk)
+	public LinkedHashMap<FrmTemp, TmpNode> analyze(ImcCodeChunk chunk)
 	{
 		LinkedHashMap<FrmTemp, TmpNode> graph = new LinkedHashMap<FrmTemp, TmpNode>();
 
@@ -145,6 +145,8 @@ public class TmpAn
 		}
 
 		chunk.graph = new LinkedList<TmpNode>(graph.values());
+
+		return graph;
 	}
 
 	public void dump(LinkedList<ImcChunk> chunks)

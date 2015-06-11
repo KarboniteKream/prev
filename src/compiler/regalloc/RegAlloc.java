@@ -53,28 +53,27 @@ public class RegAlloc
 					codeChunk.registers.put(node.temp, "$" + node.register);
 				}
 
-				int maxRegister = 0;
+				LinkedHashMap<FrmTemp, TmpNode> graph = tmpan.analyze(codeChunk);
 
 				for(AsmInstr instr : codeChunk.asmcode)
 				{
-					if(instr.defs.size() == 0)
+					if(instr.mnemonic.equals("PUSHJ") == true)
 					{
-						continue;
-					}
+						LinkedList<TmpNode> edges = graph.get(instr.defs.getFirst()).edges;
+						int maxRegister = 0;
 
-					if(instr.mnemonic.equals("PUSHJ") == false)
-					{
-						int register = Integer.parseInt(codeChunk.registers.get(instr.defs.getFirst()).substring(1));
-
-						if(register > maxRegister)
+						for(TmpNode edge : edges)
 						{
-							maxRegister = register;
+							int register = Integer.parseInt(codeChunk.registers.get(edge.temp).substring(1));
+
+							if(register > maxRegister)
+							{
+								maxRegister = register;
+							}
 						}
 
-						continue;
+						codeChunk.registers.put(instr.defs.getFirst(), "$" + (edges.size() == 0 ? 0 : maxRegister + 1));
 					}
-
-					codeChunk.registers.put(instr.defs.getFirst(), "$" + (maxRegister + 1));
 				}
 			}
 		}
@@ -170,7 +169,7 @@ public class RegAlloc
 			TmpNode node = stack.pop();
 			chunk.graph.add(node);
 
-			int regs[] = new int[registers];
+			int regs[] = new int[registers + 1];
 			boolean ok = false;
 
 			for(TmpNode edge : node.edges)
@@ -192,7 +191,7 @@ public class RegAlloc
 			{
 				if(instr.mnemonic.equals("PUSHJ") == true && instr.defs.contains(node.temp) == true)
 				{
-					node.register = registers - 1;
+					node.register = registers;
 					ok = true;
 					break;
 				}
