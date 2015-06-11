@@ -138,7 +138,7 @@ public class AsmCode
 
 			defs.add(temp = new FrmTemp());
 
-			if(constant < 0 && value <= 0xFFFFL)
+			if(constant < 0 && value <= 0xFFL)
 			{
 				chunk.asmcode.add(new AsmOPER("NEG", "`d0,0," + value, defs, null));
 				return temp;
@@ -269,7 +269,7 @@ public class AsmCode
 
 				if(next instanceof AsmLABEL == true)
 				{
-					for(int j = i + 2; j < chunk.asmcode.size(); j++)
+					for(int j = 0; j < chunk.asmcode.size(); j++)
 					{
 						AsmInstr temp = chunk.asmcode.get(j);
 
