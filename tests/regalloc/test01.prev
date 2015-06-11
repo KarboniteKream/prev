@@ -1,0 +1,13 @@
+fun main(i : integer) : integer =
+(
+	{ j[2] = 345678765435 },
+	{ k = 2 },
+	put_int(3),
+	{ k = 5 % 2 },
+	{ k = util(1) },
+	{ k = 2 },
+	0
+)
+{ where var k : integer; var j : arr [3] integer };
+
+fun util(i : integer) : integer = 0
