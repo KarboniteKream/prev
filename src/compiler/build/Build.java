@@ -78,6 +78,112 @@ public class Build
 			}
 		}
 
+		LinkedList<String> functions = new LinkedList<String>();
+
+		for(ImcChunk chunk : chunks)
+		{
+			if(chunk instanceof ImcCodeChunk == true)
+			{
+				for(AsmInstr instr : ((ImcCodeChunk)chunk).asmcode)
+				{
+					if(instr.mnemonic.equals("PUSHJ") == true)
+					{
+						functions.add(instr.labels.getFirst().name());
+					}
+				}
+			}
+		}
+
+		if(functions.contains("_get_int") == true)
+		{
+			ImcCodeChunk get_int = new ImcCodeChunk(null, null);
+			get_int.asmcode = new LinkedList<AsmInstr>();
+
+			get_int.asmcode.add(new AsmLABEL("`l0", new FrmLabel("_get_int")));
+			get_int.asmcode.add(new AsmOPER("LDA", "$255,IN"));
+			get_int.asmcode.add(new AsmOPER("TRAP", "0,Fgets,StdIn"));
+			get_int.asmcode.add(new AsmOPER("LDA", "$255,INT"));
+			get_int.asmcode.add(new AsmOPER("LDB", "$1,$255,0"));
+			get_int.asmcode.add(new AsmOPER("CMP", "$3,$1,45"));
+			get_int.asmcode.add(new AsmOPER("BNZ", "$3,LGINT1"));
+			get_int.asmcode.add(new AsmOPER("ADD", "$255,$255,1"));
+			get_int.asmcode.add(new AsmLABEL("`l0", new FrmLabel("LGINT1")));
+			get_int.asmcode.add(new AsmOPER("LDB", "$1,$255,0"));
+			get_int.asmcode.add(new AsmOPER("CMP", "$2,$1,10"));
+			get_int.asmcode.add(new AsmOPER("BZ", "$2,LGINT2"));
+			get_int.asmcode.add(new AsmOPER("SUB", "$1,$1,48"));
+			get_int.asmcode.add(new AsmOPER("MUL", "$0,$0,10"));
+			get_int.asmcode.add(new AsmOPER("ADD", "$0,$0,$1"));
+			get_int.asmcode.add(new AsmOPER("ADD", "$255,$255,1"));
+			get_int.asmcode.add(new AsmOPER("JMP", "LGINT1"));
+			get_int.asmcode.add(new AsmLABEL("`l0", new FrmLabel("LGINT2")));
+			get_int.asmcode.add(new AsmOPER("BNZ", "$3,LGINT3"));
+			get_int.asmcode.add(new AsmOPER("NEG", "$0,0,$0"));
+			get_int.asmcode.add(new AsmLABEL("`l0", new FrmLabel("LGINT3")));
+			get_int.asmcode.add(new AsmOPER("POP", "1,0"));
+
+			chunks.add(0, get_int);
+		}
+
+		if(functions.contains("_put_int") == true)
+		{
+			ImcCodeChunk put_int = new ImcCodeChunk(null, null);
+			put_int.asmcode = new LinkedList<AsmInstr>();
+
+			put_int.asmcode.add(new AsmLABEL("`l0", new FrmLabel("_put_int")));
+			put_int.asmcode.add(new AsmOPER("LDA", "$255,INT+20"));
+			put_int.asmcode.add(new AsmOPER("LDO", "$0,$250,8"));
+			put_int.asmcode.add(new AsmOPER("CMP", "$2,$0,0"));
+			put_int.asmcode.add(new AsmOPER("BP", "$2,LPINT1"));
+			put_int.asmcode.add(new AsmOPER("NEG", "$0,0,$0"));
+			put_int.asmcode.add(new AsmLABEL("`l0", new FrmLabel("LPINT1")));
+			put_int.asmcode.add(new AsmOPER("SUB", "$255,$255,1"));
+			put_int.asmcode.add(new AsmOPER("DIV", "$0,$0,10"));
+			put_int.asmcode.add(new AsmOPER("GET", "$1,rR"));
+			put_int.asmcode.add(new AsmOPER("ADD", "$1,$1,48"));
+			put_int.asmcode.add(new AsmOPER("STB", "$1,$255,0"));
+			put_int.asmcode.add(new AsmOPER("BNZ", "$0,LPINT1"));
+			put_int.asmcode.add(new AsmOPER("BNN", "$2,LPINT2"));
+			put_int.asmcode.add(new AsmOPER("SUB", "$255,$255,1"));
+			put_int.asmcode.add(new AsmOPER("SET", "$0,45"));
+			put_int.asmcode.add(new AsmOPER("STB", "$0,$255,0"));
+			put_int.asmcode.add(new AsmLABEL("`l0", new FrmLabel("LPINT2")));
+			put_int.asmcode.add(new AsmOPER("TRAP", "0,Fputs,StdOut"));
+			put_int.asmcode.add(new AsmOPER("POP", "0,0"));
+
+			chunks.add(1, put_int);
+		}
+
+		if(functions.contains("_put_nl") == true)
+		{
+			ImcCodeChunk put_nl = new ImcCodeChunk(null, null);
+			put_nl.asmcode = new LinkedList<AsmInstr>();
+
+			put_nl.asmcode.add(new AsmLABEL("`l0", new FrmLabel("_put_nl")));
+			put_nl.asmcode.add(new AsmOPER("LDO", "$0,$250,8"));
+			put_nl.asmcode.add(new AsmLABEL("`l0", new FrmLabel("LNL1")));
+			put_nl.asmcode.add(new AsmOPER("BZ", "$0,LNL2"));
+			put_nl.asmcode.add(new AsmOPER("SUB", "$0,$0,1"));
+			put_nl.asmcode.add(new AsmOPER("LDA", "$255,NL"));
+			put_nl.asmcode.add(new AsmOPER("TRAP", "0,Fputs,StdOut"));
+			put_nl.asmcode.add(new AsmOPER("JMP", "LNL1"));
+			put_nl.asmcode.add(new AsmLABEL("`l0", new FrmLabel("LNL2")));
+			put_nl.asmcode.add(new AsmOPER("POP", "0,0"));
+
+			chunks.add(2, put_nl);
+			chunks.add(2, new ImcDataChunk(new FrmLabel("NL"), ImcDataChunk.BYTE, "10,0"));
+		}
+
+		if(functions.contains("_put_int") == true || functions.contains("_get_int") == true)
+		{
+			chunks.addFirst(new ImcDataChunk(new FrmLabel("INT"), ImcDataChunk.OCTA, "0,0,0"));
+		}
+
+		if(functions.contains("_get_int") == true)
+		{
+			chunks.addFirst(new ImcDataChunk(new FrmLabel("IN"), ImcDataChunk.OCTA, "INT,21"));
+		}
+
 		ImcCodeChunk main = new ImcCodeChunk(null, null);
 		main.asmcode = new LinkedList<AsmInstr>();
 
@@ -143,14 +249,32 @@ public class Build
 				if(chunk instanceof ImcDataChunk == true)
 				{
 					ImcDataChunk dataChunk = (ImcDataChunk)chunk;
-					String data = "";
 
-					for(long j = 0; j < (dataChunk.size / 8) - 1; j++)
+					if(dataChunk.data == null)
 					{
-						data += "0,";
-					}
+						String data = "";
 
-					Report.dump(0, String.format("%-" + labelLength + "s ", dataChunk.label.name()) + "BYTE  " + data + "0");
+						for(long j = 0; j < (dataChunk.size / 8) - 1; j++)
+						{
+							data += "0,";
+						}
+
+						Report.dump(0, String.format("%-" + labelLength + "s ", dataChunk.label.name()) + "BYTE  " + data + "0");
+					}
+					else
+					{
+						String size = null;
+
+						switch((int)dataChunk.size)
+						{
+							case ImcDataChunk.BYTE:  size = "BYTE "; break;
+							case ImcDataChunk.WYDE:  size = "WYDE "; break;
+							case ImcDataChunk.TETRA: size = "TETRA"; break;
+							case ImcDataChunk.OCTA:  size = "OCTA "; break;
+						}
+
+						Report.dump(0, String.format("%-" + labelLength + "s ", dataChunk.label.name()) + size + " " + dataChunk.data);
+					}
 				}
 			}
 
