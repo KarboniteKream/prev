@@ -1,0 +1,6 @@
+fun main(i : integer) : integer =
+(
+	put_int(get_int(0)),
+	put_nl(1),
+	0
+)
