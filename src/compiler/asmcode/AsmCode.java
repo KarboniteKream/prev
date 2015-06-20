@@ -237,12 +237,16 @@ public class AsmCode
 
 				boolean ok = false;
 
-				for(int j = i + 1; j < chunk.asmcode.size(); j++)
+				for(int j = 0; j < chunk.asmcode.size(); j++)
 				{
 					AsmInstr use = chunk.asmcode.get(j);
 					int idx = use.uses.indexOf(def);
 
-					if(idx == 1 && (ok = use.uses.remove(def)) == true)
+					if(use.defs.contains(def) == true && i != j)
+					{
+						break;
+					}
+					else if(idx == 1 && (ok = use.uses.remove(def)) == true)
 					{
 						use.assem = use.assem.substring(0, use.assem.lastIndexOf(',') + 1) + constant;
 					}
