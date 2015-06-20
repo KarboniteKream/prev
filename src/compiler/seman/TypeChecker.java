@@ -132,26 +132,17 @@ public class TypeChecker implements Visitor
 			break;
 
 			case AbsBinExpr.ASSIGN:
-				if(type1.sameStructureAs(logical) == true)
+				if(type1.sameStructureAs(logical) == true && type2.sameStructureAs(logical) == false)
 				{
-					if(type2.sameStructureAs(logical) == false)
-					{
-						Report.error(acceptor.expr2.position, "Expected LOGICAL, found " + type2.actualType() + ".");
-					}
+					Report.error(acceptor.expr2.position, "Expected LOGICAL, found " + type2.actualType() + ".");
 				}
-				else if(type1.sameStructureAs(integer) == true)
+				else if(type1.sameStructureAs(integer) == true && type2.sameStructureAs(integer) == false)
 				{
-					if(type2.sameStructureAs(integer) == false)
-					{
-						Report.error(acceptor.expr2.position, "Expected INTEGER, found " + type2.actualType() + ".");
-					}
+					Report.error(acceptor.expr2.position, "Expected INTEGER, found " + type2.actualType() + ".");
 				}
-				else if(type1.sameStructureAs(string) == true)
+				else if(type1.sameStructureAs(string) == true && type2.sameStructureAs(string) == false)
 				{
-					if(type2.sameStructureAs(string) == false)
-					{
-						Report.error(acceptor.expr2.position, "Expected STRING, found " + type2.actualType() + ".");
-					}
+					Report.error(acceptor.expr2.position, "Expected STRING, found " + type2.actualType() + ".");
 				}
 				else if(type1.actualType() instanceof SemPtrType == true)
 				{
