@@ -83,7 +83,7 @@ public class LinCode
 			{
 				ImcDataChunk dataChunk = (ImcDataChunk)chunk;
 				labels.put(dataChunk.label.name(), HP);
-				HP += dataChunk.size;
+				HP += dataChunk.data == null ? dataChunk.size : dataChunk.data.length() - 1;
 			}
 		}
 
