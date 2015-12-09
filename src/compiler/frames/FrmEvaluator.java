@@ -7,7 +7,7 @@ import compiler.seman.type.*;
 
 public class FrmEvaluator implements Visitor
 {
-	private static int level = 1;
+	// frame rabim zaradi globalnih spremenljivk, zato je to boljse kot level
 	private static FrmFrame frame = null;
 
 	public void visit(AbsArrType acceptor)
@@ -35,6 +35,12 @@ public class FrmEvaluator implements Visitor
 		}
 	}
 
+	public void visit(AbsDoWhile acceptor)
+	{
+		acceptor.body.accept(this);
+		acceptor.cond.accept(this);
+	}
+
 	public void visit(AbsExprs acceptor)
 	{
 		for(int i = 0; i < acceptor.numExprs(); i++)
@@ -45,16 +51,18 @@ public class FrmEvaluator implements Visitor
 
 	public void visit(AbsFor acceptor)
 	{
-		acceptor.lo.accept(this);
-		acceptor.hi.accept(this);
-		acceptor.step.accept(this);
+		acceptor.init.accept(this);
+		acceptor.cond.accept(this);
 		acceptor.body.accept(this);
 	}
 
 	public void visit(AbsFunCall acceptor)
 	{
-		long size = 8;
-		long returnSize = ((SemFunType)SymbDesc.getType(SymbDesc.getNameDef(acceptor))).resultType.size();
+		// zacetna velikost je 0 ali 3, ker ne rabim FP.
+		// popravi velikost podatkovnih tipov na 3 in 6
+		// getNameDef() in nato iz frame poberi podatke. frame mora obstajati!
+		int size = 0;
+		int returnSize = ((SemFunType)SymbDesc.getType(SymbDesc.getNameDef(acceptor))).resultType.size();
 
 		for(int i = 0; i < acceptor.numArgs(); i++)
 		{
@@ -67,8 +75,8 @@ public class FrmEvaluator implements Visitor
 
 	public void visit(AbsFunDef acceptor)
 	{
-		FrmFrame temp = frame;
-		frame = new FrmFrame(acceptor, level++);
+		// podpora za prototipe funkcij?
+		frame = new FrmFrame(acceptor);
 
 		for(int i = 0; i < acceptor.numPars(); i++)
 		{
@@ -79,22 +87,23 @@ public class FrmEvaluator implements Visitor
 		acceptor.expr.accept(this);
 
 		FrmDesc.setFrame(acceptor, frame);
-		level--;
-		frame = temp;
+		frame = null;
 	}
 
-	public void visit(AbsIfThen acceptor)
+	public void visit(AbsIf acceptor)
 	{
 		acceptor.cond.accept(this);
 		acceptor.thenBody.accept(this);
 	}
 
-	public void visit(AbsIfThenElse acceptor)
+	public void visit(AbsIfElse acceptor)
 	{
 		acceptor.cond.accept(this);
 		acceptor.thenBody.accept(this);
 		acceptor.elseBody.accept(this);
 	}
+
+	public void visit(AbsNop acceptor) {}
 
 	public void visit(AbsPar acceptor)
 	{
@@ -109,7 +118,7 @@ public class FrmEvaluator implements Visitor
 
 	public void visit(AbsRecType acceptor)
 	{
-		long offset = 0;
+		int offset = 0;
 
 		for(int i = 0; i < acceptor.numComps(); i++)
 		{
@@ -118,6 +127,11 @@ public class FrmEvaluator implements Visitor
 			offset += SymbDesc.getType(component).size();
 			component.type.accept(this);
 		}
+	}
+
+	public void visit(AbsReturn acceptor)
+	{
+		acceptor.expr.accept(this);
 	}
 
 	public void visit(AbsTypeDef acceptor)
@@ -134,8 +148,11 @@ public class FrmEvaluator implements Visitor
 
 	public void visit(AbsVarDef acceptor)
 	{
+		// kaj pa stringi, ki se inicializirajo ob vsakem klicu?
+		// ce imamo string konstanto, potem je tudi to globalna spremenljivka
 		if(frame == null)
 		{
+			// rename to global?
 			FrmDesc.setAccess(acceptor, new FrmVarAccess(acceptor));
 		}
 		else
@@ -146,15 +163,14 @@ public class FrmEvaluator implements Visitor
 		}
 
 		acceptor.type.accept(this);
+		
+		if(acceptor.expr != null)
+		{
+			acceptor.expr.accept(this);
+		}
 	}
 
 	public void visit(AbsVarName acceptor) {}
-
-	public void visit(AbsWhere acceptor)
-	{
-		acceptor.defs.accept(this);
-		acceptor.expr.accept(this);
-	}
 
 	public void visit(AbsWhile acceptor)
 	{

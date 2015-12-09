@@ -26,36 +26,18 @@ import compiler.frames.*;
 
 public abstract class AsmInstr {
 
-	/** Znakovna predstavitev ukaza. */
 	public String mnemonic;
 	public String assem;
 
-	/** Zacasne spremenljivke, katerih vrednosti ukaz uporabi. */
-	public LinkedList<FrmTemp> uses;
-
-	/** Zacasne spremenljivke, katerih vrednosti ukaz doloci. */
 	public LinkedList<FrmTemp> defs;
-
-	/** Seznam label, na katerih se lahko nadaljuje izvajanje ukaza. */
+	public LinkedList<FrmTemp> uses;
 	public LinkedList<FrmLabel> labels;
 
 	public LinkedList<FrmTemp> in;
 	public LinkedList<FrmTemp> out;
 
-	/**
-	 * Opis ukaza strojne kode.
-	 *
-	 * @param assem
-	 *            Zankovna predstavitev ukaza (glej zgoraj).
-	 * @param defs
-	 *            Zacasne spremenljivke, ki jih ukaz definira.
-	 * @param uses
-	 *            Zacasne spremenljivke, ki jih ukaz uporablja.
-	 * @param labels
-	 *            Labele, na katere ukaz skace.
-	 */
-	protected AsmInstr(String mnemonic, String assem, LinkedList<FrmTemp> defs,
-			LinkedList<FrmTemp> uses, LinkedList<FrmLabel> labels) {
+	protected AsmInstr(String mnemonic, String assem, LinkedList<FrmTemp> defs, LinkedList<FrmTemp> uses, LinkedList<FrmLabel> labels)
+	{
 		this.mnemonic = mnemonic;
 		this.assem = assem;
 		this.defs = defs == null ? new LinkedList<FrmTemp>() : defs;
@@ -66,13 +48,34 @@ public abstract class AsmInstr {
 		out = null;
 	}
 
-	public String format(HashMap<FrmTemp, String> map) {
+	public String format(HashMap<FrmTemp, String> map)
+	{
 		String fmtAssem = String.format("%-5s %s", mnemonic, assem);
 		for (int i = 0; i < uses.size(); i++) {
 			FrmTemp temp = uses.get(i);
 			String regName = null;
+			// REMOVE
 			if (map != null)
+			{
 				regName = map.get(temp);
+
+				if(regName.equals("0") == true)
+				{
+					regName = "A";
+				}
+				else if(regName.equals("1") == true)
+				{
+					regName = "S";
+				}
+				else if(regName.equals("2") == true)
+				{
+					regName = "T";
+				}
+				else if(regName.equals("3") == true)
+				{
+					regName = "B";
+				}
+			}
 			if (regName == null)
 				regName = temp.name();
 			fmtAssem = fmtAssem.replaceAll("`s" + i, Matcher.quoteReplacement(regName));
@@ -80,8 +83,28 @@ public abstract class AsmInstr {
 		for (int i = 0; i < defs.size(); i++) {
 			FrmTemp temp = defs.get(i);
 			String regName = null;
+			// REMOVE
 			if (map != null)
+			{
 				regName = map.get(temp);
+
+				if(regName.equals("0") == true)
+				{
+					regName = "A";
+				}
+				else if(regName.equals("1") == true)
+				{
+					regName = "S";
+				}
+				else if(regName.equals("2") == true)
+				{
+					regName = "T";
+				}
+				else if(regName.equals("3") == true)
+				{
+					regName = "B";
+				}
+			}
 			if (regName == null)
 				regName = temp.name();
 			fmtAssem = fmtAssem.replaceAll("`d" + i, Matcher.quoteReplacement(regName));
@@ -92,5 +115,4 @@ public abstract class AsmInstr {
 		}
 		return fmtAssem;
 	}
-
 }

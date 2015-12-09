@@ -6,59 +6,39 @@ import compiler.abstr.tree.*;
 import compiler.seman.*;
 import compiler.seman.type.*;
 
-/**
- * Izracun klicnih zapisov.
- *
- * @author sliva
- */
-public class Frames implements Visitor {
-
-	/** Ali se izpisujejo vmesni rezultati. */
+public class Frames implements Visitor
+{
 	private boolean dump;
 
-	/**
-	 * Izracun klicnih zapisov.
-	 *
-	 * @param dump
-	 *            Ali se izpisujejo vmesni rezultati.
-	 */
 	public Frames(boolean dump)
 	{
 		this.dump = dump;
 
-		AbsFunDef get_int = (AbsFunDef)SymbTable.fnd("get_int");
-		AbsFunDef put_int = (AbsFunDef)SymbTable.fnd("put_int");
-		AbsFunDef put_nl = (AbsFunDef)SymbTable.fnd("put_nl");
-		AbsFunDef get_str = (AbsFunDef)SymbTable.fnd("get_str");
-		AbsFunDef put_str = (AbsFunDef)SymbTable.fnd("put_str");
-		AbsFunDef get_char_at = (AbsFunDef)SymbTable.fnd("get_char_at");
-		AbsFunDef put_char_at = (AbsFunDef)SymbTable.fnd("put_char_at");
+		// AbsFunDef get_int = (AbsFunDef)SymbTable.fnd("get_int");
+		// AbsFunDef put_int = (AbsFunDef)SymbTable.fnd("put_int");
+		// AbsFunDef put_nl = (AbsFunDef)SymbTable.fnd("put_nl");
+		// AbsFunDef get_str = (AbsFunDef)SymbTable.fnd("get_str");
+		// AbsFunDef put_str = (AbsFunDef)SymbTable.fnd("put_str");
+		// AbsFunDef get_char_at = (AbsFunDef)SymbTable.fnd("get_char_at");
+		// AbsFunDef put_char_at = (AbsFunDef)SymbTable.fnd("put_char_at");
 
-		FrmDesc.setFrame(get_int, new FrmFrame(get_int, 1));
-		FrmDesc.setFrame(put_int, new FrmFrame(put_int, 1));
-		FrmDesc.setFrame(put_nl, new FrmFrame(put_nl, 1));
-		FrmDesc.setFrame(get_str, new FrmFrame(get_str, 1));
-		FrmDesc.setFrame(put_str, new FrmFrame(put_str, 1));
-		FrmDesc.setFrame(get_char_at, new FrmFrame(get_char_at, 1));
-		FrmDesc.setFrame(put_char_at, new FrmFrame(put_char_at, 1));
+		// FrmDesc.setFrame(get_int, new FrmFrame(get_int, 1));
+		// FrmDesc.setFrame(put_int, new FrmFrame(put_int, 1));
+		// FrmDesc.setFrame(put_nl, new FrmFrame(put_nl, 1));
+		// FrmDesc.setFrame(get_str, new FrmFrame(get_str, 1));
+		// FrmDesc.setFrame(put_str, new FrmFrame(put_str, 1));
+		// FrmDesc.setFrame(get_char_at, new FrmFrame(get_char_at, 1));
+		// FrmDesc.setFrame(put_char_at, new FrmFrame(put_char_at, 1));
 	}
 
-	/**
-	 * Izpise abstraktno sintaksno drevo na datoteko vmesnih rezultatov.
-	 *
-	 * @param tree
-	 *            Abstraktno sintaksno drevo.
-	 */
-	public void dump(AbsTree tree) {
+	public void dump(AbsTree tree)
+	{
 		if (! dump) return;
 		if (Report.dumpFile() == null) return;
 		indent = 0;
 		tree.accept(this);
 	}
 
-	// Kot Visitor izpise abstraktno sintaksno drevo:
-
-	/** Trenutni zamik. */
 	private int indent;
 
 	public void visit(AbsArrType arrType) {
@@ -73,8 +53,8 @@ public class Frames implements Visitor {
 
 	public void visit(AbsAtomConst atomConst) {
 		switch (atomConst.type) {
-		case AbsAtomConst.LOG:
-			Report.dump(indent, "AbsAtomConst " + atomConst.position.toString() + ": LOGICAL(" + atomConst.value + ")");
+		case AbsAtomConst.BOOL:
+			Report.dump(indent, "AbsAtomConst " + atomConst.position.toString() + ": BOOLEAN(" + atomConst.value + ")");
 			break;
 		case AbsAtomConst.INT:
 			Report.dump(indent, "AbsAtomConst " + atomConst.position.toString() + ": INTEGER(" + atomConst.value + ")");
@@ -83,7 +63,8 @@ public class Frames implements Visitor {
 			Report.dump(indent, "AbsAtomConst " + atomConst.position.toString() + ": STRING(" + atomConst.value + ")");
 			break;
 		default:
-			Report.error("Internal error :: compiler.abstr.Abstr.visit(AbsAtomConst)");
+			// TODO: Change to FRAMES.
+			Report.error("Internal error :: compiler.frames.Frames.visit(AbsAtomConst)");
 		}
 		{
 			SemType typ = SymbDesc.getType(atomConst);
@@ -94,17 +75,27 @@ public class Frames implements Visitor {
 
 	public void visit(AbsAtomType atomType) {
 		switch (atomType.type) {
-		case AbsAtomType.LOG:
-			Report.dump(indent, "AbsAtomType " + atomType.position.toString() + ": LOGICAL");
+		// TODO: ostali tipi
+		case AbsAtomType.BOOL:
+			Report.dump(indent, "AbsAtomType " + atomType.position.toString() + ": BOOLEAN");
 			break;
 		case AbsAtomType.INT:
 			Report.dump(indent, "AbsAtomType " + atomType.position.toString() + ": INTEGER");
 			break;
-		case AbsAtomType.STR:
-			Report.dump(indent, "AbsAtomType " + atomType.position.toString() + ": STRING");
+		// case AbsAtomType.STR:
+		// 	Report.dump(indent, "AbsAtomType " + atomType.position.toString() + ": STRING");
+		// 	break;
+		case AbsAtomType.FLOAT:
+			Report.dump(indent, "AbsAtomType " + atomType.position.toString() + ": FLOAT");
+			break;
+		case AbsAtomType.CHAR:
+			Report.dump(indent, "AbsAtomType " + atomType.position.toString() + ": CHAR");
+			break;
+		case AbsAtomType.VOID:
+			Report.dump(indent, "AbsAtomType " + atomType.position.toString() + ": VOID");
 			break;
 		default:
-			Report.error("Internal error :: compiler.abstr.Abstr.visit(AbsAtomType)");
+			Report.error("Internal error :: compiler.frames.Frames.visit(AbsAtomType)");
 		}
 		{
 			SemType typ = SymbDesc.getType(atomType);
@@ -115,8 +106,8 @@ public class Frames implements Visitor {
 
 	public void visit(AbsBinExpr binExpr) {
 		switch (binExpr.oper) {
-		case AbsBinExpr.IOR:
-			Report.dump(indent, "AbsBinExpr " + binExpr.position.toString() + ": IOR");
+		case AbsBinExpr.OR:
+			Report.dump(indent, "AbsBinExpr " + binExpr.position.toString() + ": OR");
 			break;
 		case AbsBinExpr.AND:
 			Report.dump(indent, "AbsBinExpr " + binExpr.position.toString() + ": AND");
@@ -164,7 +155,7 @@ public class Frames implements Visitor {
 			Report.dump(indent, "AbsBinExpr " + binExpr.position.toString() + ": ASSIGN");
 			break;
 		default:
-			Report.error("Internal error :: compiler.abstr.Abstr.visit(AbsBinExpr)");
+			Report.error("Internal error :: compiler.frames.Frames.visit(AbsBinExpr)");
 		}
 		{
 			SemType typ = SymbDesc.getType(binExpr);
@@ -211,6 +202,17 @@ public class Frames implements Visitor {
 		}
 	}
 
+	public void visit(AbsDoWhile doWhileStmt) {
+		Report.dump(indent, "AbsDoWhile " + doWhileStmt.position.toString() + ":");
+		{
+			SemType typ = SymbDesc.getType(doWhileStmt);
+			if (typ != null)
+				Report.dump(indent + 2, "#typed as " + typ.toString());
+		}
+		indent += 2; doWhileStmt.body.accept(this); indent -= 2;
+		indent += 2; doWhileStmt.cond.accept(this); indent -= 2;
+	}
+
 	public void visit(AbsExprs exprs) {
 		Report.dump(indent, "AbsExprs " + exprs.position.toString() + ":");
 		{
@@ -230,9 +232,8 @@ public class Frames implements Visitor {
 			if (typ != null)
 				Report.dump(indent + 2, "#typed as " + typ.toString());
 		}
-		indent += 2; forStmt.count.accept(this); indent -= 2;
-		indent += 2; forStmt.lo.accept(this); indent -= 2;
-		indent += 2; forStmt.hi.accept(this); indent -= 2;
+		indent += 2; forStmt.init.accept(this); indent -= 2;
+		indent += 2; forStmt.cond.accept(this); indent -= 2;
 		indent += 2; forStmt.step.accept(this); indent -= 2;
 		indent += 2; forStmt.body.accept(this); indent -= 2;
 	}
@@ -273,27 +274,37 @@ public class Frames implements Visitor {
 		indent += 2; funDef.expr.accept(this); indent -= 2;
 	}
 
-	public void visit(AbsIfThen ifThen) {
-		Report.dump(indent, "AbsIfThen " + ifThen.position.toString() + ":");
+	public void visit(AbsIf ifStmt) {
+		Report.dump(indent, "AbsIf " + ifStmt.position.toString() + ":");
 		{
-			SemType typ = SymbDesc.getType(ifThen);
+			SemType typ = SymbDesc.getType(ifStmt);
 			if (typ != null)
 				Report.dump(indent + 2, "#typed as " + typ.toString());
 		}
-		indent += 2; ifThen.cond.accept(this); indent -= 2;
-		indent += 2; ifThen.thenBody.accept(this); indent -= 2;
+		indent += 2; ifStmt.cond.accept(this); indent -= 2;
+		indent += 2; ifStmt.thenBody.accept(this); indent -= 2;
 	}
 
-	public void visit(AbsIfThenElse ifThenElse) {
-		Report.dump(indent, "AbsIfThenElse " + ifThenElse.position.toString() + ":");
+	public void visit(AbsIfElse ifElse) {
+		Report.dump(indent, "AbsIfElse " + ifElse.position.toString() + ":");
 		{
-			SemType typ = SymbDesc.getType(ifThenElse);
+			SemType typ = SymbDesc.getType(ifElse);
 			if (typ != null)
 				Report.dump(indent + 2, "#typed as " + typ.toString());
 		}
-		indent += 2; ifThenElse.cond.accept(this); indent -= 2;
-		indent += 2; ifThenElse.thenBody.accept(this); indent -= 2;
-		indent += 2; ifThenElse.elseBody.accept(this); indent -= 2;
+		indent += 2; ifElse.cond.accept(this); indent -= 2;
+		indent += 2; ifElse.thenBody.accept(this); indent -= 2;
+		indent += 2; ifElse.elseBody.accept(this); indent -= 2;
+	}
+
+	public void visit(AbsNop nop)
+	{
+		Report.dump(indent, "AbsNop " + nop.position.toString());
+		{
+			SemType typ = SymbDesc.getType(nop);
+			if (typ != null)
+				Report.dump(indent + 2, "#typed as " + typ.toString());
+		}
 	}
 
 	public void visit(AbsPar par) {
@@ -331,6 +342,16 @@ public class Frames implements Visitor {
 		for (int comp = 0; comp < recType.numComps(); comp++) {
 			indent += 2; recType.comp(comp).accept(this); indent -= 2;
 		}
+	}
+
+	public void visit(AbsReturn returnStmt) {
+		Report.dump(indent, "AbsReturn " + returnStmt.position.toString());
+		{
+			SemType typ = SymbDesc.getType(returnStmt);
+			if (typ != null)
+				Report.dump(indent + 2, "#typed as " + typ.toString());
+		}
+		indent += 2; returnStmt.expr.accept(this); indent -= 2;
 	}
 
 	public void visit(AbsTypeDef typeDef) {
@@ -375,7 +396,7 @@ public class Frames implements Visitor {
 			Report.dump(indent, "AbsUnExpr " + unExpr.position.toString() + ": NOT");
 			break;
 		default:
-			Report.error("Internal error :: compiler.abstr.Abstr.visit(AbsBinExpr)");
+			Report.error("Internal error :: compiler.frames.Frames.visit(AbsBinExpr)");
 		}
 		{
 			SemType typ = SymbDesc.getType(unExpr);
@@ -397,7 +418,7 @@ public class Frames implements Visitor {
 			if (access != null)
 				Report.dump(indent + 2, "#accesed as " + access.toString());
 		}
-		indent += 2; varDef.type.accept(this); indent -= 2;
+		indent += 2; varDef.type.accept(this); if(varDef.expr != null) varDef.expr.accept(this); indent -= 2;
 	}
 
 	public void visit(AbsVarName varName) {
@@ -412,17 +433,6 @@ public class Frames implements Visitor {
 			if (typ != null)
 				Report.dump(indent + 2, "#typed as " + typ.toString());
 		}
-	}
-
-	public void visit(AbsWhere where) {
-		Report.dump(indent, "AbsWhere " + where.position.toString() + ":");
-		{
-			SemType typ = SymbDesc.getType(where);
-			if (typ != null)
-				Report.dump(indent + 2, "#typed as " + typ.toString());
-		}
-		indent += 2; where.expr.accept(this); indent -= 2;
-		indent += 2; where.defs.accept(this); indent -= 2;
 	}
 
 	public void visit(AbsWhile whileStmt) {

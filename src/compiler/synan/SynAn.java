@@ -6,42 +6,27 @@ import compiler.*;
 import compiler.lexan.*;
 import compiler.abstr.tree.*;
 
-/**
- * Sintaksni analizator.
- *
- * @author sliva
- */
-public class SynAn {
-
-	/** Leksikalni analizator. */
+public class SynAn
+{
 	private LexAn lexAn;
-
-	/** Ali se izpisujejo vmesni rezultati. */
 	private boolean dump;
 
-	private Symbol prevSymbol;
-	private Symbol currSymbol;
+	private Token prevToken;
+	private Token currToken;
 
-	/**
-	 * Ustvari nov sintaksni analizator.
-	 *
-	 * @param lexAn
-	 *            Leksikalni analizator.
-	 * @param dump
-	 *            Ali se izpisujejo vmesni rezultati.
-	 */
-	public SynAn(LexAn lexAn, boolean dump) {
+	public SynAn(LexAn lexAn, boolean dump)
+	{
 		this.lexAn = lexAn;
 		this.dump = dump;
 
-		prevSymbol = null;
-		currSymbol = null;
+		prevToken = null;
+		currToken = null;
 	}
 
 	private void prepareNext()
 	{
-		prevSymbol = currSymbol;
-		currSymbol = null;
+		prevToken = currToken;
+		currToken = null;
 	}
 
 	private void readNext()
@@ -51,11 +36,11 @@ public class SynAn {
 
 	private void readNext(boolean allowEOF)
 	{
-		currSymbol = currSymbol == null ? lexAn.lexAn() : currSymbol;
+		currToken = currToken == null ? lexAn.lexAn() : currToken;
 
-		if(currSymbol.token == Token.EOF && allowEOF == false)
+		if(currToken.token == Token.EOF && allowEOF == false)
 		{
-			Report.error(currSymbol.position, "Unexpected end of file.");
+			Report.error(currToken.position, "Unexpected end of file.");
 		}
 	}
 
@@ -63,27 +48,23 @@ public class SynAn {
 	{
 		readNext();
 
-		if(currSymbol.token != token)
+		if(currToken.token != token)
 		{
-			Symbol symbol = new Symbol(token, "", null);
-			String tokenName = symbol.toString().substring(0, symbol.toString().length() - 1);
-			Report.error(currSymbol.position, "Expected " + tokenName + ", found " + currSymbol.toString().substring(0, currSymbol.toString().indexOf(':')) + ".");
+			Report.error(currToken.position, "Expected " + new Token(token, "", null).toString() + ", found " + currToken.toString() + ".");
 		}
 
 		prepareNext();
 	}
 
-	/**
-	 * Opravi sintaksno analizo.
-	 */
-	public AbsTree parse() {
+	public AbsTree parse()
+	{
 		dump("source -> definitions");
 		AbsTree tree = parse_definitions();
 		readNext(true);
 
-		if(currSymbol.token != Token.EOF)
+		if(currToken.token != Token.EOF)
 		{
-			Report.error(currSymbol.position, "Unparsable symbol.");
+			Report.error(currToken.position, "Unparsable token.");
 		}
 
 		return tree;
@@ -93,41 +74,21 @@ public class SynAn {
 	{
 		dump("definitions -> definition definitions'");
 		readNext();
-		Position position = currSymbol.position;
+		Position position = currToken.position;
 		Vector<AbsDef> defs = new Vector<AbsDef>();
 		defs.add(parse_definition());
 		parse_definitions_(defs);
 
-		return new AbsDefs(new Position(position, prevSymbol.position), defs);
+		return new AbsDefs(new Position(position, prevToken.position), defs);
 	}
 
 	private void parse_definitions_(Vector<AbsDef> definitions)
 	{
 		readNext(true);
 
-		if(currSymbol.token == Token.SEMIC)
+		if(currToken.token != Token.EOF)
 		{
-			Symbol temp = prevSymbol;
-			prepareNext();
-			readNext(true);
-
-			if(currSymbol.token == Token.EOF)
-			{
-				Report.warning(currSymbol.position, "Last definiton should not end with SEMIC.");
-				prevSymbol = temp;
-				dump("definitions' -> E");
-				return;
-			}
-
-			dump("definitions' -> ; definition definitions'");
-			definitions.add(parse_definition());
-			parse_definitions_(definitions);
-		}
-		else if(currSymbol.token == Token.COMMA)
-		{
-			dump("definitions' -> ; definition definitions'");
-			Report.warning(currSymbol.position, "Expected SEMIC, found COMMA.");
-			prepareNext();
+			dump("definitions' -> definition definitions'");
 			definitions.add(parse_definition());
 			parse_definitions_(definitions);
 		}
@@ -142,52 +103,105 @@ public class SynAn {
 		readNext();
 
 		AbsDef definition = null;
-		Position position = currSymbol.position;
+		Position position = currToken.position;
 
-		if(currSymbol.token == Token.KW_TYP)
+		if(currToken.token == Token.TYPEDEF)
 		{
 			dump("definition -> type_definition");
 			prepareNext();
-			dump("type_definition -> typ identifier : type");
-			check(Token.IDENTIFIER);
-			String name = prevSymbol.lexeme;
-			check(Token.COLON);
+			dump("type_definition -> typedef type identifier;");
 			AbsType type = parse_type();
-			definition = new AbsTypeDef(new Position(position, prevSymbol.position), name, type);
+			check(Token.IDENTIFIER);
+			String name = prevToken.lexeme;
+			check(Token.SEMICOLON);
+			definition = new AbsTypeDef(new Position(position, prevToken.position), name, type);
 		}
-		else if(currSymbol.token == Token.KW_FUN)
+		else if(currToken.token == Token.INTEGER || currToken.token == Token.CHAR || currToken.token == Token.FLOAT || currToken.token == Token.BOOLEAN || currToken.token == Token.VOID || currToken.token == Token.CONST || currToken.token == Token.IDENTIFIER)
 		{
-			dump("definition -> function_definition");
-			prepareNext();
-			dump("function_definition -> fun identifier ( parameters ) : type = expression");
-			check(Token.IDENTIFIER);
-			String name = prevSymbol.lexeme;
-			check(Token.LPARENT);
-			Vector<AbsPar> parameters = parse_parameters();
-			check(Token.RPARENT);
-			check(Token.COLON);
+			// prehitro izpise tip. ali naj sploh imamo izpis?
 			AbsType type = parse_type();
-			check(Token.ASSIGN);
-			AbsExpr expression = parse_expression();
-			definition = new AbsFunDef(new Position(position, prevSymbol.position), name, parameters, type, expression);
-		}
-		else if(currSymbol.token == Token.KW_VAR)
-		{
-			dump("definition -> variable_definition");
-			prepareNext();
-			dump("variable_definition -> var identifier : type");
 			check(Token.IDENTIFIER);
-			String name = prevSymbol.lexeme;
-			check(Token.COLON);
-			AbsType type = parse_type();
-			definition = new AbsVarDef(new Position(position, prevSymbol.position), name, type);
+			String name = prevToken.lexeme;
+			readNext();
+
+			if(currToken.token == Token.LPARENT)
+			{
+				dump("definition -> function_definition");
+				prepareNext();
+				dump("function_definition -> type identifier(parameters) compound_statement");
+				Vector<AbsPar> parameters = parse_parameters();
+				check(Token.RPARENT);
+				Vector<AbsTree> statement = parse_compound_statement();
+				// TODO: Position
+				definition = new AbsFunDef(new Position(position, prevToken.position), name, parameters, type, new AbsExprs(new Position(0, 0), statement));
+			}
+			else
+			{
+				definition = parse_variable_definition(position, type, name);
+			}
 		}
 		else
 		{
-			Report.error(currSymbol.position, "Not a definition expression.");
+			Report.error(currToken.position, "Not a definition.");
 		}
 
 		return definition;
+	}
+
+	private AbsDef parse_variable_definition(Position position, AbsType type, String name)
+	{
+		dump("definition -> variable_definition");
+		readNext();
+
+		AbsDef variable = null;
+
+		if(currToken.token == Token.LBRACKET)
+		{
+			prepareNext();
+			readNext();
+
+			int length = 0;
+
+			if(currToken.token == Token.INT_CONST)
+			{
+				prepareNext();
+				length = Integer.parseInt(prevToken.lexeme);
+			}
+
+			readNext();
+
+			if(currToken.token != Token.RBRACKET)
+			{
+				Report.error(currToken.position, "Not a variable definition.");
+			}
+
+			prepareNext();
+			type = new AbsArrType(new Position(type.position, prevToken.position), length, type);
+		}
+
+		readNext();
+
+		if(currToken.token == Token.SEMICOLON)
+		{
+			dump("variable_definition -> type identifier;");
+			prepareNext();
+			variable = new AbsVarDef(new Position(position, prevToken.position), name, type, null);
+		}
+		else if(currToken.token == Token.ASSIGN)
+		{
+			// TODO: ce je string, nastavi velikost.
+			dump("variable_definition -> type identifier = expression;");
+			prepareNext();
+			AbsExpr expression = parse_expression();
+			check(Token.SEMICOLON);
+			variable = new AbsVarDef(new Position(position, prevToken.position), name, type, expression);
+		}
+		else
+		{
+			Report.error(currToken.position, "Not a variable definition.");
+		}
+
+		return variable;
 	}
 
 	private AbsType parse_type()
@@ -195,111 +209,120 @@ public class SynAn {
 		readNext();
 
 		AbsType type = null;
-		Position position = currSymbol.position;
+		Position position = currToken.position;
 
-		switch(currSymbol.token)
+		switch(currToken.token)
 		{
+			// TODO: save CONST to type. ali pa naredi posebej class AbsConstType
+			case Token.CONST:
+				dump("type -> const type");
+				prepareNext();
+				type = parse_type();
+			break;
+
 			case Token.IDENTIFIER:
 				dump("type -> identifier");
-				type = new AbsTypeName(new Position(position, currSymbol.position), currSymbol.lexeme);
+				type = new AbsTypeName(new Position(position, currToken.position), currToken.lexeme);
 				prepareNext();
 			break;
 
-			case Token.LOGICAL:
-				dump("type -> logical");
-				type = new AbsAtomType(new Position(position, currSymbol.position), AbsAtomType.LOG);
+			case Token.BOOLEAN:
+				dump("type -> boolean");
+				type = new AbsAtomType(new Position(position, currToken.position), AbsAtomType.BOOL);
 				prepareNext();
 			break;
 
 			case Token.INTEGER:
 				dump("type -> integer");
-				type = new AbsAtomType(new Position(position, currSymbol.position), AbsAtomType.INT);
+				type = new AbsAtomType(new Position(position, currToken.position), AbsAtomType.INT);
 				prepareNext();
 			break;
 
-			case Token.STRING:
-				dump("type -> string");
-				type = new AbsAtomType(new Position(position, currSymbol.position), AbsAtomType.STR);
+			case Token.FLOAT:
+				dump("type -> float");
+				type = new AbsAtomType(new Position(position, currToken.position), AbsAtomType.FLOAT);
 				prepareNext();
 			break;
 
-			case Token.KW_ARR:
-				dump("type -> arr [ int_const ] type");
+			case Token.CHAR:
+				dump("type -> char");
+				type = new AbsAtomType(new Position(position, currToken.position), AbsAtomType.CHAR);
 				prepareNext();
-				check(Token.LBRACKET);
-				check(Token.INT_CONST);
-				String size = prevSymbol.lexeme;
-				check(Token.RBRACKET);
-				AbsType arrType = parse_type();
-				type = new AbsArrType(new Position(position, prevSymbol.position), Long.parseLong(size), arrType);
 			break;
 
-			case Token.KW_REC:
-				dump("type -> rec { components }");
+			case Token.VOID:
+				dump("type -> void");
+				type = new AbsAtomType(new Position(position, currToken.position), AbsAtomType.VOID);
 				prepareNext();
-				check(Token.LBRACE);
-				Vector<AbsComp> components = parse_components();
-				check(Token.RBRACE);
-				type = new AbsRecType(new Position(position, prevSymbol.position), components);
 			break;
 
-			case Token.PTR:
-				dump("type -> ^ type");
-				prepareNext();
-				AbsType ptrType = parse_type();
-				type = new AbsPtrType(new Position(position, prevSymbol.position), ptrType);
-			break;
+			// case Token.STRUCT:
+			// 	dump("type -> rec { components }");
+			// 	prepareNext();
+			// 	check(Token.LBRACE);
+			// 	Vector<AbsComp> components = parse_components();
+			// 	check(Token.RBRACE);
+			// 	type = new AbsRecType(new Position(position, prevToken.position), components);
+			// break;
 
 			default:
-				Report.error(currSymbol.position, "Not a type expression.");
+				Report.error(currToken.position, "Not a type expression.");
 			break;
 		}
 
 		return type;
 	}
 
-	private Vector<AbsComp> parse_components()
-	{
-		dump("components -> component components'");
-		Vector<AbsComp> components = new Vector<AbsComp>();
-		components.add(parse_component());
-		parse_components_(components);
+	// private Vector<AbsComp> parse_components()
+	// {
+	// 	dump("components -> component components'");
+	// 	Vector<AbsComp> components = new Vector<AbsComp>();
+	// 	components.add(parse_component());
+	// 	parse_components_(components);
 
-		return components;
-	}
+	// 	return components;
+	// }
 
-	private void parse_components_(Vector<AbsComp> components)
-	{
-		readNext(true);
+	// private void parse_components_(Vector<AbsComp> components)
+	// {
+	// 	readNext(true);
 
-		if(currSymbol.token != Token.COMMA)
-		{
-			dump("components' -> E");
-			return;
-		}
+	// 	if(currToken.token != Token.COMMA)
+	// 	{
+	// 		dump("components' -> E");
+	// 		return;
+	// 	}
 
-		dump("components' -> , component components'");
-		prepareNext();
-		components.add(parse_component());
-		parse_components_(components);
-	}
+	// 	dump("components' -> , component components'");
+	// 	prepareNext();
+	// 	components.add(parse_component());
+	// 	parse_components_(components);
+	// }
 
-	private AbsComp parse_component()
-	{
-		dump("component -> identifier : type");
-		check(Token.IDENTIFIER);
-		Position position = prevSymbol.position;
-		String name = prevSymbol.lexeme;
-		check(Token.COLON);
-		AbsType type = parse_type();
+	// private AbsComp parse_component()
+	// {
+	// 	dump("component -> identifier : type");
+	// 	check(Token.IDENTIFIER);
+	// 	Position position = prevToken.position;
+	// 	String name = prevToken.lexeme;
+	// 	// check(Token.COLON);
+	// 	AbsType type = parse_type();
 
-		return new AbsComp(new Position(position, prevSymbol.position), name, type);
-	}
+	// 	return new AbsComp(new Position(position, prevToken.position), name, type);
+	// }
 
 	private Vector<AbsPar> parse_parameters()
 	{
-		dump("parameters -> parameter parameters'");
 		Vector<AbsPar> parameters = new Vector<AbsPar>();
+		readNext();
+
+		if(currToken.token == Token.RPARENT)
+		{
+			dump("parameters -> E");
+			return parameters;
+		}
+
+		dump("parameters -> parameter parameters'");
 		parameters.add(parse_parameter());
 		parse_parameters_(parameters);
 
@@ -310,7 +333,7 @@ public class SynAn {
 	{
 		readNext(true);
 
-		if(currSymbol.token != Token.COMMA)
+		if(currToken.token != Token.COMMA)
 		{
 			dump("parameters' -> E");
 			return;
@@ -324,104 +347,301 @@ public class SynAn {
 
 	private AbsPar parse_parameter()
 	{
-		dump("parameter -> identifier : type");
-		check(Token.IDENTIFIER);
-		Position position = prevSymbol.position;
-		String name = prevSymbol.lexeme;
-		check(Token.COLON);
+		dump("parameter -> type identifier");
 		AbsType type = parse_type();
+		Position position = prevToken.position;
+		check(Token.IDENTIFIER);
+		String name = prevToken.lexeme;
 
-		return new AbsPar(new Position(position, prevSymbol.position), name, type);
+		return new AbsPar(new Position(position, prevToken.position), name, type);
 	}
 
-	private Vector<AbsExpr> parse_expressions()
+	private Vector<AbsTree> parse_compound_statement()
 	{
-		dump("expressions -> expression expressions'");
-		Vector<AbsExpr> expressions = new Vector<AbsExpr>();
-		expressions.add(parse_expression());
-		parse_expressions_(expressions);
+		check(Token.LBRACE);
+		Vector<AbsTree> statement = null;
+		readNext();
 
-		return expressions;
+		if(currToken.token == Token.RBRACE)
+		{
+			dump("compound_statement -> { }");
+			statement = new Vector<AbsTree>();
+			prepareNext();
+		}
+		else
+		{
+			dump("compound_statement -> { block_items }");
+			statement = parse_block_items();
+			check(Token.RBRACE);
+		}
+
+		return statement;
 	}
 
-	private void parse_expressions_(Vector<AbsExpr> expressions)
+	private Vector<AbsTree> parse_block_items()
+	{
+		Vector<AbsTree> block_items = new Vector<AbsTree>();
+		readNext();
+
+		if(currToken.token == Token.RBRACE)
+		{
+			dump("block_items -> E");
+			return block_items;
+		}
+
+		dump("block_items -> block_item block_items'");
+		block_items.add(parse_block_item());
+		parse_block_items_(block_items);
+
+		return block_items;
+	}
+
+	private void parse_block_items_(Vector<AbsTree> block_items)
 	{
 		readNext(true);
 
-		if(currSymbol.token != Token.COMMA)
+		if(currToken.token == Token.RBRACE)
 		{
-			dump("expressions' -> E");
+			dump("block_items' -> E");
 			return;
 		}
 
-		prepareNext();
-		readNext(true);
-
-		if(currSymbol.token == Token.RPARENT)
-		{
-			Report.warning(prevSymbol.position, "Last expression should not end with COMMA.");
-			dump("expressions' -> E");
-			return;
-		}
-
-		dump("expressions' -> , expression expressions'");
-		expressions.add(parse_expression());
-		parse_expressions_(expressions);
+		dump("block_items' -> block_item block_items'");
+		block_items.add(parse_block_item());
+		parse_block_items_(block_items);
 	}
 
-	private AbsExpr parse_expression()
+	private AbsTree parse_block_item()
 	{
-		dump("expression -> logical_ior_expression expression'");
-		AbsExpr expression = parse_logical_ior_expression();
-		AbsDefs definitions = parse_expression_();
+		readNext();
+		AbsTree block_item = null;
 
-		if(definitions != null)
+		if(currToken.token == Token.INTEGER || currToken.token == Token.CHAR || currToken.token == Token.FLOAT || currToken.token == Token.BOOLEAN || currToken.token == Token.VOID || currToken.token == Token.CONST)
 		{
-			expression = new AbsWhere(new Position(expression.position, prevSymbol.position), expression, definitions);
+			dump("block_item -> variable_definition");
+			AbsType type = parse_type();
+			check(Token.IDENTIFIER);
+			String name = prevToken.lexeme;
+			block_item = parse_variable_definition(new Position(0, 0), type, name);
 		}
+		else
+		{
+			dump("block_item -> statement");
+			block_item = parse_statement();
+		}
+
+		return block_item;
+	}
+
+	private AbsExpr parse_statement()
+	{
+		readNext();
+		AbsExpr statement = null;
+		Position position = currToken.position;
+
+		if(currToken.token == Token.IF)
+		{
+			dump("statement -> selection_statement");
+			dump("selection_statement -> if(expression) statement selection_statement'");
+			prepareNext();
+			check(Token.LPARENT);
+			AbsExpr ifExpression = parse_expression();
+			check(Token.RPARENT);
+			AbsExpr thenStatement = parse_statement();
+			readNext();
+
+			if(currToken.token == Token.ELSE)
+			{
+				dump("selection_statement' -> else statement");
+				prepareNext();
+				readNext();
+				statement = new AbsIfElse(new Position(position, currToken.position), ifExpression, thenStatement, parse_statement());
+			}
+			else
+			{
+				dump("selection_statement' -> E");
+				statement = new AbsIf(new Position(position, currToken.position), ifExpression, thenStatement);
+			}
+		}
+		else if(currToken.token == Token.WHILE)
+		{
+			dump("statement -> iteration_statement");
+			dump("iteration_statement -> while(expression) statement");
+			prepareNext();
+			check(Token.LPARENT);
+			AbsExpr whileExpression = parse_expression();
+			check(Token.RPARENT);
+			AbsExpr doStatement = parse_statement();
+			statement = new AbsWhile(new Position(position, prevToken.position), whileExpression, doStatement);
+		}
+		else if(currToken.token == Token.DO)
+		{
+			dump("statement -> iteration_statement");
+			dump("iteration_statement -> do statement while(expression);");
+			prepareNext();
+			AbsExpr doStatement = parse_statement();
+			check(Token.WHILE);
+			check(Token.LPARENT);
+			AbsExpr whileExpression = parse_expression();
+			check(Token.RPARENT);
+			check(Token.SEMICOLON);
+			statement = new AbsDoWhile(new Position(position, prevToken.position), doStatement, whileExpression);
+		}
+		else if(currToken.token == Token.FOR)
+		{
+			dump("statement -> iteration_statement");
+			prepareNext();
+			check(Token.LPARENT);
+			readNext();
+
+			AbsTree init = null;
+
+			if(currToken.token == Token.INTEGER || currToken.token == Token.CHAR || currToken.token == Token.FLOAT || currToken.token == Token.BOOLEAN || currToken.token == Token.VOID || currToken.token == Token.IDENTIFIER)
+			{
+				dump("iteration_statement -> for(variable_definition expression_statement iteration_statement') statement");
+				AbsType type = parse_type();
+				check(Token.IDENTIFIER);
+				String name = prevToken.lexeme;
+				init = parse_variable_definition(new Position(0, 0), type, name);
+			}
+			else if(currToken.token == Token.CONST)
+			{
+				// error?
+				Report.error("TODO: CONST FOR");
+			}
+			else
+			{
+				dump("iteration_statement -> for(expression_statement expression_statement iteration_statement') statement");
+				init = parse_expression_statement();
+			}
+
+			AbsExpr cond = parse_expression_statement();
+			AbsExpr step = null;
+			readNext();
+
+			if(currToken.token == Token.RPARENT)
+			{
+				dump("iteration_statement' -> E");
+				step = new AbsNop(new Position(0, 0));
+			}
+			else
+			{
+				dump("iteration_statement' -> expression");
+				step = parse_expression();
+			}
+
+			check(Token.RPARENT);
+			AbsExpr body = parse_statement();
+			statement = new AbsFor(new Position(position, prevToken.position), init, cond, step, body);
+		}
+		else if(currToken.token == Token.RETURN)
+		{
+			// TODO: samo skok na label?
+			dump("statement -> jump_statement");
+			prepareNext();
+			readNext();
+
+			if(currToken.token == Token.SEMICOLON)
+			{
+				dump("jump_statement -> return;");
+				prepareNext();
+				statement = new AbsReturn(new Position(0, 0), new AbsNop(new Position(0, 0)));
+			}
+			else
+			{
+				dump("jump_statement -> return expression;");
+				AbsExpr expression = parse_expression();
+				check(Token.SEMICOLON);
+				statement = new AbsReturn(new Position(0, 0), expression);
+			}
+		}
+		else if(currToken.token == Token.BREAK || currToken.token == Token.CONTINUE)
+		{
+			// TODO: samo skok na label?
+			dump("statement -> jump_statement");
+			prepareNext();
+			check(Token.SEMICOLON);
+			// TODO: nov (skupni?) razred
+			statement = new AbsNop(new Position(0, 0));
+		}
+		else if(currToken.token == Token.LBRACE)
+		{
+			dump("statement -> compound_statement");
+			statement = new AbsExprs(new Position(0, 0), parse_compound_statement());
+		}
+		else
+		{
+			dump("statement -> expression_statement");
+			statement = parse_expression_statement();
+		}
+
+		return statement;
+	}
+
+	private AbsExpr parse_expression_statement()
+	{
+		AbsExpr expression = null;
+		readNext();
+
+		if(currToken.token == Token.SEMICOLON)
+		{
+			prepareNext();
+			dump("expression_statement -> ;");
+			return new AbsNop(new Position(0, 0));
+		}
+
+		dump("expression_statement -> expression;");
+		expression = parse_expression();
+		check(Token.SEMICOLON);
 
 		return expression;
 	}
 
-	private AbsDefs parse_expression_()
+	private AbsExpr parse_expression()
+	{
+		dump("expression -> logical_or_expression expression'");
+		return parse_expression_(parse_logical_or_expression());
+	}
+
+	private AbsExpr parse_expression_(AbsExpr left)
 	{
 		readNext(true);
 
-		if(currSymbol.token != Token.LBRACE)
+		if(currToken.token == Token.ASSIGN)
 		{
-			dump("expression' -> E");
-			return null;
-		}
-
-		dump("expression' -> { where definitions }");
-		prepareNext();
-		check(Token.KW_WHERE);
-		AbsDefs definitions = parse_definitions();
-		check(Token.RBRACE);
-
-		return definitions;
-	}
-
-	private AbsExpr parse_logical_ior_expression()
-	{
-		dump("logical_ior_expression -> logical_and_expression logical_ior_expression'");
-		return parse_logical_ior_expression_(parse_logical_and_expression());
-	}
-
-	private AbsExpr parse_logical_ior_expression_(AbsExpr left)
-	{
-		readNext(true);
-
-		if(currSymbol.token == Token.IOR)
-		{
-			dump("logical_ior_expression' -> | logical_and_expression logical_ior_expression'");
+			dump("expression' -> = expression");
 			prepareNext();
-			AbsExpr right = parse_logical_and_expression();
-			left = parse_logical_ior_expression_(new AbsBinExpr(new Position(left.position, right.position), AbsBinExpr.IOR, left, right));
+			AbsExpr right = parse_expression();
+			left = new AbsBinExpr(new Position(0, 0), AbsBinExpr.ASSIGN, left, right);
 		}
 		else
 		{
-			dump("logical_ior_expression' -> E");
+			dump("expression' -> E");
+		}
+
+		return left;
+	}
+
+	private AbsExpr parse_logical_or_expression()
+	{
+		dump("logical_or_expression -> logical_and_expression logical_or_expression'");
+		return parse_logical_or_expression_(parse_logical_and_expression());
+	}
+
+	private AbsExpr parse_logical_or_expression_(AbsExpr left)
+	{
+		readNext(true);
+
+		if(currToken.token == Token.OR)
+		{
+			dump("logical_or_expression' -> || logical_and_expression logical_or_expression'");
+			prepareNext();
+			AbsExpr right = parse_logical_and_expression();
+			left = parse_logical_or_expression_(new AbsBinExpr(new Position(left.position, right.position), AbsBinExpr.OR, left, right));
+		}
+		else
+		{
+			dump("logical_or_expression' -> E");
 		}
 
 		return left;
@@ -429,19 +649,19 @@ public class SynAn {
 
 	private AbsExpr parse_logical_and_expression()
 	{
-		dump("logical_and_expression -> comparative_expression logical_and_expression'");
-		return parse_logical_and_expression_(parse_comparative_expression());
+		dump("logical_and_expression -> bitwise_or_expression logical_and_expression'");
+		return parse_logical_and_expression_(parse_bitwise_or_expression());
 	}
 
 	private AbsExpr parse_logical_and_expression_(AbsExpr left)
 	{
 		readNext(true);
 
-		if(currSymbol.token == Token.AND)
+		if(currToken.token == Token.AND)
 		{
-			dump("logical_and_expression' -> & comparative_expression logical_and_expression'");
+			dump("logical_and_expression' -> && bitwise_or_expression logical_and_expression'");
 			prepareNext();
-			AbsExpr right = parse_comparative_expression();
+			AbsExpr right = parse_bitwise_or_expression();
 			left = parse_logical_and_expression_(new AbsBinExpr(new Position(left.position, right.position), AbsBinExpr.AND, left, right));
 		}
 		else
@@ -451,65 +671,207 @@ public class SynAn {
 
 		return left;
 	}
-
-	private AbsExpr parse_comparative_expression()
+	
+	private AbsExpr parse_bitwise_or_expression()
 	{
-		dump("comparative_expression -> additive_expression comparative_expression'");
-		return parse_comparative_expression_(parse_additive_expression());
+		dump("bitwise_or_expression -> bitwise_xor_expression bitwise_or_expression'");
+		return parse_bitwise_or_expression_(parse_bitwise_xor_expression());
 	}
 
-	private AbsExpr parse_comparative_expression_(AbsExpr left)
+	private AbsExpr parse_bitwise_or_expression_(AbsExpr left)
+	{
+		readNext(true);
+
+		if(currToken.token == Token.BIT_OR)
+		{
+			dump("bitwise_or_expression' -> | bitwise_xor_expression bitwise_or_expression'");
+			prepareNext();
+			AbsExpr right = parse_bitwise_xor_expression();
+			left = parse_bitwise_or_expression_(new AbsBinExpr(new Position(left.position, right.position), AbsBinExpr.BIT_OR, left, right));
+		}
+		else
+		{
+			dump("bitwise_or_expression' -> E");
+		}
+
+		return left;
+	}
+
+	// TODO: Ali naj odstranim position? Bo veliko lazje.
+	private AbsExpr parse_bitwise_xor_expression()
+	{
+		dump("bitwise_xor_expression -> bitwise_and_expression bitwise_xor_expression'");
+		return parse_bitwise_xor_expression_(parse_bitwise_and_expression());
+	}
+
+	private AbsExpr parse_bitwise_xor_expression_(AbsExpr left)
+	{
+		readNext(true);
+
+		if(currToken.token == Token.BIT_XOR)
+		{
+			dump("bitwise_xor_expression' -> ^ bitwise_and_expression bitwise_xor_expression'");
+			prepareNext();
+			AbsExpr right = parse_bitwise_and_expression();
+			left = parse_bitwise_xor_expression_(new AbsBinExpr(new Position(left.position, right.position), AbsBinExpr.BIT_XOR, left, right));
+		}
+		else
+		{
+			dump("bitwise_xor_expression' -> E");
+		}
+
+		return left;
+	}
+
+	private AbsExpr parse_bitwise_and_expression()
+	{
+		dump("bitwise_and_expression -> equality_expression bitwise_and_expression'");
+		return parse_bitwise_and_expression_(parse_equality_expression());
+	}
+
+	private AbsExpr parse_bitwise_and_expression_(AbsExpr left)
+	{
+		readNext(true);
+
+		if(currToken.token == Token.BIT_AND)
+		{
+			dump("bitwise_and_expression' -> & equality_expression bitwise_and_expression'");
+			prepareNext();
+			AbsExpr right = parse_equality_expression();
+			left = parse_bitwise_and_expression_(new AbsBinExpr(new Position(left.position, right.position), AbsBinExpr.BIT_AND, left, right));
+		}
+		else
+		{
+			dump("bitwise_and_expression' -> E");
+		}
+
+		return left;
+	}
+
+	private AbsExpr parse_equality_expression()
+	{
+		dump("equality_expression -> relational_expression equality_expression'");
+		return parse_equality_expression_(parse_relational_expression());
+	}
+
+	private AbsExpr parse_equality_expression_(AbsExpr left)
 	{
 		readNext(true);
 
 		AbsExpr right = null;
 		int operation = 0;
 
-		if(currSymbol.token == Token.EQU)
+		if(currToken.token == Token.EQU)
 		{
-			dump("comparative_expression' -> == additive_expression");
+			dump("equality_expression' -> == relational_expression");
 			operation = AbsBinExpr.EQU;
 			prepareNext();
-			right = parse_additive_expression();
+			right = parse_relational_expression();
 		}
-		else if(currSymbol.token == Token.NEQ)
+		else if(currToken.token == Token.NEQ)
 		{
-			dump("comparative_expression' -> != additive_expression");
+			dump("equality_expression' -> != relational_expression");
 			operation = AbsBinExpr.NEQ;
 			prepareNext();
-			right = parse_additive_expression();
+			right = parse_relational_expression();
 		}
-		else if(currSymbol.token == Token.LEQ)
+		else
 		{
-			dump("comparative_expression' -> <= additive_expression");
-			operation = AbsBinExpr.LEQ;
-			prepareNext();
-			right = parse_additive_expression();
+			dump("equality_expression' -> E");
 		}
-		else if(currSymbol.token == Token.GEQ)
+
+		if(right != null)
 		{
-			dump("comparative_expression' -> >= additive_expression");
-			operation = AbsBinExpr.GEQ;
-			prepareNext();
-			right = parse_additive_expression();
+			left = new AbsBinExpr(new Position(left.position, right.position), operation, left, right);
 		}
-		else if(currSymbol.token == Token.LTH)
+
+		return left;
+	}
+
+	private AbsExpr parse_relational_expression()
+	{
+		dump("relational_expression -> shift_expression relational_expression'");
+		return parse_relational_expression_(parse_shift_expression());
+	}
+
+	private AbsExpr parse_relational_expression_(AbsExpr left)
+	{
+		readNext(true);
+
+		AbsExpr right = null;
+		int operation = 0;
+
+		if(currToken.token == Token.LTH)
 		{
-			dump("comparative_expression' -> < additive_expression");
+			dump("relational_expression' -> < shift_expression");
 			operation = AbsBinExpr.LTH;
 			prepareNext();
+			right = parse_shift_expression();
+		}
+		else if(currToken.token == Token.GTH)
+		{
+			dump("relational_expression' -> > shift_expression");
+			operation = AbsBinExpr.GTH;
+			prepareNext();
+			right = parse_shift_expression();
+		}
+		else if(currToken.token == Token.LEQ)
+		{
+			dump("relational_expression' -> >= shift_expression");
+			operation = AbsBinExpr.LEQ;
+			prepareNext();
+			right = parse_shift_expression();
+		}
+		else if(currToken.token == Token.GEQ)
+		{
+			dump("relational_expression' -> >= shift_expression");
+			operation = AbsBinExpr.GEQ;
+			prepareNext();
+			right = parse_shift_expression();
+		}
+		else
+		{
+			dump("relational_expression' -> E");
+		}
+
+		if(right != null)
+		{
+			left = new AbsBinExpr(new Position(left.position, right.position), operation, left, right);
+		}
+
+		return left;
+	}
+
+	private AbsExpr parse_shift_expression()
+	{
+		dump("shift_expression -> additive_expression shift_expression'");
+		return parse_shift_expression_(parse_additive_expression());
+	}
+
+	private AbsExpr parse_shift_expression_(AbsExpr left)
+	{
+		readNext(true);
+
+		AbsExpr right = null;
+		int operation = 0;
+
+		if(currToken.token == Token.LSHIFT)
+		{
+			dump("shift_expression' -> << additive_expression");
+			operation = AbsBinExpr.LSHIFT;
+			prepareNext();
 			right = parse_additive_expression();
 		}
-		else if(currSymbol.token == Token.GTH)
+		else if(currToken.token == Token.RSHIFT)
 		{
-			dump("comparative_expression' -> > additive_expression");
-			operation = AbsBinExpr.GTH;
+			dump("shift_expression' -> >> additive_expression");
+			operation = AbsBinExpr.RSHIFT;
 			prepareNext();
 			right = parse_additive_expression();
 		}
 		else
 		{
-			dump("comparative_expression' -> E");
+			dump("shift_expression' -> E");
 		}
 
 		if(right != null)
@@ -530,14 +892,14 @@ public class SynAn {
 	{
 		readNext(true);
 
-		if(currSymbol.token == Token.ADD)
+		if(currToken.token == Token.ADD)
 		{
 			dump("additive_expression' -> + multiplicative_expression additive_expression'");
 			prepareNext();
 			AbsExpr right = parse_multiplicative_expression();
 			left = parse_additive_expression_(new AbsBinExpr(new Position(left.position, right.position), AbsBinExpr.ADD, left, right));
 		}
-		else if(currSymbol.token == Token.SUB)
+		else if(currToken.token == Token.SUB)
 		{
 			dump("additive_expression' -> - multiplicative_expression additive_expression'");
 			prepareNext();
@@ -549,39 +911,38 @@ public class SynAn {
 			dump("additive_expression' -> E");
 		}
 
-
 		return left;
 	}
 
 	private AbsExpr parse_multiplicative_expression()
 	{
-		dump("multiplicative_expression -> prefix_expression multiplicative_expression'");
-		return parse_multiplicative_expression_(parse_prefix_expression());
+		dump("multiplicative_expression -> unary_expression multiplicative_expression'");
+		return parse_multiplicative_expression_(parse_unary_expression());
 	}
 
 	private AbsExpr parse_multiplicative_expression_(AbsExpr left)
 	{
 		readNext(true);
 
-		if(currSymbol.token == Token.MUL)
+		if(currToken.token == Token.MUL)
 		{
-			dump("multiplicative_expression' -> * prefix_expression multiplicative_expression'");
+			dump("multiplicative_expression' -> * unary_expression multiplicative_expression'");
 			prepareNext();
-			AbsExpr right = parse_prefix_expression();
+			AbsExpr right = parse_unary_expression();
 			left = parse_multiplicative_expression_(new AbsBinExpr(new Position(left.position, right.position), AbsBinExpr.MUL, left, right));
 		}
-		else if(currSymbol.token == Token.DIV)
+		else if(currToken.token == Token.DIV)
 		{
-			dump("multiplicative_expression' -> / prefix_expression multiplicative_expression'");
+			dump("multiplicative_expression' -> / unary_expression multiplicative_expression'");
 			prepareNext();
-			AbsExpr right = parse_prefix_expression();
+			AbsExpr right = parse_unary_expression();
 			left = parse_multiplicative_expression_(new AbsBinExpr(new Position(left.position, right.position), AbsBinExpr.DIV, left, right));
 		}
-		else if(currSymbol.token == Token.MOD)
+		else if(currToken.token == Token.MOD)
 		{
-			dump("multiplicative_expression' -> % prefix_expression multiplicative_expression'");
+			dump("multiplicative_expression' -> % unary_expression multiplicative_expression'");
 			prepareNext();
-			AbsExpr right = parse_prefix_expression();
+			AbsExpr right = parse_unary_expression();
 			left = parse_multiplicative_expression_(new AbsBinExpr(new Position(left.position, right.position), AbsBinExpr.MOD, left, right));
 		}
 		else
@@ -592,44 +953,59 @@ public class SynAn {
 		return left;
 	}
 
-	private AbsExpr parse_prefix_expression()
+	private AbsExpr parse_unary_expression()
 	{
 		readNext();
 
 		AbsExpr expression = null;
-		Position position = currSymbol.position;
+		Position position = currToken.position;
 
-		if(currSymbol.token == Token.ADD)
+		if(currToken.token == Token.ADD)
 		{
-			dump("prefix_expression -> + prefix_expression");
+			dump("unary_expression -> +unary_expression");
 			prepareNext();
-			AbsExpr expr = parse_prefix_expression();
-			expression = new AbsUnExpr(new Position(position, prevSymbol.position), AbsUnExpr.ADD, expr);
+			AbsExpr expr = parse_unary_expression();
+			expression = new AbsUnExpr(new Position(position, prevToken.position), AbsUnExpr.ADD, expr);
 		}
-		else if(currSymbol.token == Token.SUB)
+		else if(currToken.token == Token.SUB)
 		{
-			dump("prefix_expression -> - prefix_expression");
+			dump("unary_expression -> -unary_expression");
 			prepareNext();
-			AbsExpr expr = parse_prefix_expression();
-			expression = new AbsUnExpr(new Position(position, prevSymbol.position), AbsUnExpr.SUB, expr);
+			AbsExpr expr = parse_unary_expression();
+			expression = new AbsUnExpr(new Position(position, prevToken.position), AbsUnExpr.SUB, expr);
 		}
-		else if(currSymbol.token == Token.PTR)
+		else if(currToken.token == Token.NOT)
 		{
-			dump("prefix_expression -> ^ prefix_expression");
+			dump("unary_expression -> !unary_expression");
 			prepareNext();
-			AbsExpr expr = parse_prefix_expression();
-			expression = new AbsUnExpr(new Position(position, prevSymbol.position), AbsUnExpr.MEM, expr);
+			AbsExpr expr = parse_unary_expression();
+			expression = new AbsUnExpr(new Position(position, prevToken.position), AbsUnExpr.NOT, expr);
 		}
-		else if(currSymbol.token == Token.NOT)
+		else if(currToken.token == Token.BIT_NOT)
 		{
-			dump("prefix_expression -> ! prefix_expression");
+			dump("unary_expression -> ~unary_expression");
 			prepareNext();
-			AbsExpr expr = parse_prefix_expression();
-			expression = new AbsUnExpr(new Position(position, prevSymbol.position), AbsUnExpr.NOT, expr);
+			AbsExpr expr = parse_unary_expression();
+			expression = new AbsUnExpr(new Position(position, prevToken.position), AbsUnExpr.BIT_NOT, expr);
+		}
+		// TODO: Zamenjaj z binop? ne bo ok, ker moramo tudi shraniti v spremenljivko
+		else if(currToken.token == Token.INC)
+		{
+			dump("unary_expression -> ++unary_expression");
+			prepareNext();
+			AbsExpr expr = parse_unary_expression();
+			expression = new AbsUnExpr(new Position(position, prevToken.position), AbsUnExpr.INC, expr);
+		}
+		else if(currToken.token == Token.DEC)
+		{
+			dump("unary_expression -> --unary_expression");
+			prepareNext();
+			AbsExpr expr = parse_unary_expression();
+			expression = new AbsUnExpr(new Position(position, prevToken.position), AbsUnExpr.DEC, expr);
 		}
 		else
 		{
-			dump("prefix_expression -> postfix_expression");
+			dump("unary_expression -> postfix_expression");
 			expression = parse_postfix_expression();
 		}
 
@@ -638,10 +1014,8 @@ public class SynAn {
 
 	private AbsExpr parse_postfix_expression()
 	{
-		dump("postfix_expression -> atom_expression postfix_expression'");
-		readNext();
-
-		return parse_postfix_expression_(currSymbol.position, parse_atom_expression());
+		dump("postfix_expression -> primary_expression postfix_expression'");
+		return parse_postfix_expression_(currToken.position, parse_primary_expression());
 	}
 
 	private AbsExpr parse_postfix_expression_(Position position, AbsExpr left)
@@ -650,27 +1024,22 @@ public class SynAn {
 
 		AbsExpr expression = null;
 
-		if(currSymbol.token == Token.PTR)
+		if(currToken.token == Token.DOT)
 		{
-			dump("postfix_expression' -> ^ postfix_expression'");
-			prepareNext();
-			expression = parse_postfix_expression_(position, new AbsUnExpr(new Position(position, prevSymbol.position), AbsUnExpr.VAL, left));
-		}
-		else if(currSymbol.token == Token.DOT)
-		{
-			dump("postfix_expression' -> . identifier postfix_expression'");
+			dump("postfix_expression' -> .identifier postfix_expression'");
 			prepareNext();
 			check(Token.IDENTIFIER);
-			expression = parse_postfix_expression_(position, new AbsBinExpr(new Position(position, prevSymbol.position), AbsBinExpr.DOT, left, new AbsCompName(prevSymbol.position, prevSymbol.lexeme)));
+			expression = parse_postfix_expression_(position, new AbsBinExpr(new Position(position, prevToken.position), AbsBinExpr.DOT, left, new AbsCompName(prevToken.position, prevToken.lexeme)));
 		}
-		else if(currSymbol.token == Token.LBRACKET)
+		else if(currToken.token == Token.LBRACKET)
 		{
-			dump("postfix_expression' -> [ expression ] postfix_expression'");
+			dump("postfix_expression' -> [expression] postfix_expression'");
 			prepareNext();
 			AbsExpr array = parse_expression();
 			check(Token.RBRACKET);
-			expression = parse_postfix_expression_(position, new AbsBinExpr(new Position(position, prevSymbol.position), AbsBinExpr.ARR, left, array));
+			expression = parse_postfix_expression_(position, new AbsBinExpr(new Position(position, prevToken.position), AbsBinExpr.ARR, left, array));
 		}
+		// kaj narediti z Inc in dec? je unary al binop? kako izvesti?
 		else
 		{
 			dump("postfix_expression' -> E");
@@ -680,181 +1049,126 @@ public class SynAn {
 		return expression;
 	}
 
-	private AbsExpr parse_atom_expression()
+	private AbsExpr parse_primary_expression()
 	{
 		readNext();
 
 		AbsExpr expression = null;
-		Position position = currSymbol.position;
+		Position position = currToken.position;
 
-		if(currSymbol.token == Token.LOG_CONST)
+		if(currToken.token == Token.BOOL_CONST)
 		{
-			dump("atom_expression -> log_constant");
-			expression = new AbsAtomConst(currSymbol.position, AbsAtomConst.LOG, currSymbol.lexeme);
+			dump("primary_expression -> boolean_constant");
+			expression = new AbsAtomConst(currToken.position, AbsAtomConst.BOOL, currToken.lexeme);
 			prepareNext();
 		}
-		else if(currSymbol.token == Token.INT_CONST)
+		else if(currToken.token == Token.INT_CONST)
 		{
-			dump("atom_expression -> int_constant");
-			expression = new AbsAtomConst(currSymbol.position, AbsAtomConst.INT, currSymbol.lexeme);
+			dump("primary_expression -> int_constant");
+			expression = new AbsAtomConst(currToken.position, AbsAtomConst.INT, currToken.lexeme);
 			prepareNext();
 		}
-		else if(currSymbol.token == Token.STR_CONST)
+		else if(currToken.token == Token.FLOAT_CONST)
 		{
-			dump("atom_expression -> str_constant");
-			expression = new AbsAtomConst(currSymbol.position, AbsAtomConst.STR, currSymbol.lexeme);
+			dump("primary_expression -> float_constant");
+			expression = new AbsAtomConst(currToken.position, AbsAtomConst.FLOAT, currToken.lexeme);
 			prepareNext();
 		}
-		else if(currSymbol.token == Token.IDENTIFIER)
+		else if(currToken.token == Token.CHAR_CONST)
 		{
-			dump("atom_expression -> identifier atom_expression_identifier");
-			expression = new AbsVarName(currSymbol.position, currSymbol.lexeme);
-			String name = currSymbol.lexeme;
+			dump("primary_expression -> char_constant");
+			expression = new AbsAtomConst(currToken.position, AbsAtomConst.CHAR, currToken.lexeme);
 			prepareNext();
-			Vector<AbsExpr> expressions = parse_atom_expression_identifier();
-
-			if(expressions != null)
-			{
-				expression = new AbsFunCall(new Position(position, prevSymbol.position), name, expressions);
-			}
 		}
-		else if(currSymbol.token == Token.LBRACE)
+		else if(currToken.token == Token.STR_CONST)
 		{
-			dump("atom_expression -> { atom_expression_braces }");
+			dump("primary_expression -> string_constant");
+			expression = new AbsAtomConst(currToken.position, AbsAtomConst.STR, currToken.lexeme);
 			prepareNext();
-			expression = parse_atom_expression_braces();
-			check(Token.RBRACE);
 		}
-		else if(currSymbol.token == Token.LPARENT)
+		else if(currToken.token == Token.IDENTIFIER)
 		{
-			dump("atom_expression -> ( expressions )");
 			prepareNext();
-			Vector<AbsExpr> expressions = parse_expressions();
-			check(Token.RPARENT);
-			expression = new AbsExprs(new Position(position, prevSymbol.position), expressions);
-		}
-		else
-		{
-			Report.error(currSymbol.position, "Not an atom expression.");
-		}
-
-		return expression;
-	}
-
-	private Vector<AbsExpr> parse_atom_expression_identifier()
-	{
-		readNext(true);
-
-		Position position = currSymbol.position;
-
-		if(currSymbol.token != Token.LPARENT)
-		{
-			dump("atom_expression_identifier -> E");
-			return null;
-		}
-
-		dump("atom_expression_identifier -> ( expressions )");
-		prepareNext();
-		Vector<AbsExpr> expressions = parse_expressions();
-		check(Token.RPARENT);
-
-		return expressions;
-	}
-
-	private AbsExpr parse_atom_expression_braces()
-	{
-		readNext();
-
-		AbsExpr expression = null;
-		Position position = prevSymbol.position;
-
-		if(currSymbol.token == Token.KW_IF)
-		{
-			dump("atom_expression_braces -> if expression then expression atom_expression_else");
-			prepareNext();
-			AbsExpr ifExpression = parse_expression();
-			check(Token.KW_THEN);
-			AbsExpr thenExpression = parse_expression();
-			AbsExpr elseExpression = parse_atom_expression_else();
-
 			readNext();
 
-			if(elseExpression == null)
+			if(currToken.token == Token.LPARENT)
 			{
-				expression = new AbsIfThen(new Position(position, currSymbol.position), ifExpression, thenExpression);
+				dump("primary_expression -> identifier(arguments)");
+				String name = prevToken.lexeme;
+				prepareNext();
+				Vector<AbsExpr> arguments = parse_arguments();
+				check(Token.RPARENT);
+				expression = new AbsFunCall(new Position(position, prevToken.position), name, arguments);
 			}
 			else
 			{
-				expression = new AbsIfThenElse(new Position(position, currSymbol.position), ifExpression, thenExpression, elseExpression);
+				dump("primary_expression -> identifier");
+				expression = new AbsVarName(prevToken.position, prevToken.lexeme);
 			}
 		}
-		else if(currSymbol.token == Token.KW_WHILE)
+		else if(currToken.token == Token.LPARENT)
 		{
-			dump("atom_expression_braces -> while expression : expression");
-			prepareNext();
-			AbsExpr condition = parse_expression();
-			check(Token.COLON);
-			AbsExpr body = parse_expression();
-			readNext();
-			expression = new AbsWhile(new Position(position, currSymbol.position), condition, body);
-		}
-		else if(currSymbol.token == Token.KW_FOR)
-		{
-			dump("atom_expression_braces -> for expression = expression, expression, expression : expression");
-			prepareNext();
-			AbsExpr count = parse_expression();
-			check(Token.ASSIGN);
-			AbsExpr lo = parse_expression();
-			check(Token.COMMA);
-			AbsExpr hi = parse_expression();
-			check(Token.COMMA);
-			AbsExpr step = parse_expression();
-			check(Token.COLON);
-			AbsExpr body = parse_expression();
-			readNext();
-			expression = new AbsFor(new Position(position, currSymbol.position), count, lo, hi, step, body);
+			// TODO: Prednost. block_items ne bo prov.
+			// dump("atom_expression -> ( expressions )");
+			// prepareNext();
+			// Vector<AbsTree> expressions = parse_expressions();
+			// check(Token.RPARENT);
+			// expression = new AbsExprs(new Position(position, prevToken.position), expressions);
 		}
 		else
 		{
-			dump("atom_expression_braces -> expression = expression");
-			AbsExpr left = parse_expression();
-			check(Token.ASSIGN);
-			AbsExpr right = parse_expression();
-			readNext();
-			expression = new AbsBinExpr(new Position(position, currSymbol.position), AbsBinExpr.ASSIGN, left, right);
+			Report.error(currToken.position, "Not a primary expression.");
 		}
 
 		return expression;
 	}
 
-	private AbsExpr parse_atom_expression_else()
+	private Vector<AbsExpr> parse_arguments()
+	{
+		Vector<AbsExpr> arguments = new Vector<AbsExpr>();
+		readNext();
+
+		if(currToken.token == Token.RPARENT)
+		{
+			dump("arguments -> E");
+			return arguments;
+		}
+
+		// expression ali argument?
+		dump("arguments -> expression arguments'");
+		arguments.add(parse_expression());
+		parse_arguments_(arguments);
+
+		return arguments;
+	}
+
+	private void parse_arguments_(Vector<AbsExpr> arguments)
 	{
 		readNext(true);
 
-		if(currSymbol.token != Token.KW_ELSE)
+		if(currToken.token == Token.RPARENT)
 		{
-			dump("atom_expression_else -> E");
-			return null;
+			dump("arguments' -> E");
+			return;
 		}
 
-		dump("atom_expression_else -> else expression");
-		prepareNext();
-
-		return parse_expression();
+		check(Token.COMMA);
+		dump("arguments' -> , expression arguments'");
+		arguments.add(parse_expression());
+		parse_arguments_(arguments);
 	}
 
-	/**
-	 * Izpise produkcijo v datoteko z vmesnimi rezultati.
-	 *
-	 * @param production
-	 *            Produkcija, ki naj bo izpisana.
-	 */
-	private void dump(String production) {
-		if (!dump)
+	private void dump(String production)
+	{
+		if(dump == false)
+		{
 			return;
-		if (Report.dumpFile() == null)
+		}
+		if(Report.dumpFile() == null)
+		{
 			return;
+		}
+
 		Report.dumpFile().println(production);
 	}
-
 }

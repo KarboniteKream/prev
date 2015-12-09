@@ -12,9 +12,6 @@ import compiler.abstr.*;
  */
 public class AbsFunDef extends AbsDef {
 
-	/** Ime funkcije. */
-	public final String name;
-
 	/** Seznam parametrov. */
 	private final AbsPar pars[];
 
@@ -39,8 +36,7 @@ public class AbsFunDef extends AbsDef {
 	 *            Jedro funkcije.
 	 */
 	public AbsFunDef(Position pos, String name, Vector<AbsPar> pars, AbsType type, AbsExpr expr) {
-		super(pos);
-		this.name = name;
+		super(pos, name);
 		this.pars = new AbsPar[pars.size()];
 		for (int par = 0; par < pars.size(); par++)
 			this.pars[par] = pars.elementAt(par);

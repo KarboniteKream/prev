@@ -4,11 +4,6 @@ import compiler.abstr.*;
 import compiler.abstr.tree.*;
 import compiler.Report;
 
-/**
- * Preverjanje in razresevanje imen (razen imen komponent).
- *
- * @author sliva
- */
 public class NameChecker implements Visitor
 {
 	public void visit(AbsArrType acceptor)
@@ -30,76 +25,38 @@ public class NameChecker implements Visitor
 		acceptor.type.accept(this);
 	}
 
-	public void visit(AbsCompName acceptor)
-	{
-	}
+	public void visit(AbsCompName acceptor) {}
 
 	public void visit(AbsDefs acceptor)
 	{
-		for(int i = 0; i < acceptor.numDefs(); i++)
-		{
-			AbsDef definition = acceptor.def(i);
-
-			if(definition instanceof AbsTypeDef == true)
-			{
-				AbsTypeDef type = (AbsTypeDef)definition;
-
-				try
-				{
-					SymbTable.ins(type.name, type);
-				}
-				catch(SemIllegalInsertException e)
-				{
-					Report.error(type.position, "Redefinition of type '" + type.name + "'.");
-				}
-			}
-			else if(definition instanceof AbsFunDef == true)
-			{
-				AbsFunDef function = (AbsFunDef)definition;
-
-				try
-				{
-					SymbTable.ins(function.name, function);
-				}
-				catch(SemIllegalInsertException e)
-				{
-					Report.error(function.position, "Redefinition of function '" + function.name + "'.");
-				}
-			}
-			else if(definition instanceof AbsVarDef == true)
-			{
-				AbsVarDef variable = (AbsVarDef)definition;
-
-				try
-				{
-					SymbTable.ins(variable.name, variable);
-				}
-				catch(SemIllegalInsertException e)
-				{
-					Report.error(variable.position, "Redefinition of variable '" + variable.name + "'.");
-				}
-			}
-		}
-
 		for(int i = 0; i < acceptor.numDefs(); i++)
 		{
 			acceptor.def(i).accept(this);
 		}
 	}
 
+	public void visit(AbsDoWhile acceptor)
+	{
+		acceptor.body.accept(this);
+		acceptor.cond.accept(this);
+	}
+
 	public void visit(AbsExprs acceptor)
 	{
+		SymbTable.newScope();
+
 		for(int i = 0; i < acceptor.numExprs(); i++)
 		{
 			acceptor.expr(i).accept(this);
 		}
+
+		SymbTable.oldScope();
 	}
 
 	public void visit(AbsFor acceptor)
 	{
-		acceptor.count.accept(this);
-		acceptor.lo.accept(this);
-		acceptor.hi.accept(this);
+		acceptor.init.accept(this);
+		acceptor.cond.accept(this);
 		acceptor.step.accept(this);
 		acceptor.body.accept(this);
 	}
@@ -123,6 +80,17 @@ public class NameChecker implements Visitor
 
 	public void visit(AbsFunDef acceptor)
 	{
+		acceptor.type.accept(this);
+
+		try
+		{
+			SymbTable.ins(acceptor.name, acceptor);
+		}
+		catch(SemIllegalInsertException __)
+		{
+			Report.error(acceptor.position, "Redefinition of function '" + acceptor.name + "'.");
+		}
+
 		SymbTable.newScope();
 
 		for(int i = 0; i < acceptor.numPars(); i++)
@@ -130,30 +98,33 @@ public class NameChecker implements Visitor
 			acceptor.par(i).accept(this);
 		}
 
-		acceptor.type.accept(this);
 		acceptor.expr.accept(this);
 		SymbTable.oldScope();
 	}
 
-	public void visit(AbsIfThen acceptor)
+	public void visit(AbsIf acceptor)
 	{
 		acceptor.cond.accept(this);
 		acceptor.thenBody.accept(this);
 	}
 
-	public void visit(AbsIfThenElse acceptor)
+	public void visit(AbsIfElse acceptor)
 	{
 		acceptor.cond.accept(this);
 		acceptor.thenBody.accept(this);
 		acceptor.elseBody.accept(this);
 	}
 
+	public void visit(AbsNop acceptor) {}
+
 	public void visit(AbsPar acceptor)
 	{
+		acceptor.type.accept(this);
+
+		// Kdaj pride tle do ponovne definicije?
 		try
 		{
 			SymbTable.ins(acceptor.name, acceptor);
-			acceptor.type.accept(this);
 		}
 		catch(SemIllegalInsertException e)
 		{
@@ -163,9 +134,11 @@ public class NameChecker implements Visitor
 
 	public void visit(AbsPtrType acceptor)
 	{
+		// TODO
 		acceptor.type.accept(this);
 	}
 
+	// TODO
 	public void visit(AbsRecType acceptor)
 	{
 		for(int i = acceptor.numComps() - 1; i > 0; i--)
@@ -187,9 +160,23 @@ public class NameChecker implements Visitor
 		}
 	}
 
+	public void visit(AbsReturn acceptor)
+	{
+		acceptor.expr.accept(this);
+	}
+
 	public void visit(AbsTypeDef acceptor)
 	{
 		acceptor.type.accept(this);
+
+		try
+		{
+			SymbTable.ins(acceptor.name, acceptor);
+		}
+		catch(SemIllegalInsertException __)
+		{
+			Report.error(acceptor.position, "Redefinition of type '" + acceptor.name + "'.");
+		}
 	}
 
 	public void visit(AbsTypeName acceptor)
@@ -212,6 +199,20 @@ public class NameChecker implements Visitor
 	public void visit(AbsVarDef acceptor)
 	{
 		acceptor.type.accept(this);
+
+		if(acceptor.expr != null)
+		{
+			acceptor.expr.accept(this);
+		}
+
+		try
+		{
+			SymbTable.ins(acceptor.name, acceptor);
+		}
+		catch(SemIllegalInsertException __)
+		{
+			Report.error(acceptor.position, "Redefinition of variable '" + acceptor.name + "'.");
+		}
 	}
 
 	public void visit(AbsVarName acceptor)
@@ -224,14 +225,6 @@ public class NameChecker implements Visitor
 		}
 
 		SymbDesc.setNameDef(acceptor, variable);
-	}
-
-	public void visit(AbsWhere acceptor)
-	{
-		SymbTable.newScope();
-		acceptor.defs.accept(this);
-		acceptor.expr.accept(this);
-		SymbTable.oldScope();
 	}
 
 	public void visit(AbsWhile acceptor)

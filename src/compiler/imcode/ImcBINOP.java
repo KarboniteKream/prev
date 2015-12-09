@@ -2,14 +2,9 @@ package compiler.imcode;
 
 import compiler.*;
 
-/**
- * Binarna operacija.
- *
- * @author sliva
- */
-public class ImcBINOP extends ImcExpr {
-
-	public static final int IOR = 0;
+public class ImcBINOP extends ImcExpr
+{
+	public static final int OR = 0;
 	public static final int AND = 1;
 	public static final int EQU = 2;
 	public static final int NEQ = 3;
@@ -22,31 +17,23 @@ public class ImcBINOP extends ImcExpr {
 	public static final int MUL = 10;
 	public static final int DIV = 11;
 
-	/** Operator.  */
 	public int op;
 
-	/** Koda levega podizraza.  */
 	public ImcExpr limc;
-
-	/** Koda desnega podizraza.  */
 	public ImcExpr rimc;
 
-	/**
-	 * Ustvari novo binarno operacijo.
-	 *
-	 * @param op Operator.
-	 * @param limc Levi podizraz.
-	 * @param rimc Desni podizraz.
-	 */
-	public ImcBINOP(int op, ImcExpr limc, ImcExpr rimc) {
+	public ImcBINOP(int op, ImcExpr limc, ImcExpr rimc)
+	{
 		this.op = op;
 		this.limc = limc;
 		this.rimc = rimc;
 	}
 
 	@Override
-	public void dump(int indent) {
+	public void dump(int indent)
+	{
 		String op = null;
+		// TODO
 		switch (this.op) {
 		case ADD: op = "+" ; break;
 		case SUB: op = "-" ; break;
@@ -58,8 +45,8 @@ public class ImcBINOP extends ImcExpr {
 		case GTH: op = ">" ; break;
 		case LEQ: op = "<="; break;
 		case GEQ: op = ">="; break;
-		case AND: op = "&" ; break;
-		case IOR: op = "|" ; break;
+		case AND: op = "&&" ; break;
+		case OR:  op = "||" ; break;
 		}
 		Report.dump(indent, "BINOP op=" + op);
 		limc.dump(indent + 2);
@@ -67,7 +54,8 @@ public class ImcBINOP extends ImcExpr {
 	}
 
 	@Override
-	public ImcESEQ linear() {
+	public ImcESEQ linear()
+	{
 		ImcESEQ limc = this.limc.linear();
 		ImcESEQ rimc = this.rimc.linear();
 		ImcSEQ stmt = new ImcSEQ();
@@ -76,5 +64,4 @@ public class ImcBINOP extends ImcExpr {
 		ImcESEQ lin = new ImcESEQ(stmt, new ImcBINOP(op, limc.expr, rimc.expr));
 		return lin;
 	}
-
 }

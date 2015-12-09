@@ -2,51 +2,26 @@ package compiler.seman.type;
 
 import java.util.*;
 
-/**
- * Opis funkcijskega tipa.
- *
- * @author sliva
- */
-public class SemFunType extends SemType {
-
-	/** Tipi parametrov. */
+public class SemFunType extends SemType
+{
 	private final SemType parTypes[];
-
-	/** Tipa rezultata. */
 	public final SemType resultType;
 
-	/**
-	 * Ustvari nov opis funkcijskega tipa.
-	 *
-	 * @param parTypes
-	 *            Tipi parametrov.
-	 * @param resultType
-	 *            Tip rezultata.
-	 */
-	public SemFunType(Vector<SemType> parTypes, SemType resultType) {
+	public SemFunType(Vector<SemType> parTypes, SemType resultType)
+	{
 		this.parTypes = new SemType[parTypes.size()];
 		for (int par = 0; par < parTypes.size(); par++)
 			this.parTypes[par] = parTypes.elementAt(par);
 		this.resultType = resultType;
 	}
 
-	/**
-	 * Vrne stevilo parametrov.
-	 *
-	 * @return Stevilo parametrov.
-	 */
-	public int getNumPars() {
+	public int getNumPars()
+	{
 		return parTypes.length;
 	}
 
-	/**
-	 * Vrne tip zahtevanega parametra.
-	 *
-	 * @param index
-	 *            Indeks zahtevanega parametra.
-	 * @return Tip zahtevanega parametra.
-	 */
-	public SemType getParType(int index) {
+	public SemType getParType(int index)
+	{
 		return parTypes[index];
 	}
 
@@ -78,8 +53,8 @@ public class SemFunType extends SemType {
 		return str;
 	}
 
-	public long size()
+	public int size()
 	{
-		return 0;
+		return resultType.size();
 	}
 }

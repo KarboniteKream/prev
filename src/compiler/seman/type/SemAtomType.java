@@ -2,33 +2,26 @@ package compiler.seman.type;
 
 import compiler.*;
 
-/**
- * Opis atomarnih podatkovnih tipov.
- *
- * @author sliva
- */
 public class SemAtomType extends SemType {
 
-	public static final int LOG = 0;
+	public static final int BOOLEAN = 0;
 	public static final int INT = 1;
+	// remove string
 	public static final int STR = 2;
-	public static final int VOID = 3;
+	public static final int FLOAT = 3;
+	public static final int CHAR = 4;
+	public static final int VOID = 5;
 
-	/* Tip. */
 	public final int type;
 
-	/**
-	 * Ustvari nov opis atomarnega tipa.
-	 *
-	 * @param type
-	 *            Atomarni tip.
-	 */
-	public SemAtomType(int type) {
+	public SemAtomType(int type)
+	{
 		this.type = type;
 	}
 
 	@Override
-	public boolean sameStructureAs(SemType type) {
+	public boolean sameStructureAs(SemType type)
+	{
 		if (type.actualType() instanceof SemAtomType) {
 			SemAtomType atomType = (SemAtomType) (type.actualType());
 			return this.type == atomType.type;
@@ -37,19 +30,29 @@ public class SemAtomType extends SemType {
 	}
 
 	@Override
-	public String toString() {
-		switch (type) {
-		case LOG: return "LOGICAL";
-		case INT: return "INTEGER";
-		case STR: return "STRING";
-		case VOID: return "VOID";
+	public String toString()
+	{
+		switch(type)
+		{
+			case BOOLEAN: return "BOOLEAN";
+			case INT: return "INTEGER";
+			case STR: return "STRING";
+			case VOID: return "VOID";
+			case CHAR: return "CHAR";
+			case FLOAT: return "FLOAT";
 		}
+
 		Report.error("Internal error :: compiler.seman.type.SemAtomType.toString()");
 		return "";
 	}
 
-	public long size()
+	public int size()
 	{
-		return 8;
+		if(type == FLOAT)
+		{
+			return 6;
+		}
+
+		return 3;
 	}
 }

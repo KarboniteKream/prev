@@ -15,39 +15,22 @@ import compiler.tmpan.*;
 import compiler.regalloc.*;
 import compiler.build.*;
 
-/**
- * Osnovni razred prevajalnika, ki vodi izvajanje celotnega procesa prevajanja.
- *
- * @author sliva
- */
-public class Main {
-
+public class Main
+{
 	/** Ime izvorne datoteke. */
 	private static String sourceFileName;
 
-	/** Seznam vseh faz prevajalnika. */
 	private static String allPhases = "(lexan|synan|ast|seman|frames|imcode|lincode|asmcode|tmpan|regalloc|build)";
-
-	/** Doloca zadnjo fazo prevajanja, ki se bo se izvedla. */
 	private static String execPhase = "build";
-
-	/** Doloca faze, v katerih se bodo izpisali vmesni rezultati. */
 	private static String dumpPhases = "build";
 
-	private static int registers = 8;
+	public static void main(String[] args)
+	{
+		System.out.printf("This is SCC compiler, v0.1:\n");
 
-	/**
-	 * Metoda, ki izvede celotni proces prevajanja.
-	 *
-	 * @param args
-	 *            Parametri ukazne vrstice.
-	 */
-	public static void main(String[] args) {
-		System.out.printf("This is PREV compiler, v0.1:\n");
-
-		// Pregled ukazne vrstice.
-		for (int argc = 0; argc < args.length; argc++) {
-			if (args[argc].startsWith("--")) {
+		for(int argc = 0; argc < args.length; argc++)
+		{
+			if(args[argc].startsWith("--")) {
 				// Stikalo v ukazni vrstici.
 				if (args[argc].startsWith("--phase=")) {
 					String phase = args[argc].substring("--phase=".length());
@@ -63,14 +46,6 @@ public class Main {
 						dumpPhases = phases;
 					else
 						Report.warning("Illegal dump phases '" + phases + "' ignored.");
-					continue;
-				}
-				if (args[argc].startsWith("--registers=")) {
-					registers = Integer.parseInt(args[argc].substring("--registers=".length()));
-					if (registers < 2 || registers > 250) {
-						Report.warning("Invalid number of registers, defaulting to 8.");
-						registers = 8;
-					}
 					continue;
 				}
 				// Neznano stikalo.
@@ -89,9 +64,11 @@ public class Main {
 		// Odpiranje datoteke z vmesnimi rezultati.
 		if (dumpPhases != null) Report.openDumpFile(sourceFileName, dumpPhases.equals("build"));
 
-		// Izvajanje faz prevajanja.
-		while (true) {
+		// TODO: Odstrani while.
+		while (true)
+		{
 			// Leksikalna analiza.
+			// TODO: Odstrani to fazo.
 			LexAn lexAn = new LexAn(sourceFileName, dumpPhases.contains("lexan"));
 			if (execPhase.equals("lexan")) {
 				while (lexAn.lexAn().token != Token.EOF) {
@@ -127,12 +104,11 @@ public class Main {
 			LinCode lincode = new LinCode(dumpPhases.contains("lincode"));
 			lincode.generate(imcodegen.chunks);
 			lincode.dump(imcodegen.chunks);
-			lincode.run(imcodegen.chunks);
 			if (execPhase.equals("lincode")) break;
 			// Generiranje strojnih ukazov.
 			AsmCode asmcode = new AsmCode(dumpPhases.contains("asmcode"));
 			asmcode.generate(imcodegen.chunks);
-			asmcode.optimize(imcodegen.chunks);
+			// asmcode.optimize(imcodegen.chunks);
 			asmcode.dump(imcodegen.chunks);
 			if (execPhase.equals("asmcode")) break;
 			// Analiza spremenljivk.
@@ -141,7 +117,7 @@ public class Main {
 			tmpan.dump(imcodegen.chunks);
 			if (execPhase.equals("tmpan")) break;
 			// Dodeljevanje registrov.
-			RegAlloc regalloc = new RegAlloc(dumpPhases.contains("regalloc"), registers);
+			RegAlloc regalloc = new RegAlloc(dumpPhases.contains("regalloc"));
 			regalloc.allocate(imcodegen.chunks);
 			regalloc.dump(imcodegen.chunks);
 			if (execPhase.equals("regalloc")) break;

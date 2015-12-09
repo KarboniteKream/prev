@@ -1,67 +1,204 @@
 package compiler.lexan;
 
-/**
- * Definicije vrst besed.
- *
- * @author sliva
- */
-public class Token {
+// TODO: Importaj samo Token in Position?
+import compiler.*;
 
-	/** Vrsta simbola: konec datoteke. */							public static final int EOF 		= 0;
+public class Token
+{
+	public static final int EOF = 0;
 
-	/** Vrsta simbola: ime. */										public static final int IDENTIFIER 	= 1;
+	public static final int IDENTIFIER = 1;
 
-	/** Vrsta simbola: logicna konstanta. */						public static final int LOG_CONST 	= 2;
-	/** Vrsta simbola: celo stevilo. */								public static final int INT_CONST 	= 3;
-	/** Vrsta simbola: niz. */										public static final int STR_CONST 	= 4;
+	public static final int BOOL_CONST = 2;
+	public static final int INT_CONST = 3;
+	public static final int CHAR_CONST = 105;
+	public static final int STR_CONST = 4;
+	public static final int FLOAT_CONST = 104;
 
-	/** Vrsta simbola: logicni in. */								public static final int AND 		= 5;
-	/** Vrsta simbola: logicni ali. */								public static final int IOR 		= 6;
-	/** Vrsta simbola: logicni ne. */								public static final int NOT 		= 7;
+	public static final int AND = 5;
+	public static final int OR = 6;
+	public static final int NOT = 7;
 
-	/** Vrsta simbola: je-enako. */									public static final int EQU 		= 8;
-	/** Vrsta simbola: ni-enako. */									public static final int NEQ 		= 9;
-	/** Vrsta simbola: manjse-kot. */								public static final int LTH 		= 10;
-	/** Vrsta simbola: vecje-kot. */								public static final int GTH 		= 11;
-	/** Vrsta simbola: manjse-ali-enako. */							public static final int LEQ 		= 12;
-	/** Vrsta simbola: vecje-ali-enako. */							public static final int GEQ 		= 13;
+	public static final int BIT_AND = 100;
+	public static final int BIT_OR = 101;
+	public static final int BIT_XOR = 102;
+	public static final int BIT_NOT = 111;
+	// TODO: BIT_NOT (dodaj v dipl, ce podpiramo)
 
-	/** Vrsta simbola: celostevilsko mnozenje. */					public static final int MUL 		= 14;
-	/** Vrsta simbola: celostevilsko deljenje. */					public static final int DIV 		= 15;
-	/** Vrsta simbola: ostanek po celostevilskem deljenju. */		public static final int MOD 		= 16;
-	/** Vrsta simbola: celostevilsko sestevanje ali predznak. */	public static final int ADD 		= 17;
-	/** Vrsta simbola: celostevilsko odstevanje ali predznak. */	public static final int SUB 		= 18;
+	public static final int EQU = 8;
+	public static final int NEQ = 9;
+	public static final int LTH = 10;
+	public static final int GTH = 11;
+	public static final int LEQ = 12;
+	public static final int GEQ = 13;
 
-	/** Vrsta simbola: kazalec. */									public static final int PTR 		= 19;
+	public static final int ADD = 17;
+	public static final int SUB = 18;
+	public static final int MUL = 14;
+	public static final int DIV = 15;
+	public static final int MOD = 16;
 
-	/** Vrsta simbola: levi oklepaj. */								public static final int LPARENT 	= 20;
-	/** Vrsta simbola: desni oklepaj. */							public static final int RPARENT 	= 21;
-	/** Vrsta simbola: levi oglati oklepaj. */						public static final int LBRACKET 	= 22;
-	/** Vrsta simbola: desni oglati oklepaj. */						public static final int RBRACKET 	= 23;
-	/** Vrsta simbola: levi zaviti oklepaj. */						public static final int LBRACE 		= 24;
-	/** Vrsta simbola: desni zaviti oklepaj. */						public static final int RBRACE 		= 25;
+	public static final int INC = 107;
+	public static final int DEC = 108;
 
-	/** Vrsta simbola: pika. */										public static final int DOT 		= 26;
-	/** Vrsta simbola: dvopicje. */									public static final int COLON 		= 27;
-	/** Vrsta simbola: podpicje. */									public static final int SEMIC 		= 28;
-	/** Vrsta simbola: vejica. */                                   public static final int COMMA 		= 29;
+	public static final int LSHIFT = 109;
+	public static final int RSHIFT = 110;
 
-	/** Vrsta simbola: prirejanje. */								public static final int ASSIGN 		= 30;
+	// TODO!
+	// public static final int PTR = 19;
 
-	/** Vrsta simbola: tip logical.  */								public static final int LOGICAL 	= 31;
-	/** Vrsta simbola: tip integer.  */								public static final int INTEGER 	= 32;
-	/** Vrsta simbola: tip string.  */								public static final int STRING 		= 33;
+	public static final int LPARENT = 20;
+	public static final int RPARENT = 21;
+	public static final int LBRACKET = 22;
+	public static final int RBRACKET = 23;
+	public static final int LBRACE = 24;
+	public static final int RBRACE = 25;
 
-	/** Vrsta simbola: kljucna beseda arr.  */						public static final int KW_ARR 		= 34;
-	/** Vrsta simbola: kljucna beseda else.  */						public static final int KW_ELSE 	= 35;
-	/** Vrsta simbola: kljucna beseda for.  */						public static final int KW_FOR 		= 36;
-	/** Vrsta simbola: kljucna beseda fun.  */						public static final int KW_FUN 		= 37;
-	/** Vrsta simbola: kljucna beseda if.  */						public static final int KW_IF 		= 38;
-	/** Vrsta simbola: kljucna beseda rec.  */						public static final int KW_REC 		= 39;
-	/** Vrsta simbola: kljucna beseda then.  */						public static final int KW_THEN 	= 40;
-	/** Vrsta simbola: kljucna beseda typ.  */						public static final int KW_TYP 		= 41;
-	/** Vrsta simbola: kljucna beseda var.  */						public static final int KW_VAR 		= 42;
-	/** Vrsta simbola: kljucna beseda where.  */					public static final int KW_WHERE 	= 43;
-	/** Vrsta simbola: kljucna beseda while.  */					public static final int KW_WHILE 	= 44;
+	public static final int DOT = 26;
+	public static final int COMMA = 29;
+	public static final int SEMICOLON = 28;
+	// dvopicja rabimo za tipe v prev. potrebujemo se vprasaj?
+	// public static final int COLON = 27;
 
+	public static final int ASSIGN = 30;
+
+	public static final int BOOLEAN = 31;
+	public static final int INTEGER = 32;
+	public static final int CHAR = 103;
+	public static final int FLOAT = 106;
+	public static final int VOID = 33;
+
+	public static final int BREAK = 34;
+	public static final int CONST = 35;
+	public static final int CONTINUE = 36;
+	public static final int DO = 37;
+	public static final int ELSE = 38;
+	public static final int FOR = 39;
+	public static final int IF = 40;
+	public static final int RETURN = 41;
+	// public static final int SIZEOF = 42;
+	public static final int STRUCT = 43;
+	public static final int TYPEDEF = 44;
+	public static final int WHILE = 45;
+
+	public final int token;
+	/** Znakovna predstavitev simbola. */
+	public final String lexeme;
+	public final Position position;
+
+	public Token(int token, String lexeme, int begLine, int begColumn, int endLine, int endColumn)
+	{
+		this.token = token;
+		this.lexeme = lexeme;
+		this.position = new Position(begLine, begColumn, endLine, endColumn);
+	}
+
+	public Token(int token, String lexeme, Position position)
+	{
+		this.token = token;
+		this.lexeme = lexeme;
+		this.position = position;
+	}
+
+	public String toString()
+	{
+		String name = "";
+
+		switch(token)
+		{
+			// TODO: PREVERI VSE TOKENE
+			case EOF: name = "EOF"; break;
+
+			case IDENTIFIER: name = "IDENTIFIER"; break;
+
+			case BOOL_CONST: name = "BOOL_CONST"; break;
+			// int == short, odstrani iz dipl
+			case INT_CONST: name = "INT_CONST"; break;
+			case CHAR_CONST: name = "CHAR_CONST"; break;
+			// TODO: char == int?
+			// TODO: char[] == str
+			case STR_CONST: name = "STR_CONST"; break;
+			case FLOAT_CONST: name = "FLOAT_CONST"; break;
+
+			case AND: name = "AND"; break;
+			case OR: name = "OR"; break;
+			case NOT: name = "NOT"; break;
+
+			case BIT_AND: name = "BIT_AND"; break;
+			case BIT_OR: name = "BIT_OR"; break;
+			case BIT_XOR: name = "BIT_XOR"; break;
+			case BIT_NOT: name = "BIT_NOT"; break;
+
+			case EQU: name = "EQU"; break;
+			case NEQ: name = "NEQ"; break;
+			case LTH: name = "LTH"; break;
+			case GTH: name = "GTH"; break;
+			case LEQ: name = "LEQ"; break;
+			case GEQ: name = "GEQ"; break;
+
+			case ADD: name = "ADD"; break;
+			case SUB: name = "SUB"; break;
+			case MUL: name = "MUL"; break;
+			case DIV: name = "DIV"; break;
+			case MOD: name = "MOD"; break;
+
+			case INC: name = "INC"; break;
+			case DEC: name = "DEC"; break;
+
+			case LSHIFT: name = "LSHIFT"; break;
+			case RSHIFT: name = "RSHIFT"; break;
+
+			// case PTR: name = "PTR"; break;
+
+			case LPARENT: name = "LPARENT"; break;
+			case RPARENT: name = "RPARENT"; break;
+			case LBRACKET: name = "LBRACKET"; break;
+			case RBRACKET: name = "RBRACKET"; break;
+			case LBRACE: name = "LBRACE"; break;
+			case RBRACE: name = "RBRACE"; break;
+
+			case DOT: name = "DOT"; break;
+			// case COLON: name = "COLON"; break;
+			case SEMICOLON: name = "SEMICOLON"; break;
+			case COMMA: name = "COMMA"; break;
+
+			case ASSIGN: name = "ASSIGN"; break;
+
+			case BOOLEAN: name = "BOOLEAN"; break;
+			case INTEGER: name = "INTEGER"; break;
+			// char
+			// float/double
+			// case STRING: name = "STRING"; break;
+			case CHAR: name = "CHAR"; break;
+			case FLOAT: name = "FLOAT"; break;
+			case VOID: name = "VOID"; break;
+
+			case BREAK: name = "BREAK"; break;
+			case CONST: name = "CONST"; break;
+			case CONTINUE: name = "CONTINUE"; break;
+			case DO: name = "DO"; break;
+			case ELSE: name = "ELSE"; break;
+			case FOR: name = "FOR"; break;
+			case IF: name = "IF"; break;
+			case RETURN: name = "RETURN"; break;
+			// case SIZEOF: name = "SIZEOF"; break;
+			case STRUCT: name = "STRUCT"; break;
+			case TYPEDEF: name = "TYPEDEF"; break;
+			case WHILE: name = "WHILE"; break;
+
+			// TODO: Remove internal errors?
+			default:
+				Report.error("Internal error: token=" + token + " in compiler.lexan.Symbol.toString().");
+			break;
+		}
+
+		if(token == IDENTIFIER || token == BOOL_CONST || token == INT_CONST || token == CHAR_CONST || token == STR_CONST || token == FLOAT_CONST)
+		{
+			return name + "(" + lexeme + ")";
+		}
+		else
+		{
+			return name;
+		}
+	}
 }

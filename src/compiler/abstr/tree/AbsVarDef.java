@@ -3,36 +3,20 @@ package compiler.abstr.tree;
 import compiler.*;
 import compiler.abstr.*;
 
-/**
- * Definicija spremenljivke.
- *
- * @author sliva
- */
-public class AbsVarDef extends AbsDef {
-
-	/** Ime spremenljivke. */
-	public final String name;
-
-	/** Opis tipa spremenljivke. */
+public class AbsVarDef extends AbsDef
+{
 	public final AbsType type;
+	public final AbsExpr expr;
 
-	/**
-	 * Ustvari novo definicijo spremenljivke.
-	 *
-	 * @param pos
-	 *            Polozaj stavcne oblike tega drevesa.
-	 * @param name
-	 *            Ime spremenljivke.
-	 * @param type
-	 *            Opis tipa spremenljivke.
-	 */
-	public AbsVarDef(Position pos, String name, AbsType type) {
-		super(pos);
-		this.name = name;
+	public AbsVarDef(Position pos, String name, AbsType type, AbsExpr expr)
+	{
+		super(pos, name);
 		this.type = type;
+		this.expr = expr;
 	}
 
-
-	@Override public void accept(Visitor visitor) { visitor.visit(this); }
-
+	@Override public void accept(Visitor visitor)
+	{
+		visitor.visit(this);
+	}
 }

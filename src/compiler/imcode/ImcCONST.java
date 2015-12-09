@@ -2,33 +2,24 @@ package compiler.imcode;
 
 import compiler.*;
 
-/**
- * Konstanta.
- *
- * @author sliva
- */
-public class ImcCONST extends ImcExpr {
+public class ImcCONST extends ImcExpr
+{
+	public int value;
 
-	/** Vrednost.  */
-	public Long value;
-
-	/**
-	 * Ustvari novo konstanto.
-	 *
-	 * @param value Vrednost konstante.
-	 */
-	public ImcCONST(Long value) {
+	public ImcCONST(int value)
+	{
 		this.value = value;
 	}
 
 	@Override
-	public void dump(int indent) {
-		Report.dump(indent, "CONST value=" + value.toString());
+	public void dump(int indent)
+	{
+		Report.dump(indent, "CONST value=" + value);
 	}
 
 	@Override
-	public ImcESEQ linear() {
+	public ImcESEQ linear()
+	{
 		return new ImcESEQ(new ImcSEQ(), this);
 	}
-
 }

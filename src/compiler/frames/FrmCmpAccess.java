@@ -2,26 +2,12 @@ package compiler.frames;
 
 import compiler.abstr.tree.*;
 
-/**
- * Dostop do komponente strukture.
- *
- * @author sliva
- */
-public class FrmCmpAccess extends FrmAccess {
-
-	/** Opis komponente.  */
+public class FrmCmpAccess extends FrmAccess
+{
 	public AbsComp cmp;
+	public int offset;
 
-	/** Odmik od zacentega naslova strukture.  */
-	public long offset;
-
-	/**
-	 * Ustvari nov dostop do komponente zapisa.
-	 *
-	 * @param cmp Komponenta zapisa.
-	 * @param offset Odmik od zacetnega naslova strukture.
-	 */
-	public FrmCmpAccess(AbsComp cmp, long offset) {
+	public FrmCmpAccess(AbsComp cmp, int offset) {
 		this.cmp = cmp;
 		this.offset = offset;
 	}
@@ -30,5 +16,4 @@ public class FrmCmpAccess extends FrmAccess {
 	public String toString() {
 		return "CMP(" + cmp.name + ": offset=" + offset + ")";
 	}
-
 }

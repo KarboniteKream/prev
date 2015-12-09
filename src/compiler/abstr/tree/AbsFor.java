@@ -3,53 +3,21 @@ package compiler.abstr.tree;
 import compiler.*;
 import compiler.abstr.*;
 
-/**
- * Zanka z eksplicitnim stevcem.
- *
- * @author sliva
- */
-public class AbsFor extends AbsExpr {
-
-	/** Stevec. */
-	public final AbsExpr count;
-
-	/** Spodnja meja. */
-	public final AbsExpr lo;
-
-	/** Zgornja meja. */
-	public final AbsExpr hi;
-
-	/** Korak. */
+public class AbsFor extends AbsExpr
+{
+	public final AbsTree init;
+	public final AbsExpr cond;
 	public final AbsExpr step;
-
-	/** Jedro stavka. */
 	public final AbsExpr body;
 
-	/**
-	 * Ustvari zanko z eksplicitnim stevcem.
-	 *
-	 * @param pos
-	 *            Polozaj stavcne oblike tega drevesa.
-	 * @param count
-	 *            Stevec.
-	 * @param lo
-	 *            Spodnja meja.
-	 * @param hi
-	 *            Zgornja meja.
-	 * @param step
-	 *            Korak.
-	 * @param body
-	 *            Jedro zanke.
-	 */
-	public AbsFor(Position pos, AbsExpr count, AbsExpr lo, AbsExpr hi, AbsExpr step, AbsExpr body) {
+	public AbsFor(Position pos, AbsTree init, AbsExpr cond, AbsExpr step, AbsExpr body)
+	{
 		super(pos);
-		this.count = count;
-		this.lo = lo;
-		this.hi = hi;
+		this.init = init;
+		this.cond = cond;
 		this.step = step;
 		this.body = body;
 	}
 
 	@Override public void accept(Visitor visitor) { visitor.visit(this); }
-
 }

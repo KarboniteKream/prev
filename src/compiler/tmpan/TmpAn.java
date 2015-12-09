@@ -63,12 +63,12 @@ public class TmpAn
 
 				LinkedList<AsmInstr> succ = new LinkedList<AsmInstr>();
 
-				if(instr.mnemonic.equals("JMP") == false && (i + 1) < chunk.asmcode.size())
+				if(instr.mnemonic.equals("J") == false && (i + 1) < chunk.asmcode.size())
 				{
 					succ.add(chunk.asmcode.get(i + 1));
 				}
 
-				if(instr.mnemonic.equals("BNZ") == true || instr.mnemonic.equals("JMP") == true)
+				if(instr.mnemonic.equals("JEQ") == true || instr.mnemonic.equals("JGT") == true || instr.mnemonic.equals("JLT") == true || instr.mnemonic.equals("J") == true)
 				{
 					for(AsmInstr label : chunk.asmcode)
 					{
@@ -151,8 +151,7 @@ public class TmpAn
 
 	public void dump(LinkedList<ImcChunk> chunks)
 	{
-		if(dump == false) return;
-		if(Report.dumpFile() == null) return;
+		if(dump == false || Report.dumpFile() == null) return;
 
 		for(ImcChunk chunk : chunks)
 		{

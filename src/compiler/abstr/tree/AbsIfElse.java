@@ -4,11 +4,11 @@ import compiler.*;
 import compiler.abstr.*;
 
 /**
- * Kratki pogojni stavek.
+ * Dolgi pogojni stavek.
  *
  * @author sliva
  */
-public class AbsIfThen extends AbsExpr {
+public class AbsIfElse extends AbsExpr {
 
 	/** Pogoj. */
 	public final AbsExpr cond;
@@ -16,8 +16,11 @@ public class AbsIfThen extends AbsExpr {
 	/** Pozitivna veja. */
 	public final AbsExpr thenBody;
 
+	/** Negativna veja. */
+	public final AbsExpr elseBody;
+
 	/**
-	 * Ustvari nov kratki pogojni stavek.
+	 * Ustvari nov dolgi pogojni stavek.
 	 *
 	 * @param pos
 	 *            Polozaj stavcne oblike tega drevesa.
@@ -25,11 +28,14 @@ public class AbsIfThen extends AbsExpr {
 	 *            Pogoj.
 	 * @param thenBody
 	 *            Pozitivna veja.
+	 * @param elseBody
+	 *            Negativna veja.
 	 */
-	public AbsIfThen(Position pos, AbsExpr cond, AbsExpr thenBody) {
+	public AbsIfElse(Position pos, AbsExpr cond, AbsExpr thenBody, AbsExpr elseBody) {
 		super(pos);
 		this.cond = cond;
 		this.thenBody = thenBody;
+		this.elseBody = elseBody;
 	}
 
 	@Override public void accept(Visitor visitor) { visitor.visit(this); }

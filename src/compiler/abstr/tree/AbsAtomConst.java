@@ -10,9 +10,11 @@ import compiler.abstr.*;
  */
 public class AbsAtomConst extends AbsExpr {
 
-	public static final int LOG = 0;
+	public static final int BOOL = 0;
 	public static final int INT = 1;
 	public static final int STR = 2;
+	public static final int FLOAT = 3;
+	public static final int CHAR = 4;
 
 	/** Tip. */
 	public final int type;

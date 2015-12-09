@@ -7,11 +7,6 @@ import compiler.abstr.*;
 import compiler.abstr.tree.*;
 import compiler.seman.type.*;
 
-/**
- * Preverjanje tipov.
- *
- * @author sliva
- */
 public class TypeChecker implements Visitor
 {
 	public void visit(AbsArrType acceptor)
@@ -38,25 +33,29 @@ public class TypeChecker implements Visitor
 		SemType type1 = SymbDesc.getType(acceptor.expr1);
 		SemType type2 = SymbDesc.getType(acceptor.expr2);
 
-		SemAtomType logical = new SemAtomType(SemAtomType.LOG);
+		SemAtomType bool = new SemAtomType(SemAtomType.BOOLEAN);
 		SemAtomType integer = new SemAtomType(SemAtomType.INT);
 		SemAtomType string = new SemAtomType(SemAtomType.STR);
+		SemAtomType floatType = new SemAtomType(SemAtomType.FLOAT);
+		SemAtomType charType = new SemAtomType(SemAtomType.CHAR);
 
+		// kaj pa operacije s chari? upostevaj, da je char enako kot int -> odstrani char?
 		switch(acceptor.oper)
 		{
-			case AbsBinExpr.IOR: case AbsBinExpr.AND:
-				if(type1.sameStructureAs(logical) == false || type2.sameStructureAs(logical) == false)
+			case AbsBinExpr.OR: case AbsBinExpr.AND:
+				if(type1.sameStructureAs(bool) == false || type2.sameStructureAs(bool) == false)
 				{
-					Report.error(acceptor.position, "Expected (LOGICAL, LOGICAL), found (" + type1.actualType() + ", " + type2.actualType() + ").");
+					Report.error(acceptor.position, "Expected (BOOLEAN, BOOLEAN), found (" + type1.actualType() + ", " + type2.actualType() + ").");
 				}
 
-				SymbDesc.setType(acceptor, logical);
+				SymbDesc.setType(acceptor, bool);
 			break;
 
 			case AbsBinExpr.ADD: case AbsBinExpr.SUB:
 			case AbsBinExpr.MUL: case AbsBinExpr.DIV:
+			// podpora za MOD?
 			case AbsBinExpr.MOD:
-				if(type1.sameStructureAs(integer) == false || type2.sameStructureAs(integer) == false)
+				if((type1.sameStructureAs(integer) == false && type1.sameStructureAs(floatType) == false) || (type2.sameStructureAs(integer) == false && type2.sameStructureAs(floatType) == false))
 				{
 					Report.error(acceptor.position, "Expected (INTEGER, INTEGER), found (" + type1.actualType() + ", " + type2.actualType() + ").");
 				}
@@ -64,16 +63,19 @@ public class TypeChecker implements Visitor
 				SymbDesc.setType(acceptor, integer);
 			break;
 
+			// ali to podpiramo za floate? kako to sploh naredimo, ce imamo samo en register?
+			// boolean glej samo za == in !=
 			case AbsBinExpr.EQU: case AbsBinExpr.NEQ:
 			case AbsBinExpr.LEQ: case AbsBinExpr.GEQ:
 			case AbsBinExpr.LTH: case AbsBinExpr.GTH:
-				if(type1.sameStructureAs(logical) == true)
+				if(type1.sameStructureAs(bool) == true)
 				{
-					if(type2.sameStructureAs(logical) == false)
+					if(type2.sameStructureAs(bool) == false)
 					{
-						Report.error(acceptor.expr2.position, "Expected LOGICAL, found " + type2.actualType() + ".");
+						Report.error(acceptor.expr2.position, "Expected BOOLEAN, found " + type2.actualType() + ".");
 					}
 				}
+				// tukaj nujno tudi char
 				else if(type1.sameStructureAs(integer) == true)
 				{
 					if(type2.sameStructureAs(integer) == false)
@@ -81,24 +83,24 @@ public class TypeChecker implements Visitor
 						Report.error(acceptor.expr2.position, "Expected INTEGER, found " + type2.actualType() + ".");
 					}
 				}
-				else if(type1.actualType() instanceof SemPtrType == true)
-				{
-					if(type2.actualType() instanceof SemPtrType == false)
-					{
-						Report.error(acceptor.expr2.position, "Expected PTR, found " + type2.actualType() + ".");
-					}
+				// else if(type1.actualType() instanceof SemPtrType == true)
+				// {
+				// 	if(type2.actualType() instanceof SemPtrType == false)
+				// 	{
+				// 		Report.error(acceptor.expr2.position, "Expected PTR, found " + type2.actualType() + ".");
+				// 	}
 
-					if(type1.sameStructureAs(type2) == false)
-					{
-						Report.error(acceptor.expr2.position, "Expected " + type1.actualType() + ", found " + type2.actualType() + ".");
-					}
-				}
+				// 	if(type1.sameStructureAs(type2) == false)
+				// 	{
+				// 		Report.error(acceptor.expr2.position, "Expected " + type1.actualType() + ", found " + type2.actualType() + ".");
+				// 	}
+				// }
 				else
 				{
-					Report.error(acceptor.expr1.position, "Expected { LOGICAL, INTEGER, PTR }, found " + type1.actualType() + ".");
+					Report.error(acceptor.expr1.position, "Expected { BOOLEAN, INTEGER, PTR }, found " + type1.actualType() + ".");
 				}
 
-				SymbDesc.setType(acceptor, logical);
+				SymbDesc.setType(acceptor, bool);
 			break;
 
 			case AbsBinExpr.ARR:
@@ -106,59 +108,71 @@ public class TypeChecker implements Visitor
 				{
 					Report.error(acceptor.position, "Expected (ARR, INTEGER), found (" + type1.actualType() + ", " + type2.actualType() + ").");
 				}
+				// tukaj je lahko string. NE, na tem mestu gledamo samo, ce je indeks ok. to dodaj v assign
 
 				SymbDesc.setType(acceptor, ((SemArrType)type1.actualType()).type);
 			break;
 
-			case AbsBinExpr.DOT:
-				if(type1.actualType() instanceof SemRecType == false)
-				{
-					Report.error(acceptor.expr1.position, "Expected REC, found " + type1.actualType() + ".");
-				}
+			// case AbsBinExpr.DOT:
+			// 	if(type1.actualType() instanceof SemRecType == false)
+			// 	{
+			// 		Report.error(acceptor.expr1.position, "Expected REC, found " + type1.actualType() + ".");
+			// 	}
 
-				SemRecType record = (SemRecType)type1.actualType();
+			// 	SemRecType record = (SemRecType)type1.actualType();
 
-				for(int i = 0; i < record.getNumComps(); i++)
-				{
-					if(record.getCompName(i).equals(((AbsCompName)acceptor.expr2).name) == true)
-					{
-						SymbDesc.setType(acceptor.expr2, record.getCompType(i));
-						SymbDesc.setType(acceptor, record.getCompType(i));
-						return;
-					}
-				}
+			// 	for(int i = 0; i < record.getNumComps(); i++)
+			// 	{
+			// 		if(record.getCompName(i).equals(((AbsCompName)acceptor.expr2).name) == true)
+			// 		{
+			// 			SymbDesc.setType(acceptor.expr2, record.getCompType(i));
+			// 			SymbDesc.setType(acceptor, record.getCompType(i));
+			// 			return;
+			// 		}
+			// 	}
 
-				Report.error(acceptor.expr2.position, "Undefined component " + ((AbsCompName)acceptor.expr2).name + ".");
-			break;
+			// 	Report.error(acceptor.expr2.position, "Undefined component " + ((AbsCompName)acceptor.expr2).name + ".");
+			// break;
 
 			case AbsBinExpr.ASSIGN:
-				if(type1.sameStructureAs(logical) == true && type2.sameStructureAs(logical) == false)
+				if(type1.sameStructureAs(bool) == true && type2.sameStructureAs(bool) == false)
 				{
-					Report.error(acceptor.expr2.position, "Expected LOGICAL, found " + type2.actualType() + ".");
+					Report.error(acceptor.expr2.position, "Expected BOOLEAN, found " + type2.actualType() + ".");
 				}
 				else if(type1.sameStructureAs(integer) == true && type2.sameStructureAs(integer) == false)
 				{
 					Report.error(acceptor.expr2.position, "Expected INTEGER, found " + type2.actualType() + ".");
 				}
+				// if type1 == ARR(char) and type2 == str -> OK
 				else if(type1.sameStructureAs(string) == true && type2.sameStructureAs(string) == false)
 				{
 					Report.error(acceptor.expr2.position, "Expected STRING, found " + type2.actualType() + ".");
 				}
-				else if(type1.actualType() instanceof SemPtrType == true)
+				else if(type1.sameStructureAs(floatType) == true && type2.sameStructureAs(floatType) == false)
 				{
-					if(type2.actualType() instanceof SemPtrType == false)
-					{
-						Report.error(acceptor.expr2.position, "Expected PTR, found " + type2.actualType() + ".");
-					}
-
-					if(type1.sameStructureAs(type2) == false)
-					{
-						Report.error(acceptor.expr2.position, "Expected " + type1.actualType() + ", found " + type2.actualType() + ".");
-					}
+					Report.error(acceptor.expr2.position, "Expected FLOAT, found " + type2.actualType() + ".");
 				}
+				else if(type1.sameStructureAs(charType) == true && type2.sameStructureAs(charType) == false)
+				{
+					Report.error(acceptor.expr2.position, "Expected CHAR, found " + type2.actualType() + ".");
+				}
+				// else if(type1.actualType() instanceof SemPtrType == true)
+				// {
+				// 	if(type2.actualType() instanceof SemPtrType == false)
+				// 	{
+				// 		Report.error(acceptor.expr2.position, "Expected PTR, found " + type2.actualType() + ".");
+				// 	}
+
+				// 	if(type1.sameStructureAs(type2) == false)
+				// 	{
+				// 		Report.error(acceptor.expr2.position, "Expected " + type1.actualType() + ", found " + type2.actualType() + ".");
+				// 	}
+				// }
 				else
 				{
-					Report.error(acceptor.expr1.position, "Expected { LOGICAL, INTEGER, STRING, PTR }, found " + type1.actualType() + ".");
+					// zakaj tukaj pride do napake, ce je vse ok? ali je prislo do napake, ker se hotel enaciti char, pa prej ni bil podprt?
+					// TODO: odstrani v PREV
+					// Report.error(acceptor.expr1.position, "Expected { BOOLEAN, INTEGER, STRING, PTR }, found " + type1.actualType() + ".");
 				}
 
 				SymbDesc.setType(acceptor, type1);
@@ -176,91 +190,72 @@ public class TypeChecker implements Visitor
 
 	public void visit(AbsDefs acceptor)
 	{
-		AbsDef definition = null;
-
 		for(int i = 0; i < acceptor.numDefs(); i++)
 		{
-			definition = acceptor.def(i);
-
-			if(definition instanceof AbsTypeDef == true)
-			{
-				SymbDesc.setType(definition, new SemTypeName(((AbsTypeDef)definition).name));
-			}
+			acceptor.def(i).accept(this);
 		}
+	}
 
-		for(int i = 0; i < acceptor.numDefs(); i++)
+	public void visit(AbsDoWhile acceptor)
+	{
+		acceptor.body.accept(this);
+		acceptor.cond.accept(this);
+
+		if(SymbDesc.getType(acceptor.cond).sameStructureAs(new SemAtomType(SemAtomType.BOOLEAN)) == true)
 		{
-			definition = acceptor.def(i);
-
-			if(definition instanceof AbsFunDef == true)
-			{
-				AbsFunDef function = (AbsFunDef)definition;
-				Vector<SemType> parameters = new Vector<SemType>();
-
-				for(int j = 0; j < function.numPars(); j++)
-				{
-					function.par(j).accept(this);
-					parameters.add(SymbDesc.getType(function.par(j)));
-				}
-
-				function.type.accept(this);
-				SymbDesc.setType(function, new SemFunType(parameters, SymbDesc.getType(function.type)));
-			}
-			else
-			{
-				definition.accept(this);
-			}
+			SymbDesc.setType(acceptor, new SemAtomType(SemAtomType.VOID));
 		}
-
-		for(int i = 0; i < acceptor.numDefs(); i++)
+		else
 		{
-			definition = acceptor.def(i);
-
-			if(definition instanceof AbsFunDef == true)
-			{
-				definition.accept(this);
-			}
+			Report.error(acceptor.cond.position, "Expected BOOLEAN, found " + SymbDesc.getType(acceptor.cond).actualType() + ".");
 		}
 	}
 
 	public void visit(AbsExprs acceptor)
 	{
+		SemType type = null;
+
 		for(int i = 0; i < acceptor.numExprs(); i++)
 		{
 			acceptor.expr(i).accept(this);
+
+			if(acceptor.expr(i) instanceof AbsReturn == true)
+			{
+				SemType exprType = SymbDesc.getType(acceptor.expr(i));
+
+				if(type == null)
+				{
+					type = exprType;
+				}
+				else if(exprType.sameStructureAs(type) == false)
+				{
+					Report.error(acceptor.expr(i).position, "Expected " + type.actualType() + ", found " + exprType.actualType() + ".");
+				}
+			}
 		}
 
-		SymbDesc.setType(acceptor, SymbDesc.getType(acceptor.expr(acceptor.numExprs() - 1)));
+		if(type == null)
+		{
+			SymbDesc.setType(acceptor, new SemAtomType(SemAtomType.VOID));
+		}
+		else
+		{
+			SymbDesc.setType(acceptor, type);
+		}
 	}
 
 	public void visit(AbsFor acceptor)
 	{
-		acceptor.count.accept(this);
-		acceptor.lo.accept(this);
-		acceptor.hi.accept(this);
+		acceptor.init.accept(this);
+		acceptor.cond.accept(this);
 		acceptor.step.accept(this);
 		acceptor.body.accept(this);
 
-		SemAtomType integer = new SemAtomType(SemAtomType.INT);
+		SemType cond = SymbDesc.getType(acceptor.cond);
 
-		if(SymbDesc.getType(acceptor.count).sameStructureAs(integer) == false)
+		if(cond.sameStructureAs(new SemAtomType(SemAtomType.VOID)) == false && cond.sameStructureAs(new SemAtomType(SemAtomType.BOOLEAN)) == false)
 		{
-			Report.error(acceptor.count.position, "Expected INTEGER, found " + SymbDesc.getType(acceptor.count).actualType() + ".");
-		}
-
-		if(SymbDesc.getType(acceptor.lo).sameStructureAs(integer) == false)
-		{
-			Report.error(acceptor.lo.position, "Expected INTEGER, found " + SymbDesc.getType(acceptor.lo).actualType() + ".");
-		}
-
-		if(SymbDesc.getType(acceptor.hi).sameStructureAs(integer) == false)
-		{
-			Report.error(acceptor.hi.position, "Expected INTEGER, found " + SymbDesc.getType(acceptor.hi).actualType() + ".");
-		}
-
-		if(SymbDesc.getType(acceptor.step).sameStructureAs(integer) == false)
-		{
-			Report.error(acceptor.step.position, "Expected INTEGER, found " + SymbDesc.getType(acceptor.step).actualType() + ".");
+			Report.error(acceptor.cond.position, "Expected BOOLEAN, found " + SymbDesc.getType(acceptor.cond).actualType() + ".");
 		}
 
 		SymbDesc.setType(acceptor, new SemAtomType(SemAtomType.VOID));
@@ -290,46 +285,61 @@ public class TypeChecker implements Visitor
 
 	public void visit(AbsFunDef acceptor)
 	{
-		acceptor.expr.accept(this);
+		acceptor.type.accept(this);
+		SemType funType = SymbDesc.getType(acceptor.type);
 
-		SemType returnType = ((SemFunType)SymbDesc.getType(acceptor)).resultType;
+		Vector<SemType> parameters = new Vector<SemType>();
+		for(int i = 0; i < acceptor.numPars(); i++)
+		{
+			acceptor.par(i).accept(this);
+			parameters.add(SymbDesc.getType(acceptor.par(i)));
+		}
+
+		SymbDesc.setType(acceptor, new SemFunType(parameters, funType));
+
+		acceptor.expr.accept(this);
 		SemType expression = SymbDesc.getType(acceptor.expr);
 
-		if(returnType.sameStructureAs(expression) == false)
+		if(expression.sameStructureAs(funType) == false)
 		{
-			Report.error(acceptor.expr.position, "Expected " + returnType.actualType() + ", found " + expression.actualType() + ".");
+			Report.error(acceptor.expr.position, "Expected " + funType.actualType() + ", found " + expression.actualType() + ".");
 		}
 	}
 
-	public void visit(AbsIfThen acceptor)
+	public void visit(AbsIf acceptor)
 	{
 		acceptor.cond.accept(this);
 		acceptor.thenBody.accept(this);
 
-		if(SymbDesc.getType(acceptor.cond).sameStructureAs(new SemAtomType(SemAtomType.LOG)) == true)
+		if(SymbDesc.getType(acceptor.cond).sameStructureAs(new SemAtomType(SemAtomType.BOOLEAN)) == true)
 		{
 			SymbDesc.setType(acceptor, new SemAtomType(SemAtomType.VOID));
 		}
 		else
 		{
-			Report.error(acceptor.cond.position, "Expected LOGICAL, found " + SymbDesc.getType(acceptor.cond).actualType() + ".");
+			Report.error(acceptor.cond.position, "Expected BOOLEAN, found " + SymbDesc.getType(acceptor.cond).actualType() + ".");
 		}
 	}
 
-	public void visit(AbsIfThenElse acceptor)
+	public void visit(AbsIfElse acceptor)
 	{
 		acceptor.cond.accept(this);
 		acceptor.thenBody.accept(this);
 		acceptor.elseBody.accept(this);
 
-		if(SymbDesc.getType(acceptor.cond).sameStructureAs(new SemAtomType(SemAtomType.LOG)) == true)
+		if(SymbDesc.getType(acceptor.cond).sameStructureAs(new SemAtomType(SemAtomType.BOOLEAN)) == true)
 		{
 			SymbDesc.setType(acceptor, new SemAtomType(SemAtomType.VOID));
 		}
 		else
 		{
-			Report.error(acceptor.cond.position, "Expected LOGICAL, found " + SymbDesc.getType(acceptor.cond).actualType() + ".");
+			Report.error(acceptor.cond.position, "Expected BOOLEAN, found " + SymbDesc.getType(acceptor.cond).actualType() + ".");
 		}
+	}
+
+	public void visit(AbsNop acceptor)
+	{
+		SymbDesc.setType(acceptor, new SemAtomType(SemAtomType.VOID));
 	}
 
 	public void visit(AbsPar acceptor)
@@ -360,10 +370,16 @@ public class TypeChecker implements Visitor
 		SymbDesc.setType(acceptor, new SemRecType(names, types));
 	}
 
+	public void visit(AbsReturn acceptor)
+	{
+		acceptor.expr.accept(this);
+		SymbDesc.setType(acceptor, SymbDesc.getType(acceptor.expr));
+	}
+
 	public void visit(AbsTypeDef acceptor)
 	{
 		acceptor.type.accept(this);
-		((SemTypeName)SymbDesc.getType(acceptor)).setType(SymbDesc.getType(acceptor.type));
+		SymbDesc.setType(acceptor, new SemTypeName(acceptor.name, SymbDesc.getType(acceptor.type)));
 	}
 
 	public void visit(AbsTypeName acceptor)
@@ -377,13 +393,13 @@ public class TypeChecker implements Visitor
 
 		if(acceptor.oper == AbsUnExpr.NOT)
 		{
-			if(SymbDesc.getType(acceptor.expr).sameStructureAs(new SemAtomType(SemAtomType.LOG)) == true)
+			if(SymbDesc.getType(acceptor.expr).sameStructureAs(new SemAtomType(SemAtomType.BOOLEAN)) == true)
 			{
-				SymbDesc.setType(acceptor, new SemAtomType(SemAtomType.LOG));
+				SymbDesc.setType(acceptor, new SemAtomType(SemAtomType.BOOLEAN));
 			}
 			else
 			{
-				Report.error(acceptor.expr.position, "Expected LOGICAL, found " + SymbDesc.getType(acceptor.expr).actualType() + ".");
+				Report.error(acceptor.expr.position, "Expected BOOLEAN, found " + SymbDesc.getType(acceptor.expr).actualType() + ".");
 			}
 		}
 		else if(acceptor.oper == AbsUnExpr.ADD || acceptor.oper == AbsUnExpr.SUB)
@@ -417,6 +433,19 @@ public class TypeChecker implements Visitor
 	public void visit(AbsVarDef acceptor)
 	{
 		acceptor.type.accept(this);
+
+		if(acceptor.expr != null)
+		{
+			acceptor.expr.accept(this);
+			SemType type1 = SymbDesc.getType(acceptor.type);
+			SemType type2 = SymbDesc.getType(acceptor.expr);
+
+			if(type1.sameStructureAs(type2) == false)
+			{
+				Report.error(acceptor.expr.position, "Expected " + type1.actualType() + ", found " + type2.actualType() + ".");
+			}
+		}
+
 		SymbDesc.setType(acceptor, SymbDesc.getType(acceptor.type));
 	}
 
@@ -425,25 +454,18 @@ public class TypeChecker implements Visitor
 		SymbDesc.setType(acceptor, SymbDesc.getType(SymbDesc.getNameDef(acceptor)));
 	}
 
-	public void visit(AbsWhere acceptor)
-	{
-		acceptor.defs.accept(this);
-		acceptor.expr.accept(this);
-		SymbDesc.setType(acceptor, SymbDesc.getType(acceptor.expr));
-	}
-
 	public void visit(AbsWhile acceptor)
 	{
 		acceptor.cond.accept(this);
 		acceptor.body.accept(this);
 
-		if(SymbDesc.getType(acceptor.cond).sameStructureAs(new SemAtomType(SemAtomType.LOG)) == true)
+		if(SymbDesc.getType(acceptor.cond).sameStructureAs(new SemAtomType(SemAtomType.BOOLEAN)) == true)
 		{
 			SymbDesc.setType(acceptor, new SemAtomType(SemAtomType.VOID));
 		}
 		else
 		{
-			Report.error(acceptor.cond.position, "Expected LOGICAL, found " + SymbDesc.getType(acceptor.cond).actualType() + ".");
+			Report.error(acceptor.cond.position, "Expected BOOLEAN, found " + SymbDesc.getType(acceptor.cond).actualType() + ".");
 		}
 	}
 }

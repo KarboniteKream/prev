@@ -3,28 +3,23 @@ package compiler.abstr;
 import compiler.*;
 import compiler.abstr.tree.*;
 
-/**
- * @author sliva
- */
-public class Abstr implements Visitor {
-
-	/** Ali se izpisujejo vmesni rezultati. */
+public class Abstr implements Visitor
+{
 	private boolean dump;
 
-	public Abstr(boolean dump) {
+	public Abstr(boolean dump)
+	{
 		this.dump = dump;
 	}
 
-	public void dump(AbsTree tree) {
+	public void dump(AbsTree tree)
+	{
 		if (! dump) return;
 		if (Report.dumpFile() == null) return;
 		indent = 0;
 		tree.accept(this);
 	}
 
-	// Kot Visitor izpise abstraktno sintaksno drevo:
-
-	/** Trenutni zamik. */
 	private int indent;
 
 	public void visit(AbsArrType arrType) {
@@ -35,14 +30,20 @@ public class Abstr implements Visitor {
 
 	public void visit(AbsAtomConst atomConst) {
 		switch (atomConst.type) {
-		case AbsAtomConst.LOG:
-			Report.dump(indent, "AbsAtomConst " + atomConst.position.toString() + ": LOGICAL(" + atomConst.value + ")");
+		case AbsAtomConst.BOOL:
+			Report.dump(indent, "AbsAtomConst " + atomConst.position.toString() + ": BOOLEAN(" + atomConst.value + ")");
 			break;
 		case AbsAtomConst.INT:
 			Report.dump(indent, "AbsAtomConst " + atomConst.position.toString() + ": INTEGER(" + atomConst.value + ")");
 			break;
 		case AbsAtomConst.STR:
 			Report.dump(indent, "AbsAtomConst " + atomConst.position.toString() + ": STRING(" + atomConst.value + ")");
+			break;
+		case AbsAtomConst.FLOAT:
+			Report.dump(indent, "AbsAtomConst " + atomConst.position.toString() + ": FLOAT(" + atomConst.value + ")");
+			break;
+		case AbsAtomConst.CHAR:
+			Report.dump(indent, "AbsAtomConst " + atomConst.position.toString() + ": CHAR(" + atomConst.value + ")");
 			break;
 		default:
 			Report.error("Internal error :: compiler.abstr.Abstr.visit(AbsAtomConst)");
@@ -51,14 +52,21 @@ public class Abstr implements Visitor {
 
 	public void visit(AbsAtomType atomType) {
 		switch (atomType.type) {
-		case AbsAtomType.LOG:
-			Report.dump(indent, "AbsAtomType " + atomType.position.toString() + ": LOGICAL");
+		// TODO: CONST, AbsConstType?
+		case AbsAtomType.BOOL:
+			Report.dump(indent, "AbsAtomType " + atomType.position.toString() + ": BOOLEAN");
 			break;
 		case AbsAtomType.INT:
 			Report.dump(indent, "AbsAtomType " + atomType.position.toString() + ": INTEGER");
 			break;
-		case AbsAtomType.STR:
-			Report.dump(indent, "AbsAtomType " + atomType.position.toString() + ": STRING");
+		case AbsAtomType.FLOAT:
+			Report.dump(indent, "AbsAtomType " + atomType.position.toString() + ": FLOAT");
+			break;
+		case AbsAtomType.CHAR:
+			Report.dump(indent, "AbsAtomType " + atomType.position.toString() + ": CHAR");
+			break;
+		case AbsAtomType.VOID:
+			Report.dump(indent, "AbsAtomType " + atomType.position.toString() + ": VOID");
 			break;
 		default:
 			Report.error("Internal error :: compiler.abstr.Abstr.visit(AbsAtomType)");
@@ -67,8 +75,8 @@ public class Abstr implements Visitor {
 
 	public void visit(AbsBinExpr binExpr) {
 		switch (binExpr.oper) {
-		case AbsBinExpr.IOR:
-			Report.dump(indent, "AbsBinExpr " + binExpr.position.toString() + ": IOR");
+		case AbsBinExpr.OR:
+			Report.dump(indent, "AbsBinExpr " + binExpr.position.toString() + ": OR");
 			break;
 		case AbsBinExpr.AND:
 			Report.dump(indent, "AbsBinExpr " + binExpr.position.toString() + ": AND");
@@ -115,6 +123,21 @@ public class Abstr implements Visitor {
 		case AbsBinExpr.ASSIGN:
 			Report.dump(indent, "AbsBinExpr " + binExpr.position.toString() + ": ASSIGN");
 			break;
+		case AbsBinExpr.BIT_OR:
+			Report.dump(indent, "AbsBinExpr " + binExpr.position.toString() + ": BIT_OR");
+			break;
+		case AbsBinExpr.BIT_XOR:
+			Report.dump(indent, "AbsBinExpr " + binExpr.position.toString() + ": BIT_XOR");
+			break;
+		case AbsBinExpr.BIT_AND:
+			Report.dump(indent, "AbsBinExpr " + binExpr.position.toString() + ": BIT_AND");
+			break;
+		case AbsBinExpr.LSHIFT:
+			Report.dump(indent, "AbsBinExpr " + binExpr.position.toString() + ": LSHIFT");
+			break;
+		case AbsBinExpr.RSHIFT:
+			Report.dump(indent, "AbsBinExpr " + binExpr.position.toString() + ": RSHIFT");
+			break;
 		default:
 			Report.error("Internal error :: compiler.abstr.Abstr.visit(AbsBinExpr)");
 		}
@@ -138,6 +161,12 @@ public class Abstr implements Visitor {
 		}
 	}
 
+	public void visit(AbsDoWhile where) {
+		Report.dump(indent, "AbsDoWhile " + where.position.toString() + ":");
+		indent += 2; where.body.accept(this); indent -= 2;
+		indent += 2; where.cond.accept(this); indent -= 2;
+	}
+
 	public void visit(AbsExprs exprs) {
 		Report.dump(indent, "AbsExprs " + exprs.position.toString() + ":");
 		for (int expr = 0; expr < exprs.numExprs(); expr++) {
@@ -147,9 +176,8 @@ public class Abstr implements Visitor {
 
 	public void visit(AbsFor forStmt) {
 		Report.dump(indent, "AbsFor " + forStmt.position.toString() + ":");
-		indent += 2; forStmt.count.accept(this); indent -= 2;
-		indent += 2; forStmt.lo.accept(this); indent -= 2;
-		indent += 2; forStmt.hi.accept(this); indent -= 2;
+		indent += 2; forStmt.init.accept(this); indent -= 2;
+		indent += 2; forStmt.cond.accept(this); indent -= 2;
 		indent += 2; forStmt.step.accept(this); indent -= 2;
 		indent += 2; forStmt.body.accept(this); indent -= 2;
 	}
@@ -170,17 +198,22 @@ public class Abstr implements Visitor {
 		indent += 2; funDef.expr.accept(this); indent -= 2;
 	}
 
-	public void visit(AbsIfThen ifThen) {
-		Report.dump(indent, "AbsIfThen " + ifThen.position.toString() + ":");
-		indent += 2; ifThen.cond.accept(this); indent -= 2;
-		indent += 2; ifThen.thenBody.accept(this); indent -= 2;
+	public void visit(AbsIf ifStmt) {
+		Report.dump(indent, "AbsIf " + ifStmt.position.toString() + ":");
+		indent += 2; ifStmt.cond.accept(this); indent -= 2;
+		indent += 2; ifStmt.thenBody.accept(this); indent -= 2;
 	}
 
-	public void visit(AbsIfThenElse ifThenElse) {
-		Report.dump(indent, "AbsIfThenElse " + ifThenElse.position.toString() + ":");
-		indent += 2; ifThenElse.cond.accept(this); indent -= 2;
-		indent += 2; ifThenElse.thenBody.accept(this); indent -= 2;
-		indent += 2; ifThenElse.elseBody.accept(this); indent -= 2;
+	public void visit(AbsIfElse ifElse) {
+		Report.dump(indent, "AbsIfElse " + ifElse.position.toString() + ":");
+		indent += 2; ifElse.cond.accept(this); indent -= 2;
+		indent += 2; ifElse.thenBody.accept(this); indent -= 2;
+		indent += 2; ifElse.elseBody.accept(this); indent -= 2;
+	}
+
+	public void visit(AbsNop nop)
+	{
+		Report.dump(indent, "AbsNop " + nop.position.toString());
 	}
 
 	public void visit(AbsPar par) {
@@ -198,6 +231,11 @@ public class Abstr implements Visitor {
 		for (int comp = 0; comp < recType.numComps(); comp++) {
 			indent += 2; recType.comp(comp).accept(this); indent -= 2;
 		}
+	}
+
+	public void visit(AbsReturn returnStmt) {
+		Report.dump(indent, "AbsReturn " + returnStmt.position.toString());
+		indent += 2; returnStmt.expr.accept(this); indent -= 2;
 	}
 
 	public void visit(AbsTypeDef typeDef) {
@@ -226,25 +264,28 @@ public class Abstr implements Visitor {
 		case AbsUnExpr.NOT:
 			Report.dump(indent, "AbsUnExpr " + unExpr.position.toString() + ": NOT");
 			break;
+		case AbsUnExpr.BIT_NOT:
+			Report.dump(indent, "AbsUnExpr " + unExpr.position.toString() + ": BIT_NOT");
+			break;
+		case AbsUnExpr.INC:
+			Report.dump(indent, "AbsUnExpr " + unExpr.position.toString() + ": INC");
+			break;
+		case AbsUnExpr.DEC:
+			Report.dump(indent, "AbsUnExpr " + unExpr.position.toString() + ": DEC");
+			break;
 		default:
-			Report.error("Internal error :: compiler.abstr.Abstr.visit(AbsBinExpr)");
+			Report.error("Internal error :: compiler.abstr.Abstr.visit(AbsUnExpr)");
 		}
 		indent += 2; unExpr.expr.accept(this); indent -= 2;
 	}
 
 	public void visit(AbsVarDef varDef) {
 		Report.dump(indent, "AbsVarDef " + varDef.position.toString() + ": " + varDef.name);
-		indent += 2; varDef.type.accept(this); indent -= 2;
+		indent += 2; varDef.type.accept(this); if(varDef.expr != null) varDef.expr.accept(this); indent -= 2;
 	}
 
 	public void visit(AbsVarName varName) {
 		Report.dump(indent, "AbsVarName " + varName.position.toString() + ": " + varName.name);
-	}
-
-	public void visit(AbsWhere where) {
-		Report.dump(indent, "AbsWhere " + where.position.toString() + ":");
-		indent += 2; where.expr.accept(this); indent -= 2;
-		indent += 2; where.defs.accept(this); indent -= 2;
 	}
 
 	public void visit(AbsWhile where) {
@@ -252,5 +293,4 @@ public class Abstr implements Visitor {
 		indent += 2; where.cond.accept(this); indent -= 2;
 		indent += 2; where.body.accept(this); indent -= 2;
 	}
-
 }

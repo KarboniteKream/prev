@@ -129,7 +129,7 @@ public class Report {
 	 *            Ime datoteke z vmesnimi rezultati.
 	 */
 	public static void openDumpFile(String sourceFileName, boolean mms) {
-		String dumpFileName = sourceFileName.replaceFirst("\\.prev$", "") + (mms == true ? ".mms" : ".log");
+		String dumpFileName = sourceFileName.replaceFirst("\\.c$", "") + (mms == true ? ".mms" : ".log");
 		try {
 			dumpFile = new PrintStream(dumpFileName);
 		} catch (FileNotFoundException __) {

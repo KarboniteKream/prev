@@ -2,21 +2,13 @@ package compiler.abstr.tree;
 
 import compiler.*;
 
-/**
- * Definicija.
- *
- * @author sliva
- */
-public abstract class AbsDef extends AbsTree {
+public abstract class AbsDef extends AbsTree
+{
+	public final String name;
 
-	/**
-	 * Ustvari novo definicijo.
-	 *
-	 * @param pos
-	 *            Polozaj stavcne oblike tega drevesa.
-	 */
-	public AbsDef(Position pos) {
+	public AbsDef(Position pos, String name)
+	{
 		super(pos);
+		this.name = name;
 	}
-
 }

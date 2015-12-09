@@ -8,9 +8,9 @@ import compiler.abstr.*;
  *
  * @author sliva
  */
-public class AbsBinExpr extends AbsExpr {
-
-	public static final int IOR = 0;
+public class AbsBinExpr extends AbsExpr
+{
+	public static final int OR = 0;
 	public static final int AND = 1;
 	public static final int EQU = 2;
 	public static final int NEQ = 3;
@@ -26,6 +26,11 @@ public class AbsBinExpr extends AbsExpr {
 	public static final int DOT = 13;
 	public static final int ARR = 14;
 	public static final int ASSIGN = 15;
+	public static final int BIT_OR = 16;
+	public static final int BIT_XOR = 17;
+	public static final int BIT_AND = 18;
+	public static final int LSHIFT = 19;
+	public static final int RSHIFT = 20;
 
 	/** Operator. */
 	public final int oper;

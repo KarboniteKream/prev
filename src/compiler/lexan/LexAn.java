@@ -4,14 +4,8 @@ import java.io.*;
 
 import compiler.*;
 
-/**
- * Leksikalni analizator.
- *
- * @author sliva
- */
-public class LexAn {
-
-	/** Ali se izpisujejo vmesni rezultati. */
+public class LexAn
+{
 	private boolean dump;
 
 	private FileReader input;
@@ -20,15 +14,8 @@ public class LexAn {
 	private int startLine, currLine;
 	private int startColumn, currColumn;
 
-	/**
-	 * Ustvari nov leksikalni analizator.
-	 *
-	 * @param sourceFileName
-	 *            Ime izvorne datoteke.
-	 * @param dump
-	 *            Ali se izpisujejo vmesni rezultati.
-	 */
-	public LexAn(String sourceFileName, boolean dump) {
+	public LexAn(String sourceFileName, boolean dump)
+	{
 		this.dump = dump;
 
 		try
@@ -45,6 +32,7 @@ public class LexAn {
 		currColumn = 1;
 	}
 
+	// COMMENT: Prebere naslednji znak, append shrani trenutnega v lexeme.
 	private void readNext(boolean append)
 	{
 		try
@@ -69,13 +57,8 @@ public class LexAn {
 		}
 	}
 
-	/**
-	 * Vrne naslednji simbol iz izvorne datoteke. Preden vrne simbol, ga izpise
-	 * na datoteko z vmesnimi rezultati.
-	 *
-	 * @return Naslednji simbol iz izvorne datoteke.
-	 */
-	public Symbol lexAn() {
+	public Token lexAn()
+	{
 		int token = -1;
 		lexeme = "";
 
@@ -86,6 +69,7 @@ public class LexAn {
 
 		while(token == -1)
 		{
+					// TODO: change from int to char
 			int temp = currChar;
 
 			startLine = currLine;
@@ -98,7 +82,7 @@ public class LexAn {
 				case '!': case '=': case '<': case '>':
 				case '(': case ')': case '[': case ']':
 				case '{': case '}': case ':': case ';':
-				case '.': case ',':
+				case '.': case ',': case '\'':
 					readNext(true);
 				break;
 			}
@@ -107,14 +91,86 @@ public class LexAn {
 			{
 				case -1: token = Token.EOF; break;
 
-				case '+': token = Token.ADD; break;
-				case '-': token = Token.SUB; break;
+				// TODO: +=
+				case '+':
+					if(currChar == '+')
+					{
+						token = Token.INC;
+						readNext(true);
+					}
+					else
+					{
+						token = Token.ADD;
+					}
+				break;
+
+				case '-':
+					if(currChar == '-')
+					{
+						token = Token.DEC;
+						readNext(true);
+					}
+					else
+					{
+						token = Token.SUB;
+					}
+				break;
+
 				case '*': token = Token.MUL; break;
-				case '/': token = Token.DIV; break;
+
+				// TODO: /=
+				case '/':
+					if(currChar == '/')
+					{
+						// TODO: \r?
+						while(currChar != '\n' && currChar != -1)
+						{
+							readNext(false);
+						}
+
+						readNext(false);
+						lexeme = "";
+					}
+					// TODO: DIV_EQU
+					else
+					{
+						token = Token.DIV;
+					}
+				break;
+
+				// TODO: %=
 				case '%': token = Token.MOD; break;
-				case '&': token = Token.AND; break;
-				case '|': token = Token.IOR; break;
-				case '^': token = Token.PTR; break;
+
+				case '&':
+					if(currChar == '&')
+					{
+						token = Token.AND;
+						readNext(true);
+					}
+					else
+					{
+						token = Token.BIT_AND;
+					}
+				break;
+
+				case '|':
+					if(currChar == '|')
+					{
+						token = Token.OR;
+						readNext(true);
+					}
+					else
+					{
+						// Se tak OR splaca podpirati?
+						token = Token.BIT_OR;
+					}
+				break;
+
+				// TODO: Ali SIC podpira XOR?
+				// To ni PTR!
+				case '^': token = Token.BIT_XOR; break;
+
+				case '~': token = Token.BIT_NOT; break;
 
 				case '!':
 					if(currChar == '=')
@@ -146,6 +202,11 @@ public class LexAn {
 						token = Token.LEQ;
 						readNext(true);
 					}
+					else if(currChar == '<')
+					{
+						token = Token.LSHIFT;
+						readNext(true);
+					}
 					else
 					{
 						token = Token.LTH;
@@ -158,33 +219,40 @@ public class LexAn {
 						token = Token.GEQ;
 						readNext(true);
 					}
+					else if(currChar == '>')
+					{
+						token = Token.RSHIFT;
+						readNext(true);
+					}
 					else
 					{
 						token = Token.GTH;
 					}
 				break;
 
-				case '(': token = Token.LPARENT;  break;
-				case ')': token = Token.RPARENT;  break;
-				case '[': token = Token.LBRACKET; break;
-				case ']': token = Token.RBRACKET; break;
-				case '{': token = Token.LBRACE;   break;
-				case '}': token = Token.RBRACE;   break;
-				case ':': token = Token.COLON;    break;
-				case ';': token = Token.SEMIC;    break;
-				case '.': token = Token.DOT;      break;
-				case ',': token = Token.COMMA;    break;
+				case '(': token = Token.LPARENT;   break;
+				case ')': token = Token.RPARENT;   break;
+				case '[': token = Token.LBRACKET;  break;
+				case ']': token = Token.RBRACKET;  break;
+				case '{': token = Token.LBRACE;    break;
+				case '}': token = Token.RBRACE;    break;
 
-				case '\'':
+				case '.': token = Token.DOT;       break;
+				case ',': token = Token.COMMA;     break;
+				case ';': token = Token.SEMICOLON; break;
+
+				// char, string: ali naj dodam narekovaje?
+				// TODO?
+				case '\"':
 					while(true)
 					{
 						readNext(true);
 
-						if(currChar == '\'')
+						if(currChar == '\"')
 						{
 							readNext(true);
 
-							if(currChar != '\'')
+							if(currChar != '\"')
 							{
 								token = Token.STR_CONST;
 								break;
@@ -203,13 +271,19 @@ public class LexAn {
 					}
 				break;
 
-				case '#':
-					while(currChar != '\n' && currChar != -1)
-					{
-						readNext(false);
-					}
+				case '\'':
+					int c = currChar;
+					readNext(true);
 
-					readNext(false);
+					if(c >= 32 && c <= 126 && currChar == '\'')
+					{
+						token = Token.CHAR_CONST;
+						readNext(true);
+					}
+					else
+					{
+						Report.error(currLine, currColumn, "Unexpected character.");
+					}
 				break;
 
 				case '\r': case '\n': case '\t': case ' ':
@@ -217,6 +291,7 @@ public class LexAn {
 				break;
 
 				default:
+					// TODO: float constant.
 					if(currChar >= '0' && currChar <= '9')
 					{
 						while(currChar >= '0' && currChar <= '9')
@@ -224,39 +299,61 @@ public class LexAn {
 							readNext(true);
 						}
 
-						token = Token.INT_CONST;
+						if(currChar == '.')
+						{
+							readNext(true);
+
+							while(currChar >= '0' && currChar <= '9')
+							{
+								readNext(true);
+							}
+
+							if(currChar == 'f')
+							{
+								readNext(false);
+							}
+
+							token = Token.FLOAT_CONST;
+						}
+						else
+						{
+							token = Token.INT_CONST;
+						}
 					}
-					else if((currChar >= 'A' && currChar <= 'Z') ||
-						    (currChar >= 'a' && currChar <= 'z') ||
-							 currChar == '_')
+					else if(currChar >= 'A' && currChar <= 'Z' || currChar >= 'a' && currChar <= 'z' || currChar == '_')
 					{
-						while((currChar >= 'A' && currChar <= 'Z') ||
-							  (currChar >= 'a' && currChar <= 'z') ||
-							  (currChar >= '0' && currChar <= '9') ||
-							   currChar == '_')
+						while(currChar >= 'A' && currChar <= 'Z' || currChar >= 'a' && currChar <= 'z' || currChar >= '0' && currChar <= '9' || currChar == '_')
 						{
 							readNext(true);
 						}
 
 						switch(lexeme)
 						{
-							case "true": case "false": token = Token.LOG_CONST; break;
+							case "true": case "false": token = Token.BOOL_CONST; break;
 
-							case "logical": token = Token.LOGICAL; break;
-							case "integer": token = Token.INTEGER; break;
-							case "string":  token = Token.STRING;  break;
+							case "bool": token = Token.BOOLEAN; break;
+							case "int": token = Token.INTEGER; break;
+							// TODO: Strings.
+							case "char": token = Token.CHAR; break;
+							// FIXME: float namesto double, popravi v dipl
+							case "float": token = Token.FLOAT; break;
+							case "void": token = Token.VOID; break;
 
-							case "arr":   token = Token.KW_ARR;   break;
-							case "else":  token = Token.KW_ELSE;  break;
-							case "for":   token = Token.KW_FOR;   break;
-							case "fun":   token = Token.KW_FUN;   break;
-							case "if":    token = Token.KW_IF;    break;
-							case "rec":   token = Token.KW_REC;   break;
-							case "then":  token = Token.KW_THEN;  break;
-							case "typ":   token = Token.KW_TYP;   break;
-							case "var":   token = Token.KW_VAR;   break;
-							case "where": token = Token.KW_WHERE; break;
-							case "while": token = Token.KW_WHILE; break;
+							case "break": token = Token.BREAK; break;
+							case "const": token = Token.CONST; break;
+							case "continue": token = Token.CONTINUE; break;
+							case "do": token = Token.DO; break;
+							case "else": token = Token.ELSE; break;
+							case "for": token = Token.FOR; break;
+							case "if": token = Token.IF; break;
+							case "return": token = Token.RETURN; break;
+
+							// FIXME: (sizeof) v dipl
+							// case "sizeof": token = Token.SIZEOF; break;
+
+							case "struct": token = Token.STRUCT; break;
+							case "typedef": token = Token.TYPEDEF; break;
+							case "while": token = Token.WHILE; break;
 
 							default: token = Token.IDENTIFIER; break;
 						}
@@ -270,25 +367,22 @@ public class LexAn {
 			}
 		}
 
-		Symbol symbol = new Symbol(token, lexeme, startLine, startColumn, currLine, currColumn == 1 ? currColumn : currColumn - 1);
+		// Rename
+		Token symbol = new Token(token, lexeme, startLine, startColumn, currLine, currColumn == 1 ? currColumn : currColumn - 1);
+		// zakaj imamo ta dump?
 		dump(symbol);
 
 		return symbol;
 	}
 
-	/**
-	 * Izpise simbol v datoteko z vmesnimi rezultati.
-	 *
-	 * @param symb
-	 *            Simbol, ki naj bo izpisan.
-	 */
-	private void dump(Symbol symb) {
+	// TODO: Remove dumps?
+	private void dump(Token token)
+	{
 		if (! dump) return;
 		if (Report.dumpFile() == null) return;
-		if (symb.token == Token.EOF)
-			Report.dumpFile().println(symb.toString());
+		if (token.token == Token.EOF)
+			Report.dumpFile().println(token);
 		else
-			Report.dumpFile().println("[" + symb.position.toString() + "] " + symb.toString());
+			Report.dumpFile().println("[" + token.position.toString() + "] " + token.toString());
 	}
-
 }

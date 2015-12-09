@@ -16,10 +16,13 @@ public class RegAlloc
 	private TmpAn tmpan;
 	private LinkedList<TmpNode> stack;
 
-	public RegAlloc(boolean dump, int registers)
+	public RegAlloc(boolean dump)
 	{
 		this.dump = dump;
-		this.registers = registers;
+		// remove
+		// na voljo imamo 5 registrov, ampak moramo nekam shraniti se SP in FP. FP bi bilo zelo dobro imeti v registrih,
+		// ker se veliko uporablja, SP pa lahko pustimo v pomnilniku
+		this.registers = 5;
 
 		tmpan = new TmpAn(false);
 		stack = null;
@@ -45,12 +48,12 @@ public class RegAlloc
 				} while(select(codeChunk) == true);
 
 				codeChunk.registers = new HashMap<FrmTemp, String>();
-				codeChunk.registers.put(codeChunk.frame.FP, "$251");
-				codeChunk.registers.put(codeChunk.frame.SP, "$250");
+				codeChunk.registers.put(codeChunk.frame.FP, "X");
+				codeChunk.registers.put(codeChunk.frame.SP, "250");
 
 				for(TmpNode node : codeChunk.graph)
 				{
-					codeChunk.registers.put(node.temp, "$" + node.register);
+					codeChunk.registers.put(node.temp, "" + node.register);
 				}
 
 				LinkedHashMap<FrmTemp, TmpNode> graph = tmpan.analyze(codeChunk);
@@ -59,7 +62,7 @@ public class RegAlloc
 				{
 					AsmInstr instr = codeChunk.asmcode.get(i);
 
-					if(instr.mnemonic.equals("PUSHJ") == true)
+					if(instr.mnemonic.equals("JSUB") == true)
 					{
 						AsmInstr next = codeChunk.asmcode.get(i + 1);
 						LinkedList<TmpNode> edges = graph.get(instr.defs.getFirst()).edges;
@@ -67,7 +70,7 @@ public class RegAlloc
 
 						for(TmpNode edge : edges)
 						{
-							int register = Integer.parseInt(codeChunk.registers.get(edge.temp).substring(1));
+							int register = Integer.parseInt(codeChunk.registers.get(edge.temp));
 
 							if(register > maxRegister)
 							{
@@ -75,7 +78,8 @@ public class RegAlloc
 							}
 						}
 
-						codeChunk.registers.put(instr.defs.getFirst(), "$" + (edges.size() == 0 ? 0 : maxRegister + 1));
+						// toString
+						codeChunk.registers.put(instr.defs.getFirst(), "" + (edges.size() == 0 ? 0 : maxRegister + 1));
 
 						if(next.mnemonic.equals("SET") == true && codeChunk.registers.get(next.defs.getFirst()).equals(codeChunk.registers.get(next.uses.getFirst())) == true)
 						{
@@ -197,7 +201,7 @@ public class RegAlloc
 
 			for(AsmInstr instr : chunk.asmcode)
 			{
-				if(instr.mnemonic.equals("PUSHJ") == true && instr.defs.contains(node.temp) == true)
+				if(instr.mnemonic.equals("JSUB") == true && instr.defs.contains(node.temp) == true)
 				{
 					node.register = registers;
 					ok = true;
@@ -243,6 +247,7 @@ public class RegAlloc
 			int def = 0;
 			while(chunk.asmcode.get(def++).defs.contains(node.temp) == false) {}
 
+			// TODO
 			chunk.asmcode.add(def, new AsmOPER("STO", "`s0,`s1," + offset, null, new LinkedList<FrmTemp>(Arrays.asList(node.temp, chunk.frame.SP))));
 
 			for(int i = chunk.asmcode.size() - 1; i > def; i--)
