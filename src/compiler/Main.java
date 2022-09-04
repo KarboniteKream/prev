@@ -1,7 +1,5 @@
 package compiler;
 
-import java.util.LinkedList;
-
 import compiler.lexan.*;
 import compiler.synan.*;
 import compiler.abstr.*;
@@ -15,151 +13,166 @@ import compiler.tmpan.*;
 import compiler.regalloc.*;
 import compiler.build.*;
 
-/**
- * Osnovni razred prevajalnika, ki vodi izvajanje celotnega procesa prevajanja.
- *
- * @author sliva
- */
 public class Main {
-
-	/** Ime izvorne datoteke. */
+	private static final String allPhases = "(lexan|synan|ast|seman|frames|imcode|lincode|asmcode|tmpan|regalloc|build)";
 	private static String sourceFileName;
-
-	/** Seznam vseh faz prevajalnika. */
-	private static String allPhases = "(lexan|synan|ast|seman|frames|imcode|lincode|asmcode|tmpan|regalloc|build)";
-
-	/** Doloca zadnjo fazo prevajanja, ki se bo se izvedla. */
 	private static String execPhase = "build";
-
-	/** Doloca faze, v katerih se bodo izpisali vmesni rezultati. */
 	private static String dumpPhases = "build";
 
 	private static int registers = 8;
 
-	/**
-	 * Metoda, ki izvede celotni proces prevajanja.
-	 *
-	 * @param args
-	 *            Parametri ukazne vrstice.
-	 */
 	public static void main(String[] args) {
-		System.out.printf("This is PREV compiler, v0.1:\n");
+		System.out.println("This is PREV compiler, v0.1:");
 
-		// Pregled ukazne vrstice.
-		for (int argc = 0; argc < args.length; argc++) {
-			if (args[argc].startsWith("--")) {
-				// Stikalo v ukazni vrstici.
-				if (args[argc].startsWith("--phase=")) {
-					String phase = args[argc].substring("--phase=".length());
-					if (phase.matches(allPhases))
+		for (String arg : args) {
+			if (arg.startsWith("--")) {
+				if (arg.startsWith("--phase=")) {
+					final String phase = arg.substring("--phase=".length());
+					if (phase.matches(allPhases)) {
 						execPhase = phase;
-					else
+					} else {
 						Report.warning("Unknown exec phase '" + phase + "' ignored.");
+					}
 					continue;
 				}
-				if (args[argc].startsWith("--dump=")) {
-					String phases = args[argc].substring("--dump=".length());
-					if (phases.matches(allPhases + "(," + allPhases + ")*"))
+
+				if (arg.startsWith("--dump=")) {
+					final String phases = arg.substring("--dump=".length());
+					if (phases.matches(allPhases + "(," + allPhases + ")*")) {
 						dumpPhases = phases;
-					else
+					} else {
 						Report.warning("Illegal dump phases '" + phases + "' ignored.");
+					}
 					continue;
 				}
-				if (args[argc].startsWith("--registers=")) {
-					registers = Integer.parseInt(args[argc].substring("--registers=".length()));
+
+				if (arg.startsWith("--registers=")) {
+					registers = Integer.parseInt(arg.substring("--registers=".length()));
 					if (registers < 2 || registers > 250) {
 						Report.warning("Invalid number of registers, defaulting to 8.");
 						registers = 8;
 					}
 					continue;
 				}
-				// Neznano stikalo.
+
 				Report.warning("Unrecognized switch in the command line.");
 			} else {
-				// Ime izvorne datoteke.
-				if (sourceFileName == null)
-					sourceFileName = args[argc];
-				else
+				if (sourceFileName == null) {
+					sourceFileName = arg;
+				} else {
 					Report.warning("Source file name '" + sourceFileName + "' ignored.");
+				}
 			}
 		}
-		if (sourceFileName == null)
+
+		if (sourceFileName == null) {
 			Report.error("Source file name not specified.");
+		}
 
-		// Odpiranje datoteke z vmesnimi rezultati.
-		if (dumpPhases != null) Report.openDumpFile(sourceFileName, dumpPhases.equals("build"));
+		if (dumpPhases != null) {
+			Report.openDumpFile(sourceFileName, dumpPhases.equals("build"));
+		}
 
-		// Izvajanje faz prevajanja.
 		while (true) {
-			// Leksikalna analiza.
-			LexAn lexAn = new LexAn(sourceFileName, dumpPhases.contains("lexan"));
+			// Lexical analysis.
+			final LexAn lexAn = new LexAn(sourceFileName, dumpPhases.contains("lexan"));
 			if (execPhase.equals("lexan")) {
-				while (lexAn.lexAn().token != Token.EOF) {
-				}
+				while (lexAn.lexAn().token != Token.EOF) {}
 				break;
 			}
-			// Sintaksna analiza.
-			SynAn synAn = new SynAn(lexAn, dumpPhases.contains("synan"));
-			AbsTree source = synAn.parse();
-			if (execPhase.equals("synan")) break;
-			// Abstraktna sintaksa.
-			Abstr ast = new Abstr(dumpPhases.contains("ast"));
+
+			// Syntax analysis.
+			final SynAn synAn = new SynAn(lexAn, dumpPhases.contains("synan"));
+			final AbsTree source = synAn.parse();
+			if (execPhase.equals("synan")) {
+				break;
+			}
+
+			// Abstract syntax tree.
+			final Abstr ast = new Abstr(dumpPhases.contains("ast"));
 			ast.dump(source);
-			if (execPhase.equals("ast")) break;
-			// Semanticna analiza.
-			SemAn semAn = new SemAn(dumpPhases.contains("seman"));
+			if (execPhase.equals("ast")) {
+				break;
+			}
+
+			// Semantic analysis.
+			final SemAn semAn = new SemAn(dumpPhases.contains("seman"));
 			source.accept(new NameChecker());
 			source.accept(new TypeChecker());
 			semAn.dump(source);
-			if (execPhase.equals("seman")) break;
-			// Klicni zapisi.
-			Frames frames = new Frames(dumpPhases.contains("frames"));
+			if (execPhase.equals("seman")) {
+				break;
+			}
+
+			// Call frames.
+			final Frames frames = new Frames(dumpPhases.contains("frames"));
 			source.accept(new FrmEvaluator());
 			frames.dump(source);
-			if (execPhase.equals("frames")) break;
-			// Vmesna koda.
-			ImCode imcode = new ImCode(dumpPhases.contains("imcode"));
-			ImcCodeGen imcodegen = new ImcCodeGen();
+			if (execPhase.equals("frames")) {
+				break;
+			}
+
+			// Intermediate code.
+			final ImCode imcode = new ImCode(dumpPhases.contains("imcode"));
+			final ImcCodeGen imcodegen = new ImcCodeGen();
 			source.accept(imcodegen);
 			imcode.dump(imcodegen.chunks);
-			if (execPhase.equals("imcode")) break;
-			// Linearizacija kode.
-			LinCode lincode = new LinCode(dumpPhases.contains("lincode"));
+			if (execPhase.equals("imcode")) {
+				break;
+			}
+
+			// Code linearization.
+			final LinCode lincode = new LinCode(dumpPhases.contains("lincode"));
 			lincode.generate(imcodegen.chunks);
 			lincode.dump(imcodegen.chunks);
 			lincode.run(imcodegen.chunks);
-			if (execPhase.equals("lincode")) break;
-			// Generiranje strojnih ukazov.
-			AsmCode asmcode = new AsmCode(dumpPhases.contains("asmcode"));
+			if (execPhase.equals("lincode")) {
+				break;
+			}
+
+			// Assembly generation.
+			final AsmCode asmcode = new AsmCode(dumpPhases.contains("asmcode"));
 			asmcode.generate(imcodegen.chunks);
 			asmcode.optimize(imcodegen.chunks);
 			asmcode.dump(imcodegen.chunks);
-			if (execPhase.equals("asmcode")) break;
-			// Analiza spremenljivk.
-			TmpAn tmpan = new TmpAn(dumpPhases.contains("tmpan"));
+			if (execPhase.equals("asmcode")) {
+				break;
+			}
+
+			// Temporary variable analysis.
+			final TmpAn tmpan = new TmpAn(dumpPhases.contains("tmpan"));
 			tmpan.analyze(imcodegen.chunks);
 			tmpan.dump(imcodegen.chunks);
-			if (execPhase.equals("tmpan")) break;
-			// Dodeljevanje registrov.
-			RegAlloc regalloc = new RegAlloc(dumpPhases.contains("regalloc"), registers);
+			if (execPhase.equals("tmpan")) {
+				break;
+			}
+
+			// Registry allocation.
+			final RegAlloc regalloc = new RegAlloc(dumpPhases.contains("regalloc"), registers);
 			regalloc.allocate(imcodegen.chunks);
 			regalloc.dump(imcodegen.chunks);
-			if (execPhase.equals("regalloc")) break;
-			// Sestavljanje prevajalnika.
-			Build build = new Build(dumpPhases.contains("build"));
+			if (execPhase.equals("regalloc")) {
+				break;
+			}
+
+			// Build phase.
+			final Build build = new Build(dumpPhases.contains("build"));
 			build.build(imcodegen.chunks);
 			build.dump(imcodegen.chunks);
-			if (execPhase.equals("build")) break;
+			if (execPhase.equals("build")) {
+				break;
+			}
 
-			// Neznana faza prevajanja.
-			if (! execPhase.equals(""))
+			if (!execPhase.equals("")) {
 				Report.warning("Unknown compiler phase specified.");
+			}
 		}
 
-		// Zapiranje datoteke z vmesnimi rezultati.
-		if (dumpPhases != null) Report.closeDumpFile();
+		if (dumpPhases != null) {
+			Report.closeDumpFile();
+		}
 
-		System.out.printf(":-) Done.\n");
+		System.out.println(":-) Done.");
 		System.exit(0);
 	}
 }

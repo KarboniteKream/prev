@@ -2,24 +2,10 @@ package compiler.imcode;
 
 import compiler.*;
 
-/**
- * Prenos.
- *
- * @author sliva
- */
 public class ImcMOVE extends ImcStmt {
+	public final ImcExpr dst;
+	public final ImcExpr src;
 
-	/** Ponor.  */
-	public ImcExpr dst;
-
-	/** Izvor.  */
-	public ImcExpr src;
-
-	/** Ustvari nov prenos.
-	 *
-	 * @param dst Ponor.
-	 * @param src Izvor.
-	 */
 	public ImcMOVE(ImcExpr dst, ImcExpr src) {
 		this.dst = dst;
 		this.src = src;
@@ -34,13 +20,12 @@ public class ImcMOVE extends ImcStmt {
 
 	@Override
 	public ImcSEQ linear() {
-		ImcSEQ lin = new ImcSEQ();
-		ImcESEQ dst = this.dst.linear();
-		ImcESEQ src = this.src.linear();
-		lin.stmts.addAll(((ImcSEQ)dst.stmt).stmts);
-		lin.stmts.addAll(((ImcSEQ)src.stmt).stmts);
+		final ImcSEQ lin = new ImcSEQ();
+		final ImcESEQ dst = this.dst.linear();
+		final ImcESEQ src = this.src.linear();
+		lin.stmts.addAll(((ImcSEQ) dst.stmt).stmts);
+		lin.stmts.addAll(((ImcSEQ) src.stmt).stmts);
 		lin.stmts.add(new ImcMOVE(dst.expr, src.expr));
 		return lin;
 	}
-
 }

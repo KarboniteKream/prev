@@ -3,29 +3,11 @@ package compiler.imcode;
 import compiler.*;
 import compiler.frames.*;
 
-/**
- * Pogojni skok.
- *
- * @author sliva
- */
 public class ImcCJUMP extends ImcStmt {
+	public final ImcExpr cond;
+	public final FrmLabel trueLabel;
+	public final FrmLabel falseLabel;
 
-	/** Koda pogoja.  */
-	public ImcExpr cond;
-
-	/** Labela skoka, ce je pogoj izpolnjen.  */
-	public FrmLabel trueLabel;
-
-	/** Lanbela skoka, ce pogoj ni izpolnjen. */
-	public FrmLabel falseLabel;
-
-	/**
-	 * Ustvari nov pogojni skok.
-	 *
-	 * @param cond Pogoj.
-	 * @param trueLabel Labela skoka, ce je pogoj izpolnjen.
-	 * @param falseLabel Labela skoka, ce pogoj ni izpolnjen.
-	 */
 	public ImcCJUMP(ImcExpr cond, FrmLabel trueLabel, FrmLabel falseLabel) {
 		this.cond = cond;
 		this.trueLabel = trueLabel;
@@ -40,14 +22,13 @@ public class ImcCJUMP extends ImcStmt {
 
 	@Override
 	public ImcSEQ linear() {
-		ImcSEQ lin = new ImcSEQ();
-		ImcESEQ linCond = cond.linear();
-		FrmLabel newFalseLabel = FrmLabel.newLabel();
-		lin.stmts.addAll(((ImcSEQ)linCond.stmt).stmts);
+		final ImcSEQ lin = new ImcSEQ();
+		final ImcESEQ linCond = cond.linear();
+		final FrmLabel newFalseLabel = FrmLabel.newLabel();
+		lin.stmts.addAll(((ImcSEQ) linCond.stmt).stmts);
 		lin.stmts.add(new ImcCJUMP(linCond.expr, trueLabel, newFalseLabel));
 		lin.stmts.add(new ImcLABEL(newFalseLabel));
 		lin.stmts.add(new ImcJUMP(falseLabel));
 		return lin;
 	}
-
 }

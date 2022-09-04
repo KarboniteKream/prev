@@ -3,21 +3,9 @@ package compiler.imcode;
 import compiler.*;
 import compiler.frames.*;
 
-/**
- * Ime.
- *
- * @author sliva
- */
 public class ImcNAME extends ImcExpr {
+	public final FrmLabel label;
 
-	/** Labela imenovane lokacije.  */
-	public FrmLabel label;
-
-	/**
-	 * Ustvari novo ime.
-	 *
-	 * @param label Labela.
-	 */
 	public ImcNAME(FrmLabel label) {
 		this.label = label;
 	}
@@ -31,5 +19,4 @@ public class ImcNAME extends ImcExpr {
 	public ImcESEQ linear() {
 		return new ImcESEQ(new ImcSEQ(), this);
 	}
-
 }

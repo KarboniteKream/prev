@@ -2,21 +2,9 @@ package compiler.imcode;
 
 import compiler.*;
 
-/**
- * Izraz kot stavek.
- *
- * @author sliva
- */
 public class ImcEXP extends ImcStmt {
+	public final ImcExpr expr;
 
-	/** Izraz.  */
-	public ImcExpr expr;
-
-	/**
-	 * Ustvari izraz kot stavek.
-	 *
-	 * @param expr
-	 */
 	public ImcEXP(ImcExpr expr) {
 		this.expr = expr;
 	}
@@ -29,12 +17,11 @@ public class ImcEXP extends ImcStmt {
 
 	@Override
 	public ImcSEQ linear() {
-		ImcSEQ lin = new ImcSEQ();
-		ImcESEQ linExpr = expr.linear();
-		lin.stmts.addAll(((ImcSEQ)linExpr.stmt).stmts);
+		final ImcSEQ lin = new ImcSEQ();
+		final ImcESEQ linExpr = expr.linear();
+		lin.stmts.addAll(((ImcSEQ) linExpr.stmt).stmts);
 		lin.stmts.add(new ImcEXP(linExpr.expr));
 		return lin;
 	}
-
 }
 

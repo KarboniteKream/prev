@@ -1,31 +1,20 @@
 package compiler.seman.type;
 
-/**
- * Opis kazalcnega tipa.
- *
- * @author sliva
- */
 public class SemPtrType extends SemType {
-
-	/** Tip elementa. */
 	public final SemType type;
 
-	/**
-	 * Ustvari nov opis kazalcnega tipa.
-	 *
-	 * @param type
-	 */
 	public SemPtrType(SemType type) {
 		this.type = type;
 	}
 
 	@Override
 	public boolean sameStructureAs(SemType type) {
-		if (type.actualType() instanceof SemPtrType) {
-			SemPtrType pointerType = (SemPtrType) (type.actualType());
-			return (pointerType.type.sameStructureAs(this.type));
-		} else
+		if (!(type.actualType() instanceof SemPtrType)) {
 			return false;
+		}
+
+		final SemPtrType pointerType = (SemPtrType) (type.actualType());
+		return (pointerType.type.sameStructureAs(this.type));
 	}
 
 	@Override
@@ -33,8 +22,7 @@ public class SemPtrType extends SemType {
 		return "PTR(" + type.toString() + ")";
 	}
 
-	public long size()
-	{
+	public long size() {
 		return 8;
 	}
 }

@@ -2,21 +2,9 @@ package compiler.imcode;
 
 import compiler.*;
 
-/**
- * Dostop do pomnilnika.
- *
- * @author sliva
- */
 public class ImcMEM extends ImcExpr {
+	public final ImcExpr expr;
 
-	/** Opis dostopa do pomnilnika.  */
-	public ImcExpr expr;
-
-	/**
-	 * Ustvari nov dostop do pomnilnika.
-	 *
-	 * @param expr Naslov.
-	 */
 	public ImcMEM(ImcExpr expr) {
 		this.expr = expr;
 	}
@@ -33,5 +21,4 @@ public class ImcMEM extends ImcExpr {
 		lin.expr = new ImcMEM(lin.expr);
 		return lin;
 	}
-
 }

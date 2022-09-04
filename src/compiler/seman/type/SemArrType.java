@@ -1,26 +1,9 @@
 package compiler.seman.type;
 
-/**
- * Opis tabelaricnega tipa.
- *
- * @author sliva
- */
 public class SemArrType extends SemType {
-
-	/** Tip elementa. */
 	public final SemType type;
-
-	/** Velikost tabele. */
 	public final long size;
 
-	/**
-	 * Ustvari nov opis tabelaricnega tipa.
-	 *
-	 * @param type
-	 *            Tip elementa tabele.
-	 * @param size
-	 *            Velikost tabele.
-	 */
 	public SemArrType(long size, SemType type) {
 		this.type = type;
 		this.size = size;
@@ -28,12 +11,12 @@ public class SemArrType extends SemType {
 
 	@Override
 	public boolean sameStructureAs(SemType type) {
-		if (type.actualType() instanceof SemArrType) {
-			SemArrType arrayType = (SemArrType) (type.actualType());
-			return (arrayType.size == size)
-					&& (arrayType.type.sameStructureAs(this.type));
-		} else
+		if (!(type.actualType() instanceof SemArrType)) {
 			return false;
+		}
+
+		final SemArrType arrayType = (SemArrType) (type.actualType());
+		return (arrayType.size == size) && (arrayType.type.sameStructureAs(this.type));
 	}
 
 	@Override
@@ -41,8 +24,7 @@ public class SemArrType extends SemType {
 		return "ARR(" + size + "," + type.toString() + ")";
 	}
 
-	public long size()
-	{
+	public long size() {
 		return size * type.size();
 	}
 }

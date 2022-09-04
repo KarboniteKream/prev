@@ -3,21 +3,9 @@ package compiler.imcode;
 import compiler.*;
 import compiler.frames.*;
 
-/**
- * Labela.
- *
- * @author sliva
- */
 public class ImcLABEL extends ImcStmt {
+	public final FrmLabel label;
 
-	/** Labela imenovane lokacije.  */
-	public FrmLabel label;
-
-	/**
-	 * Ustvari novo labelo.
-	 *
-	 * @param label Labela.
-	 */
 	public ImcLABEL(FrmLabel label) {
 		this.label = label;
 	}
@@ -29,7 +17,7 @@ public class ImcLABEL extends ImcStmt {
 
 	@Override
 	public ImcSEQ linear() {
-		ImcSEQ lin = new ImcSEQ();
+		final ImcSEQ lin = new ImcSEQ();
 		lin.stmts.add(this);
 		return lin;
 	}
@@ -37,9 +25,9 @@ public class ImcLABEL extends ImcStmt {
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof ImcLABEL) {
-			return ((ImcLABEL)obj).label.name().equals(label.name());
+			return ((ImcLABEL) obj).label.name().equals(label.name());
 		}
+
 		return false;
 	}
-
 }

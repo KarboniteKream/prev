@@ -3,17 +3,9 @@ package compiler.imcode;
 import compiler.*;
 import compiler.frames.*;
 
-/**
- * Brezpogojni skok.
- *
- * @author sliva
- */
 public class ImcJUMP extends ImcStmt {
+	public final FrmLabel label;
 
-	/** Labela skoka.  */
-	public FrmLabel label;
-
-	/** Ustvari brezpogojni skok. */
 	public ImcJUMP(FrmLabel label) {
 		this.label = label;
 	}
@@ -25,9 +17,8 @@ public class ImcJUMP extends ImcStmt {
 
 	@Override
 	public ImcSEQ linear() {
-		ImcSEQ lin = new ImcSEQ();
+		final ImcSEQ lin = new ImcSEQ();
 		lin.stmts.add(this);
 		return lin;
 	}
-
 }

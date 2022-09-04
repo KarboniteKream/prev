@@ -2,21 +2,9 @@ package compiler.imcode;
 
 import compiler.*;
 
-/**
- * Konstanta.
- *
- * @author sliva
- */
 public class ImcCONST extends ImcExpr {
+	public final Long value;
 
-	/** Vrednost.  */
-	public Long value;
-
-	/**
-	 * Ustvari novo konstanto.
-	 *
-	 * @param value Vrednost konstante.
-	 */
 	public ImcCONST(Long value) {
 		this.value = value;
 	}
@@ -30,5 +18,4 @@ public class ImcCONST extends ImcExpr {
 	public ImcESEQ linear() {
 		return new ImcESEQ(new ImcSEQ(), this);
 	}
-
 }

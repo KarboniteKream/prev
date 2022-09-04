@@ -3,13 +3,7 @@ package compiler.abstr.tree;
 import compiler.*;
 import compiler.abstr.*;
 
-/**
- * Binarni izraz.
- *
- * @author sliva
- */
 public class AbsBinExpr extends AbsExpr {
-
 	public static final int IOR = 0;
 	public static final int AND = 1;
 	public static final int EQU = 2;
@@ -27,27 +21,10 @@ public class AbsBinExpr extends AbsExpr {
 	public static final int ARR = 14;
 	public static final int ASSIGN = 15;
 
-	/** Operator. */
 	public final int oper;
-
-	/** Prvi podizraz. */
 	public final AbsExpr expr1;
-
-	/** Drugi podizraz. */
 	public final AbsExpr expr2;
 
-	/**
-	 * Ustvari nov binarni izraz.
-	 *
-	 * @param pos
-	 *            Polozaj stavcne oblike tega drevesa.
-	 * @param oper
-	 *            Operator.
-	 * @param expr1
-	 *            Prvi podizraz.
-	 * @param expr2
-	 *            Drugi podizraz.
-	 */
 	public AbsBinExpr(Position pos, int oper, AbsExpr expr1, AbsExpr expr2) {
 		super(pos);
 		this.oper = oper;
@@ -55,6 +32,8 @@ public class AbsBinExpr extends AbsExpr {
 		this.expr2 = expr2;
 	}
 
-	@Override public void accept(Visitor visitor) { visitor.visit(this); }
-
+	@Override
+	public void accept(Visitor visitor) {
+		visitor.visit(this);
+	}
 }

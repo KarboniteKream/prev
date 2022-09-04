@@ -3,21 +3,9 @@ package compiler.imcode;
 import compiler.*;
 import compiler.frames.*;
 
-/**
- * Zacasna spremenljivka.
- *
- * @author sliva
- */
 public class ImcTEMP extends ImcExpr {
+	public final FrmTemp temp;
 
-	/** Zacasna spremenljivka.  */
-	public FrmTemp temp;
-
-	/**
-	 * Ustvari novo zacasno spremenljivko.
-	 *
-	 * @param temp Zacasna spremenljivka.
-	 */
 	public ImcTEMP(FrmTemp temp) {
 		this.temp = temp;
 	}
@@ -31,5 +19,4 @@ public class ImcTEMP extends ImcExpr {
 	public ImcESEQ linear() {
 		return new ImcESEQ(new ImcSEQ(), this);
 	}
-
 }
