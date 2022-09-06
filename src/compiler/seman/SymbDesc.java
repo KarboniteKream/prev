@@ -24,7 +24,7 @@ public class SymbDesc {
 	 *            Globina nivoja vidnosti.
 	 */
 	public static void setScope(AbsTree node, int nodeScope) {
-		scope.put(node, new Integer(nodeScope));
+		scope.put(node, nodeScope);
 	}
 
 	/**
