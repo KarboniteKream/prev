@@ -1,18 +1,18 @@
-_3l	'for where'
+_3l	'	for where'
 	<=aa>=b;;;;())))	-21 21 123
 for (t := 1; t<=10;t:=t+1)
-'to je '
-'multiline test'
+'to je 
+multiline test'
 
 'for a moment''s time let''s resume our thoughts ' + '& focus on creating' + ' ' + a + compiler
 
-'7 lines '
+'7 lines 
 of 
 multiline string
 
 
 
-'test'
+test'
 test
 
 d3clared_string
@@ -23,7 +23,7 @@ for### to je super for test then typ ding ing
 arr
 else
 fun
-'to je test' 
+'to je test'
 'to je '' test '''
 rec
 then

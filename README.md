@@ -1,7 +1,7 @@
 #### Compiling
 ```sh
-$ javac -cp src src/compiler/Main.java
-$ java -cp src compiler.Main --phase=PHASE --dump=DUMP [--registers=8] FILE.prev
+$ javac -cp src -d build src/compiler/Main.java
+$ java -cp build compiler.Main --phase=PHASE --dump=DUMP [--registers=8] FILE.prev
 ```
 or
 ```sh
